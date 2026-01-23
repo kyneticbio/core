@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/kyneticbio/core/compare/v1.0.0...v1.1.0) (2026-01-23)
+
+
+### Features
+
+* add addMinutes utility to time utils ([98fdfa6](https://github.com/kyneticbio/core/commit/98fdfa67ab7440164c52123d0654e991f4638ff1))
+
 # 1.0.0 (2026-01-23)
 
 
