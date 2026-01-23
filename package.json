@@ -26,11 +26,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kyneticbio/core.git"
+    "url": "https://github.com/kyneticbio/core.git"
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.0",
