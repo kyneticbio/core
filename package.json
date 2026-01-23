@@ -1,6 +1,33 @@
 {
-  "author": "KyneticBio",
+  "name": "@kyneticbio/core",
+  "version": "1.0.0",
   "description": "Core simulation library for KyneticBio",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "kyneticbio",
+    "simulation",
+    "engine",
+    "biology"
+  ],
+  "author": "KyneticBio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyneticbio/core.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "semantic-release": "^23.0.0",
