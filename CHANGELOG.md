@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/kyneticbio/core/compare/v1.1.0...v1.1.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* restructure workflow for OIDC trusted publishing ([83c4d09](https://github.com/kyneticbio/core/commit/83c4d09c291f25238def5870268b8d6362e1f3e4))
+
 # [1.1.0](https://github.com/kyneticbio/core/compare/v1.0.0...v1.1.0) (2026-01-23)
 
 
