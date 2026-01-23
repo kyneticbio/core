@@ -37,3 +37,9 @@ export const toMinuteOfDay = (isoString: string): Minute => {
   const date = new Date(isoString);
   return (date.getHours() * 60 + date.getMinutes()) as Minute;
 };
+
+export const addMinutes = (isoString: string, minutes: number): string => {
+  const date = new Date(isoString);
+  date.setMinutes(date.getMinutes() + minutes);
+  return date.toISOString();
+};
