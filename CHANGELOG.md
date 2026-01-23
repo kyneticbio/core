@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/kyneticbio/core/compare/v1.1.1...v1.1.2) (2026-01-23)
+
+
+### Bug Fixes
+
+* explicit OIDC config for npm publish ([2db7601](https://github.com/kyneticbio/core/commit/2db76018b4900a578bce9899bf34fe6ec1b78e86))
+
 ## [1.1.1](https://github.com/kyneticbio/core/compare/v1.1.0...v1.1.1) (2026-01-23)
 
 
