@@ -2,6 +2,8 @@
 
 > The high-performance physiological simulation engine powering KyneticBio.
 
+**[Read the Documentation](https://kyneticbio.github.io/core/)**
+
 `@kyneticbio/core` is an ODE-based mathematical model of human physiology. It simulates the complex interplay between endogenous signals (hormones, neurotransmitters, metabolites) and exogenous interventions (pharmacology, nutrition, lifestyle).
 
 ## Key Features
