@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/kyneticbio/core/compare/v1.1.4...v1.1.5) (2026-01-23)
+
+
+### Bug Fixes
+
+* **ci:** add error handling to OIDC token exchange ([cb7c45b](https://github.com/kyneticbio/core/commit/cb7c45bf94409b85de7163b96d42ade4a539ab98))
+
 ## [1.1.4](https://github.com/kyneticbio/core/compare/v1.1.3...v1.1.4) (2026-01-23)
 
 
