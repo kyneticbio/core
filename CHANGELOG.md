@@ -1,0 +1,15 @@
+# 1.0.0 (2026-01-23)
+
+
+### Bug Fixes
+
+* bypass npm token check for OIDC and disable github failure issues ([aebe99a](https://github.com/kyneticbio/core/commit/aebe99af51238efc5489f0af4f9b2d643237a0e3))
+* change self-referencing import to relative import in time utils ([3c77b76](https://github.com/kyneticbio/core/commit/3c77b761037e37ead761fa814c07d84c330ccf90))
+* correct paths in github workflows ([9985755](https://github.com/kyneticbio/core/commit/99857553571c5648b3ea008efae7076a748891b9))
+* use manual npm publish for OIDC support ([e087383](https://github.com/kyneticbio/core/commit/e08738342fb5d241014a20429002fee5f8192dfc))
+
+
+### Features
+
+* add automated release workflow and semantic-release ([8b1eee4](https://github.com/kyneticbio/core/commit/8b1eee49fbe6684164b3c3673b8416e1a3ea1157))
+* add github pages deployment workflow for docs ([6a11581](https://github.com/kyneticbio/core/commit/6a11581ab926d63e7438aea6e70f0fa776e0e21d))
