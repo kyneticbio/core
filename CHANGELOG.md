@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/kyneticbio/core/compare/v1.1.2...v1.1.3) (2026-01-23)
+
+
+### Bug Fixes
+
+* **ci:** configure npm OIDC authentication for publishing ([7483979](https://github.com/kyneticbio/core/commit/7483979256ec3071242748498702183245546637))
+
 ## [1.1.2](https://github.com/kyneticbio/core/compare/v1.1.1...v1.1.2) (2026-01-23)
 
 
