@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/kyneticbio/core/compare/v1.1.3...v1.1.4) (2026-01-23)
+
+
+### Bug Fixes
+
+* **ci:** use explicit OIDC token exchange for npm publishing ([ccc99d9](https://github.com/kyneticbio/core/commit/ccc99d934a283786bbde20153a3af9e0ca804bf8))
+
 ## [1.1.3](https://github.com/kyneticbio/core/compare/v1.1.2...v1.1.3) (2026-01-23)
 
 
