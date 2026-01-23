@@ -1,4 +1,4 @@
-import type { Minute } from '@kyneticbio/core';
+import type { Minute } from '../engine/types';
 
 export const MINUTES_IN_DAY = 24 * 60;
 
