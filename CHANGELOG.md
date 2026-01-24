@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/kyneticbio/core/compare/v1.1.6...v1.1.7) (2026-01-24)
+
+
+### Bug Fixes
+
+* **ci:** use NPM_TOKEN secret for authentication ([24f070a](https://github.com/kyneticbio/core/commit/24f070a51e751ccf20f1b99dcb99028c3eb743e1))
+
 ## [1.1.6](https://github.com/kyneticbio/core/compare/v1.1.5...v1.1.6) (2026-01-24)
 
 
