@@ -24,7 +24,7 @@ export const SunlightExposure = (
 
   return {
     molecule: { name: "Photons", molarMass: 0 },
-    pk: { model: "activity-dependent", delivery: "continuous" },
+    pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
     pd: [
       {
         target: "melatonin",

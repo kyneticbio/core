@@ -2,15 +2,14 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   integrateStep,
   createInitialState,
-  SIGNAL_DEFINITIONS,
-  AUXILIARY_DEFINITIONS,
-} from "../../src";
-import { DEFAULT_SUBJECT, derivePhysiology } from "../../src";
+  DEFAULT_SUBJECT,
+  derivePhysiology,
+} from "../index";
 import type {
   DynamicsContext,
   SimulationState,
   ActiveIntervention,
-} from "../../src/unified";
+} from "./types";
 
 describe("PK/PD Regression Tests", () => {
   let state: SimulationState;
@@ -49,8 +48,8 @@ describe("PK/PD Regression Tests", () => {
         t,
         dt,
         createCtx(t % 1440),
-        SIGNAL_DEFINITIONS,
-        AUXILIARY_DEFINITIONS,
+        undefined,
+        undefined,
         interventions,
       );
     }
@@ -73,6 +72,7 @@ describe("PK/PD Regression Tests", () => {
               delivery: "bolus",
               halfLifeMin: 180,
               bioavailability: 0.3,
+              massMg: 10,
               volume: { kind: "lbm", base_L_kg: 2.0 },
             },
             pd: [],
@@ -86,8 +86,8 @@ describe("PK/PD Regression Tests", () => {
         480,
         1.0,
         createCtx(480),
-        SIGNAL_DEFINITIONS,
-        AUXILIARY_DEFINITIONS,
+        undefined,
+        undefined,
         interventions,
       );
 
@@ -111,6 +111,7 @@ describe("PK/PD Regression Tests", () => {
               delivery: "bolus",
               bioavailability: 1.0,
               halfLifeMin: 60,
+              massMg: 100,
             },
             pd: [],
           },
@@ -143,7 +144,7 @@ describe("PK/PD Regression Tests", () => {
           intensity: 1.0,
           params: { mg: 100 },
           pharmacology: {
-            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 300 },
+            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 300, massMg: 100 },
             pd: [],
           },
         },
@@ -155,7 +156,7 @@ describe("PK/PD Regression Tests", () => {
           intensity: 1.0,
           params: { mg: 100 },
           pharmacology: {
-            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 300 },
+            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 300, massMg: 100 },
             pd: [],
           },
         },
@@ -178,7 +179,7 @@ describe("PK/PD Regression Tests", () => {
           intensity: 1.0,
           params: { mg: 100 },
           pharmacology: {
-            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 1440 },
+            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 1440, massMg: 100 },
             pd: [],
           },
         },
@@ -190,7 +191,7 @@ describe("PK/PD Regression Tests", () => {
           intensity: 1.0,
           params: { mg: 100 },
           pharmacology: {
-            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 1440 },
+            pk: { model: "1-compartment", delivery: "bolus", halfLifeMin: 1440, massMg: 100 },
             pd: [],
           },
         },
@@ -224,6 +225,7 @@ describe("PK/PD Regression Tests", () => {
               delivery: "bolus",
               halfLifeMin: 180,
               bioavailability: 0.3,
+              massMg: 10,
               volume: { kind: "lbm", base_L_kg: 2.0 },
             },
             pd: [{ target: "DAT", mechanism: "antagonist", Ki: 0.01, intrinsicEfficacy: 30 }],
@@ -272,6 +274,7 @@ describe("PK/PD Regression Tests", () => {
               delivery: "bolus",
               bioavailability: 0.99,
               halfLifeMin: 300,
+              massMg: 100,
               volume: { kind: "tbw", fraction: 0.6 },
             },
             pd: [],
@@ -295,7 +298,7 @@ describe("PK/PD Regression Tests", () => {
           intensity: 1.0,
           params: { mg: 100 },
           pharmacology: {
-            pk: { model: "1-compartment", delivery: "bolus", bioavailability: 0.99, halfLifeMin: 300 },
+            pk: { model: "1-compartment", delivery: "bolus", bioavailability: 0.99, halfLifeMin: 300, massMg: 100 },
             pd: [{ target: "Adenosine_A2a", mechanism: "antagonist", Ki: 0.5, intrinsicEfficacy: 20 }],
           },
         },
@@ -320,14 +323,14 @@ describe("PK/PD Regression Tests", () => {
           duration: 480,
           intensity: 1.0,
           params: {},
-          pharmacology: { pk: { model: "activity-dependent" }, pd: [] },
+          pharmacology: { pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 }, pd: [] },
         },
       ];
 
       // Simulate during sleep
       let sleepState = state;
       for (let i = 0; i < 60; i++) {
-        sleepState = integrateStep(sleepState, i, 1.0, createCtx(i, true), SIGNAL_DEFINITIONS, AUXILIARY_DEFINITIONS, sleepIntervention);
+        sleepState = integrateStep(sleepState, i, 1.0, createCtx(i, true), undefined, undefined, sleepIntervention);
       }
 
       const concentration = sleepState.pk["sleep-test_central"] ?? 0;
@@ -343,7 +346,7 @@ describe("PK/PD Regression Tests", () => {
           duration: 480,
           intensity: 1.0,
           params: {},
-          pharmacology: { pk: { model: "activity-dependent" }, pd: [] },
+          pharmacology: { pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 }, pd: [] },
         },
         {
           id: "sleep-multi",
@@ -352,7 +355,7 @@ describe("PK/PD Regression Tests", () => {
           duration: 480,
           intensity: 1.0,
           params: {},
-          pharmacology: { pk: { model: "activity-dependent" }, pd: [] },
+          pharmacology: { pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 }, pd: [] },
         },
       ];
 
@@ -360,7 +363,7 @@ describe("PK/PD Regression Tests", () => {
       let sleepState = state;
       for (let i = 0; i < 60; i++) {
         const t = 1380 + i;
-        sleepState = integrateStep(sleepState, t, 1.0, createCtx(t % 1440, true), SIGNAL_DEFINITIONS, AUXILIARY_DEFINITIONS, interventions);
+        sleepState = integrateStep(sleepState, t, 1.0, createCtx(t % 1440, true), undefined, undefined, interventions);
       }
 
       const concentration = sleepState.pk["sleep-multi_central"] ?? 0;
@@ -383,7 +386,7 @@ describe("PK/PD Regression Tests", () => {
           duration: 60,
           intensity: 1.0,
           params: { mg: 100 },
-          pharmacology: { pk: { model: "1-compartment", delivery: "bolus" }, pd: [] },
+          pharmacology: { pk: { model: "1-compartment", delivery: "bolus", massMg: 100 }, pd: [] },
         },
       ];
 

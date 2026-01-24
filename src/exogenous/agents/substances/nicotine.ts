@@ -10,6 +10,7 @@ export const Nicotine = (
     bioavailability: 0.0,
     halfLifeMin: 120,
     timeToPeakMin: 0,
+    massMg: mg,
     volume: { kind: "weight", base_L_kg: 2.6 },
   };
 

@@ -11,6 +11,7 @@ export const Electrolytes = (
     delivery: "bolus",
     bioavailability: 0.9,
     halfLifeMin: 240,
+    massMg: sodium_mg + potassium_mg + magnesium_mg,
     timeToPeakMin: 45,
     volume: { kind: "tbw", fraction: 1.0 },
   },

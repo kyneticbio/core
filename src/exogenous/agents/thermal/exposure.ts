@@ -9,7 +9,7 @@ export const ColdExposure = (
 
   return {
     molecule: { name: "Cold Exposure", molarMass: 0 },
-    pk: { model: "activity-dependent", delivery: "continuous" },
+    pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
     pd: [
       {
         target: "norepi",
@@ -108,7 +108,7 @@ export const HeatExposure = (
 
   return {
     molecule: { name: "Heat Exposure", molarMass: 0 },
-    pk: { model: "activity-dependent", delivery: "continuous" },
+    pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
     pd: [
       {
         target: "growthHormone",

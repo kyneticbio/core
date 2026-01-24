@@ -8,8 +8,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { buildConditionAdjustments, CONDITION_LIBRARY } from '../../src';
-import type { ConditionKey, ConditionStateSnapshot } from '../../src';
+import { buildConditionAdjustments, CONDITION_LIBRARY } from '../../index';
+import type { ConditionKey, ConditionStateSnapshot } from '../../index';
 
 // Helper to create condition state
 function createConditionState(

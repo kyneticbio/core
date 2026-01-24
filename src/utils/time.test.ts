@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { minuteToLabel, toMinuteISO, rangeMinutes, snapMinute, toMinute } from '../src/utils/time';
+import { minuteToLabel, toMinuteISO, rangeMinutes, snapMinute, toMinute } from './time';
 
 describe('time utils', () => {
   it('converts hour + minute to absolute minute', () => {

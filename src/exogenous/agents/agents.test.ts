@@ -19,6 +19,6 @@ describe("Agents Catalog", () => {
   it("should produce valid pharmacology for Caffeine", () => {
     const pharm = Agents.Caffeine(100);
     expect(pharm.molecule.name).toBe("Caffeine");
-    expect(pharm.pk.halfLifeMin).toBe(300);
+    expect(pharm.pk!.halfLifeMin).toBe(300);
   });
 });

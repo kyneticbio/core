@@ -12,6 +12,7 @@ export const Caffeine = (mg: number): PharmacologyDef => ({
     delivery: "bolus",
     bioavailability: 0.99,
     halfLifeMin: CAFFEINE_HALFLIFE,
+    massMg: mg,
     clearance: { hepatic: { baseCL_mL_min: 155, CYP: "CYP1A2" } },
     volume: { kind: "tbw", fraction: 0.6 },
   },

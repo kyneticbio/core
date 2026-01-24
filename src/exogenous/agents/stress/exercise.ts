@@ -10,7 +10,7 @@ const EXERCISE_GH = { AMPLITUDE: 8.0 } as const;
 
 export const SympatheticStress = (intensity: number): PharmacologyDef => ({
   molecule: { name: "Sympathetic Drive", molarMass: 0 },
-  pk: { model: "activity-dependent", delivery: "continuous" },
+  pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
   pd: [
     {
       target: "norepi",
@@ -38,7 +38,7 @@ export const SympatheticStress = (intensity: number): PharmacologyDef => ({
 
 export const MetabolicLoad = (intensity: number): PharmacologyDef => ({
   molecule: { name: "Metabolic Load", molarMass: 0 },
-  pk: { model: "activity-dependent", delivery: "continuous" },
+  pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
   pd: [
     {
       target: "ampk",
@@ -66,7 +66,7 @@ export const MetabolicLoad = (intensity: number): PharmacologyDef => ({
 
 export const MechanicalLoad = (intensity: number): PharmacologyDef => ({
   molecule: { name: "Mechanical Load", molarMass: 0 },
-  pk: { model: "activity-dependent", delivery: "continuous" },
+  pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
   pd: [
     {
       target: "mtor",

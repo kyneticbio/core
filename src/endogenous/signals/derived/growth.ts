@@ -54,7 +54,7 @@ export const mtor: SignalDefinition = {
   dynamics: {
     setpoint: () => 1.0,
     tau: 1440,
-    production: [{ source: "insulin", coefficient: 0.03 }],
+    production: [{ source: "insulin", coefficient: 0.001 }],
     clearance: [{ type: "linear", rate: 0.01 }],
     couplings: [],
   },

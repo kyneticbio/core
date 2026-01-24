@@ -206,13 +206,15 @@ interface PKAgent {
   startTime: number;
   duration: number;
   intensity: number;
-  dose: number;
+  massMg: number;
   F: number;
   ka: number;
   ke: number;
   vd: number;
   model: string;
   delivery: string;
+  Vmax?: number;
+  Km?: number;
 }
 
 function extractPKAgents(
@@ -225,9 +227,7 @@ function extractPKAgents(
     if (!iv.pharmacology?.pk) continue;
     const pk = iv.pharmacology.pk;
 
-    const dose = Number(
-      iv.params?.mg ?? iv.params?.dose ?? iv.params?.units ?? 100,
-    );
+    const massMg = pk.massMg;
     const F = pk.bioavailability ?? 1.0;
     const ke = pk.eliminationRate ?? 0.693 / (pk.halfLifeMin ?? 60);
     const ka = pk.absorptionRate ?? ke * 4;
@@ -263,14 +263,16 @@ function extractPKAgents(
       id: iv.id,
       startTime: iv.startTime,
       duration: iv.duration,
-      intensity: iv.intensity,
-      dose,
+      intensity: iv.intensity ?? 1.0,
+      massMg,
       F,
       ka,
       ke,
       vd,
       model: pk.model ?? "1-compartment",
-      delivery: pk.delivery || (dose ? "bolus" : "continuous"),
+      delivery: pk.delivery || (massMg ? "bolus" : "continuous"),
+      Vmax: pk.Vmax,
+      Km: pk.Km,
     });
   }
 
@@ -301,20 +303,66 @@ function computeAnalyticalConcentration(
           (1 - Math.exp(-a.duration / tau)) *
           Math.exp(-(dt - a.duration) / tau);
       }
+    } else if (a.model === "michaelis-menten") {
+      // Quasi-analytical approximation for MM kinetics
+      const { massMg, F, vd, duration, Vmax = 0.2, Km = 10 } = a;
+      const kin = (massMg * F * a.intensity) / Math.max(1, duration);
+      
+      const t_active = Math.min(dt, duration);
+      const t_decay = Math.max(0, dt - duration);
+      
+      // During infusion: assume approach to steady state C_ss where kin/vd = Vmax*C/(Km+C)
+      // Conversion: kin/vd is mg/L/min. Vmax is mg/dL/min.
+      // 1 mg/L = 0.1 mg/dL.
+      const input_mgdL = (kin / vd) * 0.1;
+      let C_peak_mgdL = 0;
+      
+      if (input_mgdL >= Vmax) {
+        // Zero-order accumulation
+        C_peak_mgdL = (input_mgdL - Vmax) * t_active;
+      } else {
+        const C_ss = (Km * input_mgdL) / (Vmax - input_mgdL + 0.00001);
+        const effective_tau = Km / Vmax; 
+        C_peak_mgdL = C_ss * (1 - Math.exp(-t_active / effective_tau));
+      }
+      
+      let C_final_mgdL = 0;
+      if (t_decay <= 0) {
+        C_final_mgdL = C_peak_mgdL;
+      } else {
+        // Post-infusion decay
+        if (C_peak_mgdL > Km) {
+          const t_linear = (C_peak_mgdL - Km) / Vmax;
+          if (t_decay <= t_linear) {
+            C_final_mgdL = C_peak_mgdL - Vmax * t_decay;
+          } else {
+            C_final_mgdL = Km * Math.exp(-(t_decay - t_linear) / (Km / Vmax));
+          }
+        } else {
+          C_final_mgdL = C_peak_mgdL * Math.exp(-t_decay / (Km / Vmax));
+        }
+      }
+      
+      if (isNaN(C_final_mgdL) || C_final_mgdL < 0) {
+        console.error(`MM Bad Value: ${C_final_mgdL}, peak=${C_peak_mgdL}, dt=${dt}, dur=${duration}, mass=${massMg}`);
+      }
+
+      // Convert mg/dL back to mg/L for the central compartment
+      sum += C_final_mgdL * 10;
     } else if (a.delivery === "bolus") {
       // Bateman equation for bolus
-      const dose = a.dose * a.F * a.intensity;
+      const massMg = a.massMg * a.F * a.intensity;
       const eps = 0.0001;
       const denom = Math.abs(a.ka - a.ke) < eps ? eps : a.ka - a.ke;
       sum += Math.max(
         0,
-        (dose / a.vd) *
+        (massMg / a.vd) *
           (a.ka / denom) *
           (Math.exp(-a.ke * dt) - Math.exp(-a.ka * dt)),
       );
     } else {
       // Infusion: zero-order input with first-order absorption/elimination
-      const kin = (a.dose * a.F * a.intensity) / a.duration;
+      const kin = (a.massMg * a.F * a.intensity) / a.duration;
       const { ka, ke, vd } = a;
       const D = a.duration;
       const eps = 0.0001;
@@ -550,6 +598,8 @@ export function computeDerivativesVector(
                         effectiveConc = (conc / molarMass) * 1000000;
                       else if (eff.unit === "uM" || eff.unit === "µM")
                         effectiveConc = (conc / molarMass) * 1000;
+                      else if (eff.unit === "mg/dL")
+                        effectiveConc = conc * 0.1;
                     }
 
                     const EC50 = eff.EC50 ?? eff.Ki ?? 100;
@@ -979,8 +1029,10 @@ export function runOptimizedV2(
 
         const pharms: any[] =
           (item as any).resolvedPharmacology ||
-          (def.pharmacology && typeof def.pharmacology !== "function"
-            ? [def.pharmacology]
+          (def.pharmacology
+            ? typeof def.pharmacology === "function"
+              ? [def.pharmacology(item.meta.params)].flat()
+              : [def.pharmacology]
             : []);
 
         for (let idx = 0; idx < pharms.length; idx++) {
@@ -989,7 +1041,7 @@ export function runOptimizedV2(
 
           const pk = pharm.pk;
           const agentId = pharms.length > 1 ? `${item.id}_${idx}` : item.id;
-          const dose = Number(
+          const massMg = pk.massMg ?? Number(
             item.meta.params?.mg ??
               item.meta.params?.dose ??
               item.meta.params?.units ??
@@ -1005,6 +1057,7 @@ export function runOptimizedV2(
             const weight = options?.subject?.weight ?? 70;
             const tbw = options?.physiology?.tbw ?? weight * 0.6;
             const lbm = options?.physiology?.leanBodyMass ?? weight * 0.8;
+            const sex = options?.subject?.sex ?? "male";
             switch (vol.kind) {
               case "tbw":
                 vd = tbw * (vol.fraction ?? 0.6);
@@ -1015,6 +1068,10 @@ export function runOptimizedV2(
               case "weight":
                 vd = weight * (vol.base_L_kg ?? 0.7);
                 break;
+              case "sex-adjusted":
+                const ratio = sex === "female" ? (vol.female_L_kg ?? 0.55) : (vol.male_L_kg ?? 0.68);
+                vd = weight * ratio;
+                break;
             }
           }
 
@@ -1023,13 +1080,15 @@ export function runOptimizedV2(
             startTime: item.startMin + d * 1440,
             duration: item.durationMin,
             intensity: item.meta.intensity ?? 1.0,
-            dose,
+            massMg,
             F,
             ka,
             ke,
             vd,
             model: pk.model ?? "1-compartment",
-            delivery: pk.delivery || (dose ? "bolus" : "continuous"),
+            delivery: pk.delivery || (massMg ? "bolus" : "continuous"),
+            Vmax: pk.Vmax,
+            Km: pk.Km,
           });
         }
       }
@@ -1098,8 +1157,10 @@ export function runOptimizedV2(
         if (!def) continue;
         const pharms: any[] =
           (item as any).resolvedPharmacology ||
-          (def.pharmacology && typeof def.pharmacology !== "function"
-            ? [def.pharmacology]
+          (def.pharmacology
+            ? typeof def.pharmacology === "function"
+              ? [def.pharmacology(item.meta.params)].flat()
+              : [def.pharmacology]
             : []);
         pharms.forEach((pharm, idx) => {
           const agentId = pharms.length > 1 ? `${item.id}_${idx}` : item.id;

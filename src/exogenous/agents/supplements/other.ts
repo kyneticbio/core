@@ -7,6 +7,7 @@ export const Inositol = (mg: number): PharmacologyDef => ({
     delivery: "bolus",
     bioavailability: 0.9,
     halfLifeMin: 240,
+    massMg: mg,
     timeToPeakMin: 120,
     volume: { kind: "tbw", fraction: 0.6 },
   },
@@ -23,7 +24,7 @@ export const Inositol = (mg: number): PharmacologyDef => ({
 
 export const DigestiveEnzymes = (units: number = 1): PharmacologyDef => ({
   molecule: { name: "Digestive Enzymes", molarMass: 0 },
-  pk: { model: "activity-dependent", delivery: "continuous" },
+  pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
   pd: [
     {
       target: "glp1",

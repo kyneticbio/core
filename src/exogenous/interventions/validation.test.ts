@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { INTERVENTIONS } from '../../src';
-import { validateInterventionLibrary } from '../../src';
+import { INTERVENTIONS } from './index';
+import { validateInterventionLibrary } from './validation';
 
 describe('Intervention Unit Integrity', () => {
   it('should have matching units for all pharmacological effects', () => {

@@ -16,7 +16,7 @@ export const adrenaline: SignalDefinition = {
     },
     tau: 5,
     production: [],
-    clearance: [{ type: "linear", rate: 0.2 }],
+    clearance: [],
     couplings: [
       { source: "orexin", effect: "stimulate", strength: 0.4 },
       { source: "dopamine", effect: "stimulate", strength: 1.0 },

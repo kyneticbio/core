@@ -12,6 +12,7 @@ export const Melatonin = (mg: number): PharmacologyDef => ({
     delivery: "bolus",
     bioavailability: 0.15,
     halfLifeMin: MELATONIN_HALFLIFE,
+    massMg: mg,
     clearance: { hepatic: { baseCL_mL_min: 1200, CYP: "CYP1A2" } },
     volume: { kind: "weight", base_L_kg: 1.0 },
   },

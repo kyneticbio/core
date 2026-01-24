@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { computeDerivatives, initializeZeroState } from '../../src';
-import { dopamine } from '../../src';
-import { DEFAULT_SUBJECT, derivePhysiology } from '../../src';
-import type { DynamicsContext } from '../../src';
+import { computeDerivatives, initializeZeroState } from '../index';
+import { dopamine } from '../endogenous/signals';
+import { DEFAULT_SUBJECT, derivePhysiology } from '../index';
+import type { DynamicsContext } from '../index';
 
 describe('Solver Debug Flags (Optimized V2)', () => {
   const subject = DEFAULT_SUBJECT;
@@ -21,12 +21,12 @@ describe('Solver Debug Flags (Optimized V2)', () => {
   it('should have non-zero setpoint when baselines enabled', () => {
     const state = initializeZeroState();
     const derivs = computeDerivatives(
-      state, 
-      480, 
-      ctx, 
-      definitions, 
-      {}, 
-      [], 
+      state,
+      480,
+      ctx,
+      definitions,
+      {},
+      [],
       { debug: { enableBaselines: true } }
     );
     // Dopamine setpoint is non-zero at 8AM
@@ -36,15 +36,15 @@ describe('Solver Debug Flags (Optimized V2)', () => {
   it('should have zero setpoint contribution when baselines disabled', () => {
     const state = initializeZeroState();
     const derivs = computeDerivatives(
-      state, 
-      480, 
-      ctx, 
-      definitions, 
-      {}, 
-      [], 
+      state,
+      480,
+      ctx,
+      definitions,
+      {},
+      [],
       { debug: { enableBaselines: false } }
     );
-    
+
     expect(derivs.signals.dopamine).toBe(0);
   });
 });

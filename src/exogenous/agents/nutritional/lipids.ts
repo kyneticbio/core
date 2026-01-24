@@ -26,13 +26,15 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       delivery: "infusion",
       halfLifeMin: 120,
       timeToPeakMin: 180,
+      massMg: amountGrams * 1000,
       volume: { kind: "weight", base_L_kg: 0.3 },
     },
     pd: [
       {
         target: "ghrelin",
         mechanism: "antagonist",
-        intrinsicEfficacy: amountGrams * 3.0,
+        EC50: 500,
+        intrinsicEfficacy: 150, 
         unit: "pg/mL",
         tau: 60,
         description: "Fat powerfully suppresses the hunger hormone.",
@@ -40,7 +42,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "leptin",
         mechanism: "agonist",
-        intrinsicEfficacy: leptinEffect,
+        EC50: 500,
+        intrinsicEfficacy: 40 * leptinEffect,
         unit: "ng/mL",
         tau: 120,
         description: "Fat triggers strong fullness signaling.",
@@ -48,7 +51,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "glp1",
         mechanism: "agonist",
-        intrinsicEfficacy: amountGrams * 0.3,
+        EC50: 500,
+        intrinsicEfficacy: 60,
         unit: "pmol/L",
         tau: 90,
         description: "Fat stimulates gut fullness hormones.",
@@ -56,7 +60,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "vagal",
         mechanism: "agonist",
-        intrinsicEfficacy: vagalEffect,
+        EC50: 500,
+        intrinsicEfficacy: 25 * vagalEffect,
         unit: "index",
         tau: 45,
         description: "Activates the rest-and-digest nerve.",
@@ -64,7 +69,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "acetylcholine",
         mechanism: "agonist",
-        intrinsicEfficacy: achEffect,
+        EC50: 500,
+        intrinsicEfficacy: 30 * achEffect,
         unit: "nM",
         tau: 30,
         description: "Parasympathetic signal for digestion.",
@@ -72,7 +78,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "dopamine",
         mechanism: "agonist",
-        intrinsicEfficacy: Math.min(8, amountGrams * 0.2),
+        EC50: 500,
+        intrinsicEfficacy: 25,
         unit: "nM",
         tau: 25,
         description: "Rich foods light up reward circuits.",
@@ -80,7 +87,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "oxytocin",
         mechanism: "agonist",
-        intrinsicEfficacy: Math.min(3, amountGrams * 0.08),
+        EC50: 500,
+        intrinsicEfficacy: 15,
         unit: "pg/mL",
         tau: 60,
         description: "Comfort foods trigger bonding hormones.",
@@ -88,7 +96,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "endocannabinoid",
         mechanism: "agonist",
-        intrinsicEfficacy: endocannabinoidEffect,
+        EC50: 500,
+        intrinsicEfficacy: 30 * endocannabinoidEffect,
         unit: "nM",
         tau: 90,
         description: "Triggers body's natural bliss molecules.",
@@ -96,7 +105,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "orexin",
         mechanism: "antagonist",
-        intrinsicEfficacy: orexinSuppression,
+        EC50: 500,
+        intrinsicEfficacy: 15 * orexinSuppression,
         unit: "pg/mL",
         tau: 90,
         description: "Heavy meals suppress wakefulness signals.",
@@ -104,7 +114,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "norepi",
         mechanism: "antagonist",
-        intrinsicEfficacy: norepinephrineSuppression,
+        EC50: 500,
+        intrinsicEfficacy: 80 * norepinephrineSuppression / 80,
         unit: "pg/mL",
         tau: 60,
         description: "Alertness chemicals drop during digestion.",
@@ -112,7 +123,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "cortisol",
         mechanism: "antagonist",
-        intrinsicEfficacy: cortisolSuppression,
+        EC50: 500,
+        intrinsicEfficacy: 15 * cortisolSuppression / 4,
         unit: "µg/dL",
         tau: 90,
         description: "Comfort eating reduces cortisol.",
@@ -120,7 +132,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "inflammation",
         mechanism: "agonist",
-        intrinsicEfficacy: amountGrams * 0.05,
+        EC50: 500,
+        intrinsicEfficacy: 15,
         unit: "index",
         tau: 120,
         description: "Temporary post-prandial inflammation.",
@@ -128,7 +141,8 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       {
         target: "thyroid",
         mechanism: "agonist",
-        intrinsicEfficacy: thyroidEffect,
+        EC50: 500,
+        intrinsicEfficacy: 8,
         unit: "pmol/L",
         tau: 120,
         description: "Low metabolic cost to process fat.",

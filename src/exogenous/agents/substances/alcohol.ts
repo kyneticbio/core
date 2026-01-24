@@ -29,6 +29,7 @@ const ETHANOL_GLUTAMATE = {
  */
 export const Alcohol = (units: number): PharmacologyDef => {
   const grams = units * ETHANOL_DOSE.GRAMS_PER_STANDARD_UNIT;
+  const mg = grams * 1000;
   
   return {
     molecule: { name: "Ethanol", molarMass: 46.07 },
@@ -37,7 +38,8 @@ export const Alcohol = (units: number): PharmacologyDef => {
       delivery: "infusion",
       bioavailability: 1.0,
       Vmax: ETHANOL_KINETICS.VMAX_DEFAULT,
-      Km: ETHANOL_KINETICS.KM_MGDL,
+      Km: ETHANOL_KINETICS.KM_MGDL * 10, // Convert mg/dL to mg/L
+      massMg: mg,
       volume: { 
         kind: "sex-adjusted", 
         male_L_kg: ETHANOL_DISTRIBUTION.WIDMARK_R_MALE, 
@@ -48,44 +50,51 @@ export const Alcohol = (units: number): PharmacologyDef => {
       {
         target: "GABA_A",
         mechanism: "PAM",
-        intrinsicEfficacy: units * (ETHANOL_GABA.AMPLITUDE / 15.0),
+        EC50: 500,
+        intrinsicEfficacy: 100 * units,
         unit: "fold-change",
       },
       {
         target: "ethanol",
         mechanism: "agonist",
-        intrinsicEfficacy: grams * 10,
+        EC50: 500,
+        intrinsicEfficacy: 100, 
         unit: "mg/dL",
       },
       {
         target: "dopamine",
         mechanism: "agonist",
-        intrinsicEfficacy: units * 3.3,
+        EC50: 500,
+        intrinsicEfficacy: 60 * units,
         unit: "nM",
         tau: 10,
       },
       {
         target: "NMDA",
         mechanism: "NAM",
-        intrinsicEfficacy: units * (ETHANOL_GLUTAMATE.SUPPRESSION_AMPLITUDE / 100),
+        EC50: 500,
+        intrinsicEfficacy: 40 * units,
         unit: "fold-change",
       },
       {
         target: "vasopressin",
         mechanism: "antagonist",
-        intrinsicEfficacy: units * 6.6,
+        EC50: 500,
+        intrinsicEfficacy: 80 * units,
         unit: "pg/mL",
       },
       {
         target: "cortisol",
         mechanism: "agonist",
-        intrinsicEfficacy: units * 6.6,
+        EC50: 500,
+        intrinsicEfficacy: 60 * units,
         unit: "µg/dL",
       },
       {
         target: "inflammation",
         mechanism: "agonist",
-        intrinsicEfficacy: units * 0.33,
+        EC50: 500,
+        intrinsicEfficacy: 10 * units,
         unit: "index",
       },
     ],

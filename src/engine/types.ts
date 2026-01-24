@@ -140,6 +140,45 @@ export interface WorkerComputeResponse {
 export type PDMechanism = "agonist" | "antagonist" | "PAM" | "NAM";
 export type PharmacologicalTarget = string;
 
+export type PKModelType =
+  | "1-compartment"
+  | "2-compartment"
+  | "activity-dependent"
+  | "michaelis-menten";
+
+export type PKDeliveryType = "bolus" | "continuous" | "infusion";
+
+export interface PKVolumeConfig {
+  kind: "tbw" | "lbm" | "weight" | "sex-adjusted";
+  fraction?: number;
+  base_L_kg?: number;
+  male_L_kg?: number;
+  female_L_kg?: number;
+}
+
+export interface PKDef {
+  model: PKModelType;
+  delivery: PKDeliveryType;
+  massMg: number;
+  bioavailability?: number;
+  halfLifeMin?: number;
+  absorptionRate?: number;
+  eliminationRate?: number;
+  timeToPeakMin?: number;
+  Vmax?: number;
+  Km?: number;
+  volume?: PKVolumeConfig;
+  clearance?: {
+    hepatic?: {
+      baseCL_mL_min: number;
+      CYP?: string;
+    };
+    renal?: {
+      baseCL_mL_min: number;
+    };
+  };
+}
+
 export interface PharmacologyDef {
   molecule: {
     name: string;
@@ -147,7 +186,7 @@ export interface PharmacologyDef {
     pK_a?: number;
     logP?: number;
   };
-  pk?: any;
+  pk?: PKDef;
   pd?: Array<{
     target: PharmacologicalTarget;
     unit?: string;

@@ -9,11 +9,11 @@ import type {
   SimulationState, 
   DynamicsContext, 
   ActiveIntervention
-} from '../../src';
-import { SIGNALS_ALL } from '../../src';
-import { rangeMinutes } from '../../src/utils/time';
-import { buildInterventionLibrary } from '../../src';
-import { buildConditionAdjustments, type ConditionKey, type ConditionStateSnapshot, derivePhysiology, type Subject as SubjectType } from '../../src';
+} from '../../index';
+import { SIGNALS_ALL } from '../../index';
+import { rangeMinutes } from '../time';
+import { buildInterventionLibrary } from '../../index';
+import { buildConditionAdjustments, type ConditionKey, type ConditionStateSnapshot, derivePhysiology, type Subject as SubjectType } from '../../index';
 import {
   integrateStep,
   createInitialState,
@@ -22,8 +22,8 @@ import {
   SIGNAL_DEFINITIONS,
   isReceptor,
   getReceptorSignals
-} from "../../src";
-import { runOptimizedV2 } from '../../src';
+} from "../../index";
+import { runOptimizedV2 } from '../../index';
 
 // --- Types ---
 
@@ -67,6 +67,8 @@ export interface TestIntervention {
 export interface EngineResult {
   /** Signal time series */
   signals: Record<Signal, Float32Array>;
+  /** Auxiliary time series */
+  auxiliarySeries: Record<string, Float32Array>;
   /** Time grid in minutes */
   gridMins: Minute[];
   /** Config used */
@@ -201,10 +203,11 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
   };
 
   // Run computation (import worker logic)
-  const signals = await computeEngineSync(request, includeSignals);
+  const { signals, auxiliarySeries } = await computeEngineSync(request, includeSignals);
 
   return {
     signals,
+    auxiliarySeries,
     gridMins,
     config,
   };
@@ -217,7 +220,7 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
 async function computeEngineSync(
   request: WorkerComputeRequest,
   includeSignals: readonly Signal[]
-): Promise<Record<Signal, Float32Array>> {
+): Promise<{ signals: Record<Signal, Float32Array>; auxiliarySeries: Record<string, Float32Array> }> {
   const system = {
     signals: includeSignals,
     signalDefinitions: getAllUnifiedDefinitions(),
@@ -226,7 +229,7 @@ async function computeEngineSync(
     createInitialState
   };
   const response = runOptimizedV2(request, system as any);
-  return response.series;
+  return { signals: response.series, auxiliarySeries: response.auxiliarySeries };
 }
 
 // --- Analysis Utilities ---

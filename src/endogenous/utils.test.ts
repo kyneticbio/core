@@ -1,10 +1,3 @@
-/**
- * Mathematical Verification Tests
- *
- * Tests the "physics layer" - pharmacokinetics, Hill functions, receptor models.
- * These are pure function tests that verify the mathematical foundations.
- */
-
 import { describe, expect, it } from 'vitest';
 import {
   pk1,
@@ -20,7 +13,7 @@ import {
   carbAppearance,
   michaelisMentenPK,
   alcoholBAC
-} from '../../src';
+} from './utils';
 
 describe('Pharmacokinetics (PK)', () => {
   describe('pk1 - One-Compartment Model', () => {

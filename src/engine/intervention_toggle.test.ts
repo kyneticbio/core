@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { computeDerivatives, initializeZeroState } from '../../src';
-import { dopamine } from '../../src';
-import { DEFAULT_SUBJECT, derivePhysiology } from '../../src';
-import type { ActiveIntervention, DynamicsContext } from '../../src';
+import { computeDerivatives, initializeZeroState } from '../index';
+import { dopamine } from '../endogenous/signals';
+import { DEFAULT_SUBJECT, derivePhysiology } from '../index';
+import type { ActiveIntervention, DynamicsContext } from '../index';
 
 describe('Intervention Toggle (Optimized V2)', () => {
   const subject = DEFAULT_SUBJECT;
@@ -32,7 +32,7 @@ describe('Intervention Toggle (Optimized V2)', () => {
   it('should apply intervention when enabled', () => {
     const state = initializeZeroState();
     const derivs = computeDerivatives(
-      state, 
+      state,
       450, // inside window
       ctx,
       { dopamine },
@@ -40,14 +40,14 @@ describe('Intervention Toggle (Optimized V2)', () => {
       [intervention],
       { debug: { enableInterventions: true } }
     );
-    
+
     expect(derivs.signals.dopamine).toBeGreaterThan(50);
   });
 
   it('should ignore intervention when disabled', () => {
     const state = initializeZeroState();
     const derivs = computeDerivatives(
-      state, 
+      state,
       450,
       ctx,
       { dopamine },
@@ -55,7 +55,7 @@ describe('Intervention Toggle (Optimized V2)', () => {
       [intervention],
       { debug: { enableInterventions: false } }
     );
-    
+
     // Should only have base dynamics
     expect(derivs.signals.dopamine).toBeLessThan(50);
     expect(derivs.signals.dopamine).toBeGreaterThan(0);

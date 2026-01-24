@@ -57,7 +57,7 @@ export const Breathwork = (
 
   return {
     molecule: { name: "Breathwork", molarMass: 0 },
-    pk: { model: "activity-dependent", delivery: "continuous" },
+    pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
     pd,
   };
 };

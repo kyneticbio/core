@@ -32,13 +32,15 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       delivery: "infusion",
       halfLifeMin: 60,
       timeToPeakMin: 90,
+      massMg: amountGrams * 1000,
       volume: { kind: "weight", base_L_kg: 0.5 },
     },
     pd: [
       {
         target: "mtor",
         mechanism: "agonist",
-        intrinsicEfficacy: amountGrams * 1.0,
+        EC50: 500,
+        intrinsicEfficacy: 200, 
         unit: "fold-change",
         tau: 90,
         description: "Protein flips the build muscle switch.",
@@ -46,7 +48,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "insulin",
         mechanism: "agonist",
-        intrinsicEfficacy: amountGrams * 0.2,
+        EC50: 500,
+        intrinsicEfficacy: 30,
         unit: "µIU/mL",
         tau: 45,
         description: "Protein raises insulin modestly.",
@@ -54,7 +57,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "glucagon",
         mechanism: "agonist",
-        intrinsicEfficacy: amountGrams * 0.5,
+        EC50: 500,
+        intrinsicEfficacy: 60,
         unit: "pg/mL",
         tau: 30,
         description: "Maintains stable blood sugar.",
@@ -62,7 +66,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "glp1",
         mechanism: "agonist",
-        intrinsicEfficacy: glp1Effect,
+        EC50: 500,
+        intrinsicEfficacy: 50,
         unit: "pmol/L",
         tau: 60,
         description: "Triggers gut fullness hormone.",
@@ -70,7 +75,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "ghrelin",
         mechanism: "antagonist",
-        intrinsicEfficacy: amountGrams * 2.5,
+        EC50: 500,
+        intrinsicEfficacy: 120,
         unit: "pg/mL",
         tau: 60,
         description: "Strongly suppresses hunger.",
@@ -78,7 +84,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "leptin",
         mechanism: "agonist",
-        intrinsicEfficacy: leptinEffect,
+        EC50: 500,
+        intrinsicEfficacy: 25 * leptinEffect,
         unit: "ng/mL",
         tau: 150,
         description: "Signals fullness over hours.",
@@ -86,7 +93,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "dopamine",
         mechanism: "agonist",
-        intrinsicEfficacy: dopaminePrecursorEffect,
+        EC50: 500,
+        intrinsicEfficacy: 15 * dopaminePrecursorEffect,
         unit: "nM",
         tau: 120,
         description: "Provides tyrosine for dopamine.",
@@ -94,7 +102,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "serotonin",
         mechanism: "agonist",
-        intrinsicEfficacy: serotoninPrecursorEffect,
+        EC50: 500,
+        intrinsicEfficacy: 25 * serotoninPrecursorEffect,
         unit: "nM",
         tau: 150,
         description: "Provides tryptophan for serotonin.",
@@ -102,7 +111,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "glutamate",
         mechanism: "agonist",
-        intrinsicEfficacy: glutamateEffect,
+        EC50: 500,
+        intrinsicEfficacy: 30 * glutamateEffect,
         unit: "µM",
         tau: 60,
         description: "Umami taste and excitatory signal.",
@@ -110,7 +120,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "histamine",
         mechanism: "agonist",
-        intrinsicEfficacy: histamineEffect,
+        EC50: 500,
+        intrinsicEfficacy: 15 * histamineEffect,
         unit: "nM",
         tau: 90,
         description: "Histidine conversion to histamine.",
@@ -118,7 +129,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "bdnf",
         mechanism: "agonist",
-        intrinsicEfficacy: bdnfEffect,
+        EC50: 500,
+        intrinsicEfficacy: 25 * bdnfEffect,
         unit: "ng/mL",
         tau: 180,
         description: "Building blocks for brain health.",
@@ -126,7 +138,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "orexin",
         mechanism: "antagonist",
-        intrinsicEfficacy: orexinSuppression,
+        EC50: 500,
+        intrinsicEfficacy: 15 * orexinSuppression,
         unit: "pg/mL",
         tau: 90,
         description: "Mild satiety-mediated sedation.",
@@ -134,7 +147,8 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       {
         target: "thyroid",
         mechanism: "agonist",
-        intrinsicEfficacy: thyroidEffect,
+        EC50: 500,
+        intrinsicEfficacy: 30 * thyroidEffect,
         unit: "pmol/L",
         tau: 90,
         description: "Highest metabolic cost to process.",

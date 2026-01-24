@@ -19,6 +19,7 @@ export const Ketamine = (
       delivery: route === "iv" ? "infusion" : "bolus",
       bioavailability: params.bioavail,
       halfLifeMin: params.halfLife,
+      massMg: mg,
       timeToPeakMin: params.tPeak,
       clearance: { hepatic: { baseCL_mL_min: 1100, CYP: "CYP3A4" } },
       volume: { kind: "weight", base_L_kg: 3.0 },

@@ -11,7 +11,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     params: [],
     pharmacology: {
       molecule: { name: "Sleep", molarMass: 0 },
-      pk: { model: "activity-dependent", delivery: "continuous" },
+      pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
       pd: [
         {
           target: "melatonin",
@@ -138,7 +138,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     ],
     pharmacology: {
       molecule: { name: "Nap", molarMass: 0 },
-      pk: { model: "activity-dependent", delivery: "continuous" },
+      pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
       pd: [
         {
           target: "gaba",
@@ -321,7 +321,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     params: [],
     pharmacology: {
       molecule: { name: "Social", molarMass: 0 },
-      pk: { model: "activity-dependent", delivery: "continuous" },
+      pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
       pd: [
         {
           target: "oxytocin",
@@ -389,7 +389,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     params: [],
     pharmacology: {
       molecule: { name: "Meditation", molarMass: 0 },
-      pk: { model: "activity-dependent", delivery: "continuous" },
+      pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
       pd: [
         {
           target: "vagal",

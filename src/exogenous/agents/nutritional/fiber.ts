@@ -22,13 +22,15 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       delivery: "infusion",
       halfLifeMin: 240,
       timeToPeakMin: 180,
+      massMg: amountGrams * 1000,
       volume: { kind: "weight", base_L_kg: 0.1 },
     },
     pd: [
       {
         target: "glp1",
         mechanism: "agonist",
-        intrinsicEfficacy: glp1Effect,
+        EC50: 500,
+        intrinsicEfficacy: 50, 
         unit: "pmol/L",
         tau: 120,
         description: "Gut bacteria trigger delayed fullness signal.",
@@ -36,7 +38,8 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       {
         target: "ghrelin",
         mechanism: "antagonist",
-        intrinsicEfficacy: amountGrams * 1.5,
+        EC50: 500,
+        intrinsicEfficacy: 80,
         unit: "pg/mL",
         tau: 30,
         description: "Physically fills stomach, suppressing hunger.",
@@ -44,7 +47,8 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       {
         target: "gaba",
         mechanism: "agonist",
-        intrinsicEfficacy: scfaGabaEffect,
+        EC50: 500,
+        intrinsicEfficacy: 30,
         unit: "nM",
         tau: 180,
         description: "Gut bacteria produce calming chemicals.",
@@ -52,7 +56,8 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       {
         target: "vagal",
         mechanism: "agonist",
-        intrinsicEfficacy: vagalEffect,
+        EC50: 500,
+        intrinsicEfficacy: 15,
         unit: "index",
         tau: 60,
         description: "Activates gut-to-brain nerve pathway.",
@@ -60,7 +65,8 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       {
         target: "serotonin",
         mechanism: "agonist",
-        intrinsicEfficacy: gutSerotoninEffect,
+        EC50: 500,
+        intrinsicEfficacy: 25,
         unit: "nM",
         tau: 90,
         description: "Supports gut-derived serotonin production.",
@@ -68,7 +74,8 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       {
         target: "inflammation",
         mechanism: "antagonist",
-        intrinsicEfficacy: scfaAntiInflammatory,
+        EC50: 500,
+        intrinsicEfficacy: 8,
         unit: "index",
         tau: 240,
         description: "Reduces gut inflammation and strengthens barrier.",
@@ -76,7 +83,8 @@ export const Fiber = (amountGrams: number): PharmacologyDef => {
       {
         target: "thyroid",
         mechanism: "agonist",
-        intrinsicEfficacy: thyroidEffect,
+        EC50: 500,
+        intrinsicEfficacy: 8,
         unit: "pmol/L",
         tau: 240,
         description: "Small metabolic boost from fermentation.",

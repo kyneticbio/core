@@ -7,14 +7,16 @@ export const AlphaGPC = (mg: number): PharmacologyDef => {
 
   return {
     molecule: { name: "Alpha-GPC", molarMass: 257.22 },
-    pk: {
-      model: "1-compartment",
-      delivery: "bolus",
-      bioavailability: 0.88,
-      halfLifeMin: 240,
-      timeToPeakMin: 60,
-      volume: { kind: "tbw", fraction: 0.5 },
-    },
+      pk: {
+        model: "1-compartment",
+        delivery: "bolus",
+        bioavailability: 0.88,
+        halfLifeMin: 240,
+        massMg: mg,
+        timeToPeakMin: 60,
+        volume: { kind: "tbw", fraction: 0.5 },
+      },
+    
     pd: [
       {
         target: "acetylcholine",

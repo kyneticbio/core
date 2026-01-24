@@ -5,7 +5,7 @@ export const SocialMedia = (
   durationMin: number
 ): PharmacologyDef => ({
   molecule: { name: "Social Media", molarMass: 0 },
-  pk: { model: "activity-dependent", delivery: "continuous" },
+  pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
   pd: [
     {
       target: "dopamine",

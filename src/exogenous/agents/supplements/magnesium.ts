@@ -14,14 +14,16 @@ export const Magnesium = (mg: number): PharmacologyDef => {
 
   return {
     molecule: { name: "Magnesium", molarMass: 24.31 },
-    pk: {
-      model: "1-compartment",
-      delivery: "bolus",
-      bioavailability: 0.4,
-      halfLifeMin: MAGNESIUM_HALFLIFE,
-      timeToPeakMin: 180,
-      volume: { kind: "weight", base_L_kg: 0.3 },
-    },
+      pk: {
+        model: "1-compartment",
+        delivery: "bolus",
+        bioavailability: 0.4,
+        halfLifeMin: MAGNESIUM_HALFLIFE,
+        massMg: mg,
+        timeToPeakMin: 180,
+        volume: { kind: "weight", base_L_kg: 0.3 },
+      },
+    
     pd: [
       {
         target: "NMDA",

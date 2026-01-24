@@ -9,14 +9,16 @@ export const Omega3 = (mg: number): PharmacologyDef => {
 
   return {
     molecule: { name: "EPA/DHA", molarMass: 330 },
-    pk: {
-      model: "1-compartment",
-      delivery: "bolus",
-      bioavailability: 0.7,
-      halfLifeMin: 2880,
-      timeToPeakMin: 360,
-      volume: { kind: "weight", base_L_kg: 0.2 },
-    },
+      pk: {
+        model: "1-compartment",
+        delivery: "bolus",
+        bioavailability: 0.7,
+        halfLifeMin: 2880,
+        massMg: mg,
+        timeToPeakMin: 360,
+        volume: { kind: "weight", base_L_kg: 0.2 },
+      },
+    
     pd: [
       {
         target: "inflammation",

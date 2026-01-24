@@ -7,6 +7,7 @@ export const MDMA = (mg: number): PharmacologyDef => ({
     delivery: "bolus",
     bioavailability: 0.75,
     halfLifeMin: 510,
+    massMg: mg,
     timeToPeakMin: 120,
     clearance: { hepatic: { baseCL_mL_min: 600, CYP: "CYP2D6" } },
     volume: { kind: "weight", base_L_kg: 5.0 },
