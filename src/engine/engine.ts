@@ -808,6 +808,7 @@ export function integrateStep(
   const subSteps = Math.max(1, Math.ceil(dt));
   const subDt = dt / subSteps;
   const debug = options?.debug;
+  const conditionAdjustments = (options as any)?.conditionAdjustments;
 
   for (let s = 0; s < subSteps; s++) {
     const subT = t + s * subDt;
@@ -823,6 +824,7 @@ export function integrateStep(
       signals,
       resolver,
       { debug },
+      conditionAdjustments
     );
   }
 

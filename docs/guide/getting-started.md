@@ -10,11 +10,7 @@ npm install @kyneticbio/core
 
 ## Basic Concepts
 
-The engine operates on a few core concepts:
-
-1. **State**: A snapshot of all signals, auxiliary variables, and PK compartments.
-2. **Context**: Environmental variables like time of day and subject physiology.
-3. **Integration**: The process of advancing the state forward in time.
+Before diving into the code, it's helpful to understand the [Core Concepts](./concepts) of the engine: Engine, Subject, Signals, Conditions, and Interventions.
 
 ## Quick Example
 

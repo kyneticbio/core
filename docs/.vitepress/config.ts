@@ -1,60 +1,56 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from "vitepress";
+import path from "path";
 
 export default defineConfig({
   title: "KyneticBio Core",
   description: "Physiological Simulation Engine Documentation",
-  base: '/core/',
+  base: "/core/",
+  vite: {
+    resolve: {
+      alias: {
+        "@kyneticbio/core": path.resolve(__dirname, "../../src/index.ts"),
+      },
+    },
+  },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
-      { text: 'Reference', link: '/reference/' },
-      { text: 'Contributing', link: '/contributing/' }
+      { text: 'Reference', link: '/reference/subject' },
+      { text: 'Contributing', link: '/contributing/' },
+      { text: 'Kynetic Studio', link: 'https://physim.jeffjassky.com' }
     ],
-    sidebar: {
-      '/guide/': [
-        {
-          text: 'Introduction',
-          items: [
-            { text: 'Getting Started', link: '/guide/getting-started' },
-            { text: 'Architecture', link: '/guide/architecture' }
-          ]
-        },
-        {
-          text: 'Core Concepts',
-          items: [
-            { text: 'Simulation Loop', link: '/guide/simulation' },
-            { text: 'Pharmacokinetics (PK)', link: '/guide/pk' },
-            { text: 'Pharmacodynamics (PD)', link: '/guide/pd' },
-            { text: 'Signals & Systems', link: '/guide/signals' }
-          ]
-        }
-      ],
-      '/reference/': [
-        {
-          text: 'API Reference',
-          items: [
-            { text: 'Engine API', link: '/reference/engine' },
-            { text: 'Signal Catalog', link: '/reference/signals' },
-            { text: 'Condition Library', link: '/reference/conditions' },
-            { text: 'Type Definitions', link: '/reference/types' }
-          ]
-        }
-      ],
-      '/contributing/': [
-        {
-          text: 'Contributing',
-          items: [
-            { text: 'Development Setup', link: '/contributing/' },
-            { text: 'Testing Guide', link: '/contributing/testing' },
-            { text: 'Adding Interventions', link: '/contributing/interventions' },
-            { text: 'Release Process', link: '/contributing/release' }
-          ]
-        }
-      ]
-    },
+    sidebar: [
+      {
+        text: "Guide",
+        items: [
+          { text: "Getting Started", link: "/guide/getting-started" },
+          { text: "Interactive Demo", link: "/demo" },
+        ],
+      },
+      {
+        text: "API Reference",
+        items: [
+          { text: "Subject", link: "/reference/subject" },
+          { text: "System", link: "/reference/system" },
+          { text: "Signal", link: "/reference/signals" },
+          { text: "Condition", link: "/reference/conditions" },
+          { text: "Intervention", link: "/reference/interventions" },
+          { text: "Agent", link: "/reference/agents" },
+          { text: "Mechanism", link: "/reference/mechanisms" },
+        ],
+      },
+      {
+        text: "Contributing",
+        items: [{ text: "Development Setup", link: "/contributing/" }],
+      },
+    ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/kyneticbio/core' }
-    ]
+    ],
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: 'Made with love by <a href="https://github.com/jeffjassky">@jeffjassky</a>'
+    }
   }
 })
