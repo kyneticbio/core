@@ -2,9 +2,9 @@
 layout: home
 
 hero:
-  name: "KyneticBio Core"
-  text: "Mechanistic Physiological Simulation"
-  tagline: "High-performance biological modeling in pure TypeScript"
+  name: "KyneticBio"
+  text: "Physiological Simulation Engine"
+  tagline: "Biological modeling in pure TypeScript"
   actions:
     - theme: brand
       text: Get Started

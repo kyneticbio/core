@@ -35,7 +35,10 @@ const filteredItems = computed(() => {
     <div class="catalog-grid">
       <div v-for="item in filteredItems" :key="item.key" class="catalog-card">
         <div class="card-header">
-          <span class="card-label">{{ item.label }}</span>
+          <span class="card-label">
+            <span v-if="item.icon" class="card-icon">{{ item.icon }}</span>
+            {{ item.label }}
+          </span>
           <code class="card-key">{{ item.key }}</code>
         </div>
         <p class="card-description">{{ item.description }}</p>
@@ -113,6 +116,11 @@ const filteredItems = computed(() => {
   font-weight: 600;
   font-size: 1.1rem;
   color: var(--vp-c-text-1);
+  display: flex;
+  align-items: center;
+}
+.card-icon {
+  margin-right: 0.5rem;
 }
 .card-key {
   font-size: 0.8rem;

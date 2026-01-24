@@ -5,6 +5,7 @@ export default {
     return INTERVENTIONS.map(def => ({
       key: def.key,
       label: def.label,
+      icon: def.icon,
       description: def.notes || 'No description available.',
       categories: def.categories || [],
       goals: def.goals || [],

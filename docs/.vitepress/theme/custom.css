@@ -1,0 +1,29 @@
+@import url("https://cdnjs.cloudflare.com/api/libs/KaTeX/0.16.9/katex.min.css");
+
+:root {
+  /* Slightly dimmer text for light mode */
+  --vp-c-text-1: #666;
+}
+
+.dark {
+  /* Slightly dimmer text for dark mode */
+  --vp-c-text-1: #bbb;
+}
+
+strong,
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: black;
+}
+
+.dark strong,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5 {
+  color: white;
+}

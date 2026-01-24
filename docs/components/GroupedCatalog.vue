@@ -87,7 +87,10 @@ const groupedItems = computed(() => {
       <div class="catalog-grid">
         <div v-for="item in items" :key="item.key" class="catalog-card">
           <div class="card-header">
-            <span class="card-label">{{ item.label }}</span>
+            <span class="card-label">
+              <span v-if="item.icon" class="card-icon">{{ item.icon }}</span>
+              {{ item.label }}
+            </span>
             <div class="card-header-right">
               <code class="card-key">{{ item.key }}</code>
               <button @click="selectedItem = item" class="view-code-btn">Source</button>
@@ -188,6 +191,11 @@ const groupedItems = computed(() => {
 .card-label {
   font-weight: 600;
   color: var(--vp-c-text-1);
+  display: flex;
+  align-items: center;
+}
+.card-icon {
+  margin-right: 0.5rem;
 }
 .card-key {
   font-size: 0.7rem;
