@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/kyneticbio/core/compare/v1.1.5...v1.1.6) (2026-01-24)
+
+
+### Bug Fixes
+
+* **ci:** use GitHub OIDC token directly for npm trusted publishing ([300d5b1](https://github.com/kyneticbio/core/commit/300d5b13dd3cff10986fb82d92ea5dd6b6649536))
+
 ## [1.1.5](https://github.com/kyneticbio/core/compare/v1.1.4...v1.1.5) (2026-01-23)
 
 
