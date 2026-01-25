@@ -8,6 +8,7 @@ import * as autonomic from "./autonomic";
 import * as immune from "./immune";
 import * as sleep from "./sleep";
 import * as endocrine from "./endocrine";
+import * as genetics from "./genetics";
 import type { ConditionDef } from "./types";
 
 export const CONDITION_LIBRARY: ConditionDef[] = [
@@ -17,6 +18,7 @@ export const CONDITION_LIBRARY: ConditionDef[] = [
   ...Object.values(immune),
   ...Object.values(sleep),
   ...Object.values(endocrine),
+  ...Object.values(genetics),
 ];
 
-export { neurodivergence, mood, autonomic, immune, sleep, endocrine };
+export { neurodivergence, mood, autonomic, immune, sleep, endocrine, genetics };

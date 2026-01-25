@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const pots: ConditionDef = {
   key: 'pots',
+  category: 'clinical',
   label: 'POTS',
   description: {
     physiology:

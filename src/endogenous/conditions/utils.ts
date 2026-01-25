@@ -149,7 +149,10 @@ export function buildConditionAdjustments(
 
       if (modifier.baseline) {
         const record = ensureBaseline(target);
-        if (modifier.baseline.amplitudeGain !== undefined && !hasMechanistic) {
+        // For genetic conditions, always apply amplitudeGain (they use enzyme modifiers for metadata only)
+        // For clinical conditions, skip amplitudeGain if mechanistic modifiers exist (to avoid double-counting)
+        const shouldApplyAmplitude = condition.category === 'genetic' || !hasMechanistic;
+        if (modifier.baseline.amplitudeGain !== undefined && shouldApplyAmplitude) {
           record.amplitude =
             (record.amplitude ?? 0) +
             modifier.baseline.amplitudeGain * modIntensity;

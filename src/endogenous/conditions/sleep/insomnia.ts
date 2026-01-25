@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const insomnia: ConditionDef = {
   key: 'insomnia',
+  category: 'clinical',
   label: 'Primary Insomnia',
   description: {
     physiology:

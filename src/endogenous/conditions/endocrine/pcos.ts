@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const pcos: ConditionDef = {
   key: 'pcos',
+  category: 'clinical',
   label: 'PCOS',
   description: {
     physiology:

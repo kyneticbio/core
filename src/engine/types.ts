@@ -186,8 +186,8 @@ export interface PharmacologyDef {
     pK_a?: number;
     logP?: number;
   };
-  pk?: PKDef;
-  pd?: Array<{
+  pk: PKDef;
+  pd: Array<{
     target: PharmacologicalTarget;
     unit?: string;
     mechanism: PDMechanism;

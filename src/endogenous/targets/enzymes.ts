@@ -36,4 +36,11 @@ export const ENZYMES = {
     substrates: ["histamine"],
     baselineActivity: 1.0,
   } as EnzymeDefinition,
+  MTHFR: {
+    category: "enzyme",
+    system: "Methylation",
+    description: "Converts folate to methylfolate for BH4 regeneration and neurotransmitter synthesis.",
+    substrates: ["folate"],
+    baselineActivity: 1.0,
+  } as EnzymeDefinition,
 };

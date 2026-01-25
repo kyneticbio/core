@@ -15,6 +15,8 @@ export function createConditionState(
     mcas: { enabled: false, params: { activation: 0.5 } },
     insomnia: { enabled: false, params: { severity: 0.5 } },
     pcos: { enabled: false, params: { severity: 0.5 } },
+    comt: { enabled: false, params: { genotype: 1.0 } },
+    mthfr: { enabled: false, params: { genotype: 1.0 } },
   };
 
   for (const [key, value] of Object.entries(overrides)) {

@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const adhd: ConditionDef = {
   key: 'adhd',
+  category: 'clinical',
   label: 'ADHD',
   description: {
     physiology:

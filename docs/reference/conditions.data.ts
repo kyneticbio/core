@@ -5,6 +5,7 @@ export default {
     return CONDITION_LIBRARY.map(def => ({
       key: def.key,
       label: def.label,
+      category: def.category,
       description: def.description.physiology,
       application: def.description.application,
       paramsCount: def.params.length,

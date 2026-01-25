@@ -33,6 +33,7 @@ export const dopamine: SignalDefinition = {
     clearance: [
       { type: "enzyme-dependent", rate: 0.002, enzyme: "DAT" },
       { type: "enzyme-dependent", rate: 0.001, enzyme: "MAO_B" },
+      { type: "enzyme-dependent", rate: 0.001, enzyme: "COMT" }, // PFC dopamine clearance
     ],
     couplings: [{ source: "cortisol", effect: "stimulate", strength: 0.001 }],
   },

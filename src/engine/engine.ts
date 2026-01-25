@@ -111,6 +111,7 @@ export interface PreResolvedDefinition {
     rate: number;
     type: string;
     enzymeIndex: number;
+    enzymeName: string | null;  // Name of enzyme/transporter for clearance modifier lookup
     Km?: number;
     transform?: (v: number, state: any, ctx: any) => number;
   }>;
@@ -152,6 +153,7 @@ function resolveDefinitions(
           rate: c.rate,
           type: c.type,
           enzymeIndex: c.enzyme ? (layout.auxiliary.get(c.enzyme) ?? -1) : -1,
+          enzymeName: c.enzyme ?? null,
           Km: c.Km,
           transform: c.transform,
         })),
@@ -186,6 +188,7 @@ function resolveDefinitions(
           rate: c.rate,
           type: c.type,
           enzymeIndex: c.enzyme ? (layout.auxiliary.get(c.enzyme) ?? -1) : -1,
+          enzymeName: c.enzyme ?? null,
           Km: c.Km,
           transform: c.transform,
         })),
@@ -477,12 +480,13 @@ export function computeDerivativesVector(
   resolvedAux: PreResolvedDefinition[],
   signals: readonly Signal[],
   resolver: SystemResolver,
-  options?: { debug?: any; pkAgents?: PKAgent[] },
+  options?: { debug?: any; pkAgents?: PKAgent[]; clearanceModifiers?: Record<string, number> },
   conditionAdjustments?: any,
 ) {
   derivs.fill(0);
   const debug = options?.debug || {};
   const pkAgents = options?.pkAgents || [];
+  const clearanceModifiers = options?.clearanceModifiers || {};
 
   // Build PK concentration map for this time point
   const pkConcentrations = new Map<string, number>();
@@ -532,7 +536,10 @@ export function computeDerivativesVector(
       if (c.type === "saturable") rate /= c.Km! + val;
       else if (c.type === "enzyme-dependent") {
         const enzymeVal = c.enzymeIndex !== -1 ? state[c.enzymeIndex] : 1.0;
-        rate *= debug.enableEnzymes !== false ? enzymeVal : 1.0;
+        // Apply clearance modifier from conditions (enzyme/transporter activity changes)
+        const modifier = c.enzymeName ? (clearanceModifiers[c.enzymeName] ?? 0) : 0;
+        const effectiveEnzyme = enzymeVal * (1 + modifier);
+        rate *= debug.enableEnzymes !== false ? effectiveEnzyme : 1.0;
       }
       if (c.transform) rate *= c.transform(val, stateProxy, ctx);
       dS -= rate * val;
@@ -650,7 +657,10 @@ export function computeDerivativesVector(
         if (c.type === "saturable") rate /= c.Km! + val;
         else if (c.type === "enzyme-dependent") {
           const enzymeVal = c.enzymeIndex !== -1 ? state[c.enzymeIndex] : 1.0;
-          rate *= debug.enableEnzymes !== false ? enzymeVal : 1.0;
+          // Apply clearance modifier from conditions (enzyme/transporter activity changes)
+          const modifier = c.enzymeName ? (clearanceModifiers[c.enzymeName] ?? 0) : 0;
+          const effectiveEnzyme = enzymeVal * (1 + modifier);
+          rate *= debug.enableEnzymes !== false ? effectiveEnzyme : 1.0;
         }
         if (c.transform) rate *= c.transform(val, stateProxy, ctx);
         dA -= rate * val;
@@ -859,6 +869,7 @@ export function integrateStep(
   const subDt = dt / subSteps;
   const debug = options?.debug;
   const conditionAdjustments = (options as any)?.conditionAdjustments;
+  const clearanceModifiers = (options as any)?.clearanceModifiers;
 
   for (let s = 0; s < subSteps; s++) {
     const subT = t + s * subDt;
@@ -873,7 +884,7 @@ export function integrateStep(
       resAux,
       signals,
       resolver,
-      { debug },
+      { debug, clearanceModifiers },
       conditionAdjustments
     );
   }
@@ -927,6 +938,7 @@ export function computeDerivatives(
   const derivs = new Float64Array(layout.size);
   const pkAgents = extractPKAgents(interventions, ctx);
   const debug = options?.debug;
+  const clearanceModifiers = (options as any)?.clearanceModifiers;
 
   computeDerivativesVector(
     vector,
@@ -939,7 +951,7 @@ export function computeDerivatives(
     resAux,
     signals,
     resolver,
-    { debug, pkAgents },
+    { debug, pkAgents, clearanceModifiers },
   );
 
   const result = vectorToState(derivs, layout);
@@ -1209,6 +1221,16 @@ export function runOptimizedV2(
         }
       : {};
 
+  // Merge enzyme and transporter activities into unified clearance modifiers
+  // These affect enzyme-dependent clearance rates (e.g., DAT, DAO, SERT, MAO_A)
+  const clearanceModifiers: Record<string, number> =
+    options?.debug?.enableConditions !== false
+      ? {
+          ...(options?.enzymeActivities ?? {}),
+          ...(options?.transporterActivities ?? {}),
+        }
+      : {};
+
   // Warm-up period
   if (options?.initialHomeostasisState) {
     const s = options.initialHomeostasisState as any;
@@ -1269,7 +1291,7 @@ export function runOptimizedV2(
         resAux,
         signals,
         resolver,
-        { debug: options?.debug, pkAgents },
+        { debug: options?.debug, pkAgents, clearanceModifiers },
         conditionAdjustments,
       );
       for (let i = 0; i < layout.size; i++) currentStateVector[i] += k1_ws[i];
@@ -1338,7 +1360,7 @@ export function runOptimizedV2(
         };
 
         // RK4 with analytical PK lookup
-        const opts = { debug: options?.debug, pkAgents };
+        const opts = { debug: options?.debug, pkAgents, clearanceModifiers };
         computeDerivativesVector(
           currentStateVector,
           t,

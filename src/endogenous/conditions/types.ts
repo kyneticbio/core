@@ -14,15 +14,27 @@ export type ConditionKey =
   | "pots"
   | "mcas"
   | "insomnia"
-  | "pcos";
+  | "pcos"
+  | "comt"
+  | "mthfr";
+
+export type ConditionCategory = "clinical" | "genetic" | "lifestyle" | "experimental";
 
 export interface ConditionParam {
   key: string;
   label: string;
-  type: "slider";
-  min: number;
-  max: number;
-  step: number;
+  type: "slider" | "select";
+  // For sliders
+  min?: number;
+  max?: number;
+  step?: number;
+  // For discrete variants (Genotypes)
+  options?: Array<{
+    label: string;
+    value: number;
+    description?: string;
+    rsid?: string;
+  }>;
   default: number;
 }
 
@@ -57,6 +69,7 @@ export interface SignalModifier {
 
 export interface ConditionDef {
   key: ConditionKey;
+  category: ConditionCategory;
   label: string;
   description: {
     physiology: string;

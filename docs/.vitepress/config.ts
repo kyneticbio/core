@@ -58,7 +58,10 @@ export default defineConfig({
       },
       {
         text: "Contributing",
-        items: [{ text: "Development Setup", link: "/contributing/" }],
+        items: [
+          { text: "Development Setup", link: "/contributing/" },
+          { text: "Testing Standards", link: "/contributing/testing" }
+        ],
       },
     ],
     socialLinks: [

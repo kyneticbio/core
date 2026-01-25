@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const mcas: ConditionDef = {
   key: 'mcas',
+  category: 'clinical',
   label: 'MCAS',
   description: {
     physiology:

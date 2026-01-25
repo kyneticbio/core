@@ -65,6 +65,7 @@ The engine models enzymatic breakdown using linear and saturable kinetics:
 
 - **MAO-A/B:** Degrades Monoamines (Serotonin, Dopamine, NE).
 - **COMT:** Degrades Catecholamines, particularly in the prefrontal cortex.
+- **MTHFR:** Converts folate to methylfolate for BH4 regeneration and neurotransmitter synthesis.
 - **AChE:** Rapidly degrades Acetylcholine.
 - **DAO:** Metabolizes Histamine.
 

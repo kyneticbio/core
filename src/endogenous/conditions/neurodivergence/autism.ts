@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const autism: ConditionDef = {
   key: 'autism',
+  category: 'clinical',
   label: 'Autism Spectrum',
   description: {
     physiology:

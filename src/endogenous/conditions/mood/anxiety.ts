@@ -2,6 +2,7 @@ import type { ConditionDef } from "../types";
 
 export const anxiety: ConditionDef = {
   key: 'anxiety',
+  category: 'clinical',
   label: 'Generalized Anxiety',
   description: {
     physiology:

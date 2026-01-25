@@ -42,9 +42,19 @@ describe('Condition Library', () => {
       expect(condition.params.length).toBeGreaterThan(0);
 
       for (const param of condition.params) {
-        expect(param.min).toBeLessThan(param.max);
-        expect(param.default).toBeGreaterThanOrEqual(param.min);
-        expect(param.default).toBeLessThanOrEqual(param.max);
+        if (param.type === 'slider') {
+          // Slider params must have min/max
+          expect(param.min).toBeLessThan(param.max!);
+          expect(param.default).toBeGreaterThanOrEqual(param.min!);
+          expect(param.default).toBeLessThanOrEqual(param.max!);
+        } else if (param.type === 'select') {
+          // Select params must have options
+          expect(param.options).toBeDefined();
+          expect(param.options!.length).toBeGreaterThan(0);
+          // Default should match one of the option values
+          const optionValues = param.options!.map(o => o.value);
+          expect(optionValues).toContain(param.default);
+        }
       }
     }
   });
@@ -322,8 +332,11 @@ describe('Condition Magnitude Sanity', () => {
     }
   });
 
-  it('Enzyme activity deltas are physiologically reasonable (< 50%)', () => {
+  it('Enzyme activity deltas are physiologically reasonable (< 50%) for clinical conditions', () => {
     for (const condition of CONDITION_LIBRARY) {
+      // Genetic conditions use direct activity multipliers, not deltas
+      if (condition.category === 'genetic') continue;
+
       for (const mod of condition.enzymeModifiers ?? []) {
         expect(Math.abs(mod.activity)).toBeLessThanOrEqual(0.5);
       }
