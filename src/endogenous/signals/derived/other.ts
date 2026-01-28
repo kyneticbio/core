@@ -14,8 +14,8 @@ export const inflammation: SignalDefinition = {
   description: "A measure of your body's immune activation.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: () => 1.0,
-    tau: 1440,
+    setpoint: (ctx, state) => 1.0,
+    tau: 10,
     production: [
       {
         source: "constant",
@@ -31,12 +31,12 @@ export const inflammation: SignalDefinition = {
         transform: (A: any) => (A > 200 ? 1.0 : 0),
       },
     ],
-    clearance: [{ type: "linear", rate: 0.0005 }],
+    clearance: [{ type: "linear", rate: 0.02 }],
     couplings: [{ source: "cortisol", effect: "inhibit", strength: 0.2 }],
   },
   initialValue: 1.0,
   min: 0,
-  max: 10,
+  max: 100,
   display: {
     referenceRange: { min: 0, max: 2 },
   },
@@ -51,7 +51,7 @@ export const ketone: SignalDefinition = {
     "An alternative fuel source made from fat when blood sugar is low.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const overnight =
         gaussianPhase(p, hourToPhase(19.5), widthToConcentration(400)) +
@@ -85,7 +85,7 @@ export const ethanol: SignalDefinition = {
   description: "Blood alcohol concentration.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: () => 0,
+    setpoint: (ctx, state) => 0,
     tau: 60,
     production: [],
     clearance: [{ type: "linear", rate: 0.015 }],
@@ -107,7 +107,7 @@ export const acetaldehyde: SignalDefinition = {
   description: "A toxic byproduct of alcohol metabolism.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: () => 0,
+    setpoint: (ctx, state) => 0,
     tau: 60,
     production: [{ source: "ethanol", coefficient: 0.3 }],
     clearance: [{ type: "linear", rate: 0.03 }],
@@ -129,7 +129,7 @@ export const magnesium: SignalDefinition = {
   description: "A vital mineral involved in over 300 biochemical reactions.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 2.0,
+    setpoint: (ctx, state) => 2.0,
     tau: 10080,
     production: [],
     clearance: [{ type: "linear", rate: 0.0001 }],
@@ -152,7 +152,7 @@ export const sensoryLoad: SignalDefinition = {
     "A measure of the total cognitive and sensory input your brain is currently processing.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: () => 0.1,
+    setpoint: (ctx, state) => 0.1,
     tau: 15,
     production: [{ source: "adrenaline", coefficient: 0.2 }],
     clearance: [{ type: "linear", rate: 0.1 }],
@@ -175,7 +175,7 @@ export const oxygen: SignalDefinition = {
     "A measure of how much oxygen your red blood cells are carrying.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: () => 50.0,
+    setpoint: (ctx, state) => 50.0,
     tau: 5,
     production: [],
     clearance: [{ type: "linear", rate: 0.2 }],

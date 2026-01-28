@@ -15,7 +15,7 @@ export const glucose: SignalDefinition = {
     "The primary fuel for your brain and muscles. Maintaining blood sugar in a steady range is essential for consistent energy levels, mental clarity, and long-term metabolic health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => 90,
+    setpoint: (ctx: any, state: any) => 90,
     tau: 35.7,
     production: [{ source: "constant", coefficient: 0.1 }],
     clearance: [

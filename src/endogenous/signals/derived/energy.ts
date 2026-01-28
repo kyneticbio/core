@@ -14,7 +14,7 @@ export const energy: SignalDefinition = {
     "A composite index of your subjective vitality. Driven by fuel availability, arousal chemicals, and your body's overall state, this reflects the 'gas in the tank' you feel for the day's tasks.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(2), 1.0);
       const afternoonDip = gaussianPhase(p, hourToPhase(9), 1.5);

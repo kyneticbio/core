@@ -10,7 +10,7 @@ export const endocannabinoid: SignalDefinition = {
     "Part of your body's internal 'homeostasis' system. Endocannabinoids like anandamide (the 'bliss molecule') help balance other signals, regulating mood, pain perception, and appetite while promoting a sense of calm and balance.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const morningRise = gaussianPhase(p, hourToPhase(9), 2.0);
       return 4.0 + 6.0 * morningRise;

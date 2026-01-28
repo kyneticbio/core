@@ -16,13 +16,13 @@ import { buildInterventionLibrary } from '../../index';
 import { buildConditionAdjustments, type ConditionKey, type ConditionStateSnapshot, derivePhysiology, type Subject as SubjectType } from '../../index';
 import {
   integrateStep,
-  createInitialState,
   getAllUnifiedDefinitions,
   AUXILIARY_DEFINITIONS,
   SIGNAL_DEFINITIONS,
   isReceptor,
   getReceptorSignals
 } from "../../index";
+import { createInitialState as genericCreateInitialState } from "../../engine/state";
 import { runOptimizedV2 } from '../../index';
 
 // --- Types ---
@@ -223,10 +223,25 @@ async function computeEngineSync(
   request: WorkerComputeRequest,
   includeSignals: readonly Signal[]
 ): Promise<{ signals: Record<Signal, Float32Array>; auxiliarySeries: Record<string, Float32Array> }> {
+  const signalDefinitions = getAllUnifiedDefinitions();
+  const auxDefinitions = AUXILIARY_DEFINITIONS;
+
+  // Create a wrapper for createInitialState that matches what the engine expects
+  // Engine calls: createInitialState(signalDefs, auxDefs, ctx, debug)
+  // Generic needs: createInitialState(signals, signalDefs, auxDefs, ctx, debug)
+  const createInitialState = (
+    signalDefs: any,
+    auxDefs: any,
+    ctx: { subject: any; physiology: any; isAsleep: boolean },
+    debug?: any
+  ) => {
+    return genericCreateInitialState(includeSignals, signalDefs, auxDefs, ctx, debug);
+  };
+
   const system = {
     signals: includeSignals,
-    signalDefinitions: getAllUnifiedDefinitions(),
-    auxDefinitions: AUXILIARY_DEFINITIONS,
+    signalDefinitions,
+    auxDefinitions,
     resolver: { isReceptor, getReceptorSignals },
     createInitialState
   };

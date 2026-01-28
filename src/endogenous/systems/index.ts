@@ -5,6 +5,7 @@ import { reproductive } from "./reproductive";
 import { cardiovascular } from "./cardiovascular";
 import { organ } from "./organ";
 import { nutritional } from "./nutritional";
+import { growth } from "./growth";
 import type { BioSystemDef } from "./types";
 
 export * from "./types";
@@ -15,6 +16,7 @@ export * from "./reproductive";
 export * from "./cardiovascular";
 export * from "./organ";
 export * from "./nutritional";
+export * from "./growth";
 
 export const BIOLOGICAL_SYSTEMS: BioSystemDef[] = [
   nervous,
@@ -24,4 +26,5 @@ export const BIOLOGICAL_SYSTEMS: BioSystemDef[] = [
   cardiovascular,
   organ,
   nutritional,
+  growth,
 ];

@@ -59,7 +59,7 @@ export interface DynamicCoupling {
 }
 
 export interface SignalDynamics {
-  setpoint: (ctx: DynamicsContext) => number;
+  setpoint: (ctx: DynamicsContext, state: SimulationState) => number;
   tau: number;
   production: ProductionTerm[];
   clearance: ClearanceTerm[];
@@ -92,7 +92,7 @@ export interface AuxiliaryDefinition {
   key: string;
   label?: string;
   dynamics: {
-    setpoint: (ctx: DynamicsContext) => number;
+    setpoint: (ctx: DynamicsContext, state: SimulationState) => number;
     tau: number;
     production: ProductionTerm[];
     clearance: ClearanceTerm[];
@@ -137,7 +137,7 @@ export interface WorkerComputeResponse {
 }
 
 // --- Pharmacology (PK/PD) ---
-export type PDMechanism = "agonist" | "antagonist" | "PAM" | "NAM";
+export type PDMechanism = "agonist" | "antagonist" | "PAM" | "NAM" | "linear";
 export type PharmacologicalTarget = string;
 
 export type PKModelType =

@@ -9,7 +9,7 @@ export const leptin: SignalDefinition = {
     "The 'long-term satiety' signal. Leptin is produced by your fat cells and tells your brain how much stored energy you have. It helps regulate your metabolic rate and long-term appetite balance.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) =>
+    setpoint: (ctx: any, state: any) =>
       15.0 +
       5.0 * Math.cos(((ctx.circadianMinuteOfDay / 60 - 24) * Math.PI) / 12),
     tau: 1440,

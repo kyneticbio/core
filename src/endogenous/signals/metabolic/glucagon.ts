@@ -9,7 +9,7 @@ export const glucagon: SignalDefinition = {
   description: "The 'mobilization' hormone. Released when blood sugar is low.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const nocturnal =
         gaussianPhase(p, hourToPhase(23), 1.0) +

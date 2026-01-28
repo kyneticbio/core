@@ -8,7 +8,7 @@ export const selenium: SignalDefinition = {
   description: "Antioxidant mineral.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 120,
+    setpoint: (ctx, state) => 120,
     tau: 10080,
     production: [],
     clearance: [],

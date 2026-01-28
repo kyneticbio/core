@@ -8,7 +8,7 @@ export const zinc: SignalDefinition = {
   description: "Essential mineral for immunity.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 90,
+    setpoint: (ctx, state) => 90,
     tau: 10080,
     production: [],
     clearance: [],

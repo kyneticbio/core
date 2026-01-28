@@ -22,6 +22,11 @@ export const Creatine = (grams: number): PharmacologyDef => ({
   ],
 });
 
+/**
+ * L-CARNITINE (The Fat Shuttle)
+ * Transports fatty acids into mitochondria for oxidation.
+ * Enhances fat burning efficiency, especially during exercise.
+ */
 export const LCarnitine = (mg: number): PharmacologyDef => ({
   molecule: { name: "Acetyl-L-Carnitine", molarMass: 203.24 },
   pk: {
@@ -40,6 +45,25 @@ export const LCarnitine = (mg: number): PharmacologyDef => ({
       intrinsicEfficacy: Math.min(0.15, mg * 0.0001),
       unit: "index",
       tau: 120,
+      description: "Improved cellular energy production.",
+    },
+    // NEW: Fat oxidation shuttle - helps fatty acids enter mitochondria
+    {
+      target: "ampk",
+      mechanism: "agonist",
+      intrinsicEfficacy: Math.min(0.3, mg * 0.0002),
+      unit: "fold-change",
+      tau: 120,
+      description: "Activates fat-burning cellular pathways.",
+    },
+    // NEW: Enhances mitochondrial function
+    {
+      target: "bdnf",
+      mechanism: "agonist",
+      intrinsicEfficacy: Math.min(3, mg * 0.002),
+      unit: "ng/mL",
+      tau: 180,
+      description: "Neuroprotective effects from acetyl group.",
     },
   ],
 });

@@ -8,7 +8,7 @@ export const choline: SignalDefinition = {
   description: "Acetylcholine precursor.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 10,
+    setpoint: (ctx, state) => 10,
     tau: 10080,
     production: [],
     clearance: [],

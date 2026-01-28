@@ -15,7 +15,7 @@ export const growthHormone: SignalDefinition = {
     "The primary 'repair and recovery' signal. Released mainly during deep sleep and after intense exercise.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const sleepOnset = gaussianPhase(
         p,
@@ -53,7 +53,7 @@ export const growthHormone: SignalDefinition = {
 export const ghReserve: AuxiliaryDefinition = {
   key: "ghReserve",
   dynamics: {
-    setpoint: () => 0.8,
+    setpoint: (ctx, state) => 0.8,
     tau: 1440,
     production: [
       {

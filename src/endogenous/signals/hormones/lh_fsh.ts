@@ -9,7 +9,7 @@ export const lh: SignalDefinition = {
   description: "Luteinizing hormone, driver of ovulation in women.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       if (ctx.subject.sex === "male") return 5.0;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =
@@ -37,7 +37,7 @@ export const fsh: SignalDefinition = {
   description: "Follicle-stimulating hormone, regulates reproductive health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       if (ctx.subject.sex === "male") return 5.0;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =

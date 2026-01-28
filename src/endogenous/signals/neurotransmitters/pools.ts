@@ -14,7 +14,7 @@ const VESICLE_DYNAMICS = {
 export const dopamineVesicles: AuxiliaryDefinition = {
   key: "dopamineVesicles",
   dynamics: {
-    setpoint: () => VESICLE_DYNAMICS.BASELINE_POOL,
+    setpoint: (ctx, state) => VESICLE_DYNAMICS.BASELINE_POOL,
     tau: 100,
     production: [
       {
@@ -34,7 +34,7 @@ export const dopamineVesicles: AuxiliaryDefinition = {
 export const norepinephrineVesicles: AuxiliaryDefinition = {
   key: "norepinephrineVesicles",
   dynamics: {
-    setpoint: () => VESICLE_DYNAMICS.BASELINE_POOL,
+    setpoint: (ctx, state) => VESICLE_DYNAMICS.BASELINE_POOL,
     tau: 120,
     production: [
       {
@@ -51,7 +51,7 @@ export const norepinephrineVesicles: AuxiliaryDefinition = {
 export const serotoninPrecursor: AuxiliaryDefinition = {
   key: "serotoninPrecursor",
   dynamics: {
-    setpoint: () => 0.7,
+    setpoint: (ctx, state) => 0.7,
     tau: 480,
     production: [
       {
@@ -71,7 +71,7 @@ export const serotoninPrecursor: AuxiliaryDefinition = {
 export const gabaPool: AuxiliaryDefinition = {
   key: "gabaPool",
   dynamics: {
-    setpoint: () => 0.7,
+    setpoint: (ctx, state) => 0.7,
     tau: 240,
     production: [
       {
@@ -88,7 +88,7 @@ export const gabaPool: AuxiliaryDefinition = {
 export const glutamatePool: AuxiliaryDefinition = {
   key: "glutamatePool",
   dynamics: {
-    setpoint: () => 0.7,
+    setpoint: (ctx, state) => 0.7,
     tau: 180,
     production: [
       {

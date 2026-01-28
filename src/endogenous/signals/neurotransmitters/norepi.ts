@@ -15,7 +15,7 @@ export const norepi: SignalDefinition = {
     "Both a hormone and a neurotransmitter, this is your brain's 'focus' signal. It increases alertness and arousal, sharpening your attention and preparing your body for action—essential for concentration and productivity.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(8.5), 1.0);
       const stressResponse = gaussianPhase(p, hourToPhase(9), 0.5);

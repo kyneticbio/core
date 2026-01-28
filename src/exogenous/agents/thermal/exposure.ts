@@ -17,6 +17,7 @@ export const ColdExposure = (
         intrinsicEfficacy: Math.min(400, effectiveIntensity * 300),
         unit: "pg/mL",
         tau: 5,
+        description: "Massive norepinephrine spike for focus and mood.",
       },
       {
         target: "adrenaline",
@@ -31,6 +32,7 @@ export const ColdExposure = (
         intrinsicEfficacy: Math.min(30, effectiveIntensity * 25),
         unit: "nM",
         tau: 30,
+        description: "Sustained dopamine boost for drive and mood.",
       },
       {
         target: "cortisol",
@@ -73,6 +75,24 @@ export const ColdExposure = (
         intrinsicEfficacy: Math.min(20, effectiveIntensity * 15),
         unit: "pg/mL",
         tau: 10,
+      },
+      // NEW: Cold-induced thermogenesis (burning fat for heat)
+      {
+        target: "thermogenesis",
+        mechanism: "agonist",
+        intrinsicEfficacy: Math.min(0.5, effectiveIntensity * 0.4),
+        unit: "kcal/min",
+        tau: 5,
+        description: "Triggers brown fat activation for heat production.",
+      },
+      // NEW: Heat shock protein induction from cold stress
+      {
+        target: "heatShockProteins",
+        mechanism: "agonist",
+        intrinsicEfficacy: Math.min(2.0, effectiveIntensity * 1.5),
+        unit: "fold-change",
+        tau: 60,
+        description: "Cellular stress response for repair and resilience.",
       },
     ],
   };
@@ -179,6 +199,24 @@ export const HeatExposure = (
         intrinsicEfficacy: Math.min(5, effectiveIntensity * 4),
         unit: "nM",
         tau: 30,
+      },
+      // NEW: Heat shock protein induction (primary benefit of sauna)
+      {
+        target: "heatShockProteins",
+        mechanism: "agonist",
+        intrinsicEfficacy: Math.min(3.0, effectiveIntensity * 2.5),
+        unit: "fold-change",
+        tau: 30,
+        description: "Cellular repair proteins triggered by heat stress.",
+      },
+      // NEW: Mimics cardio effect on heart rate/metabolism
+      {
+        target: "burnRate",
+        mechanism: "agonist",
+        intrinsicEfficacy: Math.min(2.0, effectiveIntensity * 1.5),
+        unit: "kcal/min",
+        tau: 5,
+        description: "Elevated heart rate and metabolic demand.",
       },
     ],
   };

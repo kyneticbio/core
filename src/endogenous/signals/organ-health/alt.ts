@@ -8,7 +8,7 @@ export const alt: SignalDefinition = {
   description: "Alanine Aminotransferase. Liver stress marker.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: () => 25,
+    setpoint: (ctx, state) => 25,
     tau: 10080,
     production: [],
     clearance: [],

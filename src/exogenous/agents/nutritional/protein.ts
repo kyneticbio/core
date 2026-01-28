@@ -4,9 +4,13 @@ import type { PharmacologyDef } from "../../../engine";
  * AMINO ACIDS (Protein)
  * mTOR driver and modest insulinogenic.
  */
-export const Protein = (amountGrams: number): PharmacologyDef => {
+export const Protein = (
+  amountGrams: number,
+  context: { duration?: number } = {},
+): PharmacologyDef => {
   const glp1Effect = (amountGrams / (amountGrams + 25)) * 18 * 0.4;
   const kcalFromProtein = amountGrams * 4;
+  const duration = context.duration ?? 30;
   const leptinEffect = (kcalFromProtein / (kcalFromProtein + 800)) * 2.0;
 
   const tyrosineGrams = amountGrams * 0.05;
@@ -38,18 +42,18 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
     pd: [
       {
         target: "mtor",
-        mechanism: "agonist",
-        EC50: 500,
-        intrinsicEfficacy: 200, 
+        mechanism: "linear",
+        EC50: 100,
+        intrinsicEfficacy: 2.0,
         unit: "fold-change",
         tau: 90,
         description: "Protein flips the build muscle switch.",
       },
       {
         target: "insulin",
-        mechanism: "agonist",
-        EC50: 500,
-        intrinsicEfficacy: 30,
+        mechanism: "linear",
+        EC50: 100,
+        intrinsicEfficacy: 1.0,
         unit: "µIU/mL",
         tau: 45,
         description: "Protein raises insulin modestly.",
@@ -65,9 +69,9 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
       },
       {
         target: "glp1",
-        mechanism: "agonist",
-        EC50: 500,
-        intrinsicEfficacy: 50,
+        mechanism: "linear",
+        EC50: 100,
+        intrinsicEfficacy: 1.5,
         unit: "pmol/L",
         tau: 60,
         description: "Triggers gut fullness hormone.",
@@ -153,6 +157,14 @@ export const Protein = (amountGrams: number): PharmacologyDef => {
         tau: 90,
         description: "Highest metabolic cost to process.",
       },
+      {
+        target: "caloricIntake",
+        mechanism: "linear",
+        unit: "kcal/min",
+        EC50: 100,
+        intrinsicEfficacy: 1.54,
+        tau: 1,
+      }
     ],
   };
 };

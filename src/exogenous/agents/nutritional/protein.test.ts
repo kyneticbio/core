@@ -21,19 +21,20 @@ describe('Agent: Protein', () => {
       expect(targets).toContain('bdnf');
       expect(targets).toContain('orexin');
       expect(targets).toContain('thyroid');
-      expect(targets).toHaveLength(13);
+      expect(targets).toContain('caloricIntake');
+      expect(targets).toHaveLength(14);
     });
 
-    it('mtor should be an agonist (muscle building)', () => {
+    it('mtor should be a linear agonist (muscle building)', () => {
       const def = Protein(30);
       const effect = def.pd.find(p => p.target === 'mtor');
-      expect(effect?.mechanism).toBe('agonist');
+      expect(effect?.mechanism).toBe('linear');
     });
 
-    it('insulin should be an agonist', () => {
+    it('insulin should be a linear agonist', () => {
       const def = Protein(30);
       const effect = def.pd.find(p => p.target === 'insulin');
-      expect(effect?.mechanism).toBe('agonist');
+      expect(effect?.mechanism).toBe('linear');
     });
 
     it('glucagon should be an agonist (blood sugar stability)', () => {
@@ -42,10 +43,10 @@ describe('Agent: Protein', () => {
       expect(effect?.mechanism).toBe('agonist');
     });
 
-    it('glp1 should be an agonist (satiety)', () => {
+    it('glp1 should be a linear agonist (satiety)', () => {
       const def = Protein(30);
       const effect = def.pd.find(p => p.target === 'glp1');
-      expect(effect?.mechanism).toBe('agonist');
+      expect(effect?.mechanism).toBe('linear');
     });
 
     it('ghrelin should be an antagonist (hunger suppression)', () => {

@@ -17,7 +17,8 @@ describe('Agent: Glucose', () => {
       expect(targets).toContain('orexin');
       expect(targets).toContain('norepi');
       expect(targets).toContain('cortisol');
-      expect(targets).toHaveLength(9);
+      expect(targets).toContain('caloricIntake');
+      expect(targets).toHaveLength(10);
     });
 
     it('glucose should be an agonist', () => {
@@ -26,10 +27,10 @@ describe('Agent: Glucose', () => {
       expect(effect?.mechanism).toBe('agonist');
     });
 
-    it('insulin should be an agonist', () => {
+    it('insulin should be a linear agonist', () => {
       const def = Glucose(50);
       const effect = def.pd.find(p => p.target === 'insulin');
-      expect(effect?.mechanism).toBe('agonist');
+      expect(effect?.mechanism).toBe('linear');
     });
 
     it('dopamine should be an agonist (reward response)', () => {

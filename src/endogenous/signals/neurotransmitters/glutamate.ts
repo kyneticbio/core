@@ -10,7 +10,7 @@ export const glutamate: SignalDefinition = {
     "The most abundant 'on' switch in your brain. Glutamate is the gas pedal for neural activity, playing a central role in learning, memory, and fast communication between neurons. Balance is key, as too much can cause over-excitement.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(9), 1.0);
       return 2.5 + 4.16 * wakeDrive;

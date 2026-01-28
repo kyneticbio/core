@@ -16,7 +16,7 @@ export const vip: SignalDefinition = {
   description: "A master synchronizer for your internal clocks.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const day = gaussianPhase(p, hourToPhase(12), widthToConcentration(300));
       const eveningSuppress = windowPhase(

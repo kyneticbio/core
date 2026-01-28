@@ -15,7 +15,7 @@ export const glp1: SignalDefinition = {
     "A powerful gut signal that slows down digestion and tells your brain you're getting full.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const bk = gaussianPhase(p, hourToPhase(8.5), widthToConcentration(70));
       const ln = gaussianPhase(p, hourToPhase(13.0), widthToConcentration(80));

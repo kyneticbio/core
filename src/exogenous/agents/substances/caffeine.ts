@@ -53,5 +53,24 @@ export const Caffeine = (mg: number): PharmacologyDef => ({
       intrinsicEfficacy: mg * 0.9375,
       unit: "pg/mL",
     },
+    // Fat mobilization effects - caffeine increases lipolysis
+    {
+      target: "ampk",
+      mechanism: "agonist",
+      EC50: 20000,
+      intrinsicEfficacy: Math.min(0.5, mg * 0.002),
+      unit: "fold-change",
+      tau: 30,
+      description: "Activates fat-burning pathways via catecholamine release.",
+    },
+    {
+      target: "burnRate",
+      mechanism: "agonist",
+      EC50: 25000,
+      intrinsicEfficacy: Math.min(0.3, mg * 0.001),
+      unit: "kcal/min",
+      tau: 20,
+      description: "Mild thermogenic effect increasing metabolic rate.",
+    },
   ],
 });

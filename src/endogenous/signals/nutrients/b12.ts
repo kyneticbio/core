@@ -8,7 +8,7 @@ export const b12: SignalDefinition = {
   description: "Essential for nerve health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 500,
+    setpoint: (ctx, state) => 500,
     tau: 10080,
     production: [],
     clearance: [],

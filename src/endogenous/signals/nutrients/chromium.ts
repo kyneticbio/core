@@ -8,7 +8,7 @@ export const chromium: SignalDefinition = {
   description: "Blood sugar management.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 10080,
     production: [],
     clearance: [],

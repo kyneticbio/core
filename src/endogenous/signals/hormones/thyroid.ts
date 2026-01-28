@@ -17,7 +17,7 @@ export const thyroid: SignalDefinition = {
     "The body's 'metabolic thermostat.' Thyroid hormones set the pace for how quickly your cells burn energy and produce heat.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const active = windowPhase(
         p,

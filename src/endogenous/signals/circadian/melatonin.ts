@@ -9,7 +9,7 @@ export const melatonin: SignalDefinition = {
     "Often called the 'vampire hormone,' melatonin is your brain's primary signal for biological night. It doesn't knock you out like a sedative, but rather opens the 'sleep gate' and helps coordinate your body's internal clocks.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       return 80.0 * windowPhase(p, hourToPhase(21), hourToPhase(7.5), 0.5);
     },

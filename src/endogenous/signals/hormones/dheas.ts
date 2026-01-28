@@ -8,7 +8,7 @@ export const dheas: SignalDefinition = {
   description: "A precursor to sex hormones.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 200,
+    setpoint: (ctx, state) => 200,
     tau: 10080,
     production: [],
     clearance: [],

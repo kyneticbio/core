@@ -10,7 +10,7 @@ export const dopamine: SignalDefinition = {
     "Often called the 'reward' chemical, dopamine is actually about motivation and anticipation. It's the signal that drives you to pursue goals and seek out pleasurable experiences, creating that 'get up and go' feeling.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const morningDrive = gaussianPhase(p, hourToPhase(10.5), 1.0);
       const afternoonPlateau = gaussianPhase(p, hourToPhase(13.5), 0.8);

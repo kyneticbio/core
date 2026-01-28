@@ -10,7 +10,7 @@ export const progesterone: SignalDefinition = {
     "Rising in the second half of the cycle, has a calming effect on the brain.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       if (ctx.subject.sex === "male") return 0.2;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =

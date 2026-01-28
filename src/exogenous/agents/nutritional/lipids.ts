@@ -4,8 +4,12 @@ import type { PharmacologyDef } from "../../../engine";
  * LIPIDS (Fat)
  * Satiety signal and caloric density.
  */
-export const Lipids = (amountGrams: number): PharmacologyDef => {
+export const Lipids = (
+  amountGrams: number,
+  context: { duration?: number } = {},
+): PharmacologyDef => {
   const kcalFromFat = amountGrams * 9;
+  const duration = context.duration ?? 30;
   const leptinEffect = (kcalFromFat / (kcalFromFat + 400)) * 4.0;
   const vagalEffect = Math.min(0.5, amountGrams * 0.015);
   const achEffect = Math.min(15, amountGrams * 0.4);
@@ -50,9 +54,9 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       },
       {
         target: "glp1",
-        mechanism: "agonist",
-        EC50: 500,
-        intrinsicEfficacy: 60,
+        mechanism: "linear",
+        EC50: 100,
+        intrinsicEfficacy: 1.5,
         unit: "pmol/L",
         tau: 90,
         description: "Fat stimulates gut fullness hormones.",
@@ -131,9 +135,9 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
       },
       {
         target: "inflammation",
-        mechanism: "agonist",
-        EC50: 500,
-        intrinsicEfficacy: 15,
+        mechanism: "linear",
+        EC50: 100,
+        intrinsicEfficacy: 0.2,
         unit: "index",
         tau: 120,
         description: "Temporary post-prandial inflammation.",
@@ -147,6 +151,14 @@ export const Lipids = (amountGrams: number): PharmacologyDef => {
         tau: 120,
         description: "Low metabolic cost to process fat.",
       },
+      {
+        target: "caloricIntake",
+        mechanism: "linear",
+        unit: "kcal/min",
+        EC50: 100,
+        intrinsicEfficacy: 1.08,
+        tau: 1,
+      }
     ],
   };
 };

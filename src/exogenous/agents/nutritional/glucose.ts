@@ -31,12 +31,14 @@ export const Glucose = (
     fiberGrams?: number;
     sugarGrams?: number;
     glycemicIndex?: number;
+    duration?: number;
   } = {},
 ): PharmacologyDef => {
   const fat = context.fatGrams ?? 0;
   const fiber = context.fiberGrams ?? 0;
   const sugar = context.sugarGrams ?? amountGrams * 0.5;
   const gi = context.glycemicIndex ?? 60;
+  const duration = context.duration ?? 30;
 
   const giMultiplier = gi / 60;
   const baseHalfLife = GLUCOSE_CONSTANTS.FAST_ABSORPTION_TAU_MIN / giMultiplier;
@@ -75,9 +77,9 @@ export const Glucose = (
       },
       {
         target: "insulin",
-        mechanism: "agonist",
-        EC50: 500,
-        intrinsicEfficacy: 250 * giMultiplier,
+        mechanism: "linear",
+        EC50: 100,
+        intrinsicEfficacy: 5.0 * giMultiplier,
         unit: "µIU/mL",
         tau: 45,
       },
@@ -129,6 +131,14 @@ export const Glucose = (
         intrinsicEfficacy: 4 * sedationIntensity,
         unit: "µg/dL",
         tau: 60,
+      },
+      {
+        target: "caloricIntake",
+        mechanism: "linear",
+        unit: "kcal/min",
+        EC50: 100,
+        intrinsicEfficacy: 3.2,
+        tau: 1,
       }
     ],
   };

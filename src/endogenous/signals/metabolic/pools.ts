@@ -3,7 +3,7 @@ import type { AuxiliaryDefinition } from "../../../engine";
 export const insulinAction: AuxiliaryDefinition = {
   key: "insulinAction",
   dynamics: {
-    setpoint: () => 0,
+    setpoint: (ctx, state) => 0,
     tau: 40,
     production: [
       {
@@ -20,7 +20,7 @@ export const insulinAction: AuxiliaryDefinition = {
 export const hepaticGlycogen: AuxiliaryDefinition = {
   key: "hepaticGlycogen",
   dynamics: {
-    setpoint: () => 0.7,
+    setpoint: (ctx, state) => 0.7,
     tau: 1440,
     production: [
       {

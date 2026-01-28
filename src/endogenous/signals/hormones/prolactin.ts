@@ -17,7 +17,7 @@ export const prolactin: SignalDefinition = {
     "Plays a role in immune regulation, metabolic health, and the body's 'rest and digest' state.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const prep = sigmoidPhase(
         p,

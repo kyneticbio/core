@@ -8,7 +8,7 @@ export const folate: SignalDefinition = {
   description: "Essential for cell division.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 12,
+    setpoint: (ctx, state) => 12,
     tau: 10080,
     production: [],
     clearance: [],

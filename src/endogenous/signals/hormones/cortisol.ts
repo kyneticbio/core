@@ -14,7 +14,7 @@ export const cortisol: SignalDefinition = {
     "The body's primary 'readiness' hormone. Cortisol peaks in the morning to help you wake up and mobilize energy. While it's essential for handling stress, chronic high levels can lead to fatigue and metabolic issues.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const CAR = gaussianPhase(p, hourToPhase(8.75), 1.5);
       const dayComponent = windowPhase(p, hourToPhase(8), hourToPhase(20), 0.5);

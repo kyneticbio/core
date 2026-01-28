@@ -9,7 +9,7 @@ export const endorphin: SignalDefinition = {
   idealTendency: "none",
   display: {},
   dynamics: {
-    setpoint: () => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 30, // Relatively fast clearance
     production: [],
     clearance: [],
@@ -26,7 +26,7 @@ export const dynorphin: SignalDefinition = {
   idealTendency: "mid",
   display: {},
   dynamics: {
-    setpoint: () => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 30,
     production: [],
     clearance: [],
@@ -43,7 +43,7 @@ export const anandamide: SignalDefinition = {
   idealTendency: "none",
   display: {},
   dynamics: {
-    setpoint: () => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 15, // Very short half-life
     production: [],
     clearance: [],

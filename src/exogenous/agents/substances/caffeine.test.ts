@@ -13,7 +13,9 @@ describe('Agent: Caffeine', () => {
       expect(targets).toContain('cortisol');
       expect(targets).toContain('adrenaline');
       expect(targets).toContain('norepi');
-      expect(targets).toHaveLength(5);
+      expect(targets).toContain('ampk');
+      expect(targets).toContain('burnRate');
+      expect(targets).toHaveLength(7);
     });
   });
 

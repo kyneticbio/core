@@ -10,7 +10,7 @@ export const gaba: SignalDefinition = {
     "The brain's primary 'off' switch. GABA reduces the activity of neurons, acting as a natural brake to prevent overstimulation. It's essential for relaxation, reducing anxiety, and falling asleep.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const eveningRise = sigmoidPhase(p, hourToPhase(21), 1.0);
       return 240.0 + 180.0 * eveningRise;

@@ -40,6 +40,20 @@ export class ScenarioBuilder {
     return this;
   }
 
+  /**
+   * Flexible method to add an intervention with all options
+   */
+  public add(key: string, options: { params?: Record<string, any>, duration?: number, intensity?: number, start?: number } = {}): this {
+    this._interventions.push({
+      key,
+      params: options.params,
+      durationMin: options.duration,
+      intensity: options.intensity,
+      startMin: options.start ?? 480
+    });
+    return this;
+  }
+
   public expect(signal: Signal): AssertionBuilder {
     const firstIntervention = this._interventions[0];
     const startTime = firstIntervention ? firstIntervention.startMin : 0;

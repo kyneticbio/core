@@ -10,7 +10,7 @@ export const adrenaline: SignalDefinition = {
     "The 'acute stress' signal. Adrenaline rapidly increases heart rate and blood pressure while mobilizing sugar for immediate energy. It's the chemical driver of the 'fight or flight' response.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       return 30.0 + 80.0 * gaussianPhase(p, hourToPhase(10), 2.0);
     },

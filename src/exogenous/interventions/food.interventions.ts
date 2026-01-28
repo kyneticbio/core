@@ -111,6 +111,7 @@ export const FOOD_INTERVENTIONS: InterventionDef[] = [
       const protein = Number(params.protein) || 0;
       const fat = Number(params.fat) || 0;
       const fiber = Number(params.fiber) || 0;
+      const duration = Number(params.durationMin) || 30;
 
       // === MEAL CHARACTERISTICS ===
       const glycemicIndex = Number(params.glycemicIndex) || 60;
@@ -149,16 +150,17 @@ export const FOOD_INTERVENTIONS: InterventionDef[] = [
             fiberGrams: fiber,
             sugarGrams: sugar,
             glycemicIndex: weightedGI,
+            duration,
           }),
         );
       }
 
       if (fat > 0) {
-        agents.push(Agents.Lipids(fat));
+        agents.push(Agents.Lipids(fat, { duration }));
       }
 
       if (protein > 0) {
-        agents.push(Agents.Protein(protein));
+        agents.push(Agents.Protein(protein, { duration }));
       }
 
       if (fiber > 0) {

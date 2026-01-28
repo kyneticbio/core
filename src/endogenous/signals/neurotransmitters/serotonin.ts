@@ -10,7 +10,7 @@ export const serotonin: SignalDefinition = {
     "The body's natural mood stabilizer. Serotonin helps regulate everything from sleep and appetite to social behavior and contentment. Higher levels are generally associated with a sense of well-being and emotional resilience.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const lateMorning = gaussianPhase(p, hourToPhase(11), 1.0);
       const afternoon = gaussianPhase(p, hourToPhase(15), 0.8);

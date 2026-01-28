@@ -66,4 +66,24 @@ export const AUXILIARY = {
     system: "Thermoregulation",
     description: "Core body temperature.",
   } as AuxiliaryTargetDefinition,
+  muscleProteinSynthesis: {
+    category: "auxiliary",
+    system: "Growth",
+    description: "Real-time rate of muscle tissue building.",
+  } as AuxiliaryTargetDefinition,
+  fatOxidationRate: {
+    category: "auxiliary",
+    system: "Metabolic",
+    description: "Real-time rate of fat burning.",
+  } as AuxiliaryTargetDefinition,
+  muscleMass: {
+    category: "auxiliary",
+    system: "Growth",
+    description: "Accumulated virtual muscle mass.",
+  } as AuxiliaryTargetDefinition,
+  fatMass: {
+    category: "auxiliary",
+    system: "Metabolic",
+    description: "Accumulated virtual fat mass.",
+  } as AuxiliaryTargetDefinition,
 };

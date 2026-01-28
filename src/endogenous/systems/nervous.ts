@@ -15,6 +15,7 @@ export const nervous: BioSystemDef = {
     "orexin",
     "endocannabinoid",
     "bdnf",
+    "neuroplasticityScore",
     "sensoryLoad",
   ],
   auxiliary: [

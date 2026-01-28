@@ -3,7 +3,7 @@ import type { AuxiliaryDefinition } from "../../../engine";
 export const crhPool: AuxiliaryDefinition = {
   key: "crhPool",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const hour = ctx.circadianMinuteOfDay / 60;
       return 0.5 + 0.5 * Math.cos(((hour - 8) * Math.PI) / 12);
     },
@@ -26,7 +26,7 @@ export const crhPool: AuxiliaryDefinition = {
 export const cortisolIntegral: AuxiliaryDefinition = {
   key: "cortisolIntegral",
   dynamics: {
-    setpoint: () => 0,
+    setpoint: (ctx, state) => 0,
     tau: 10000,
     production: [
       {

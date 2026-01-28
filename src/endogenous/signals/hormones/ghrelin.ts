@@ -10,7 +10,7 @@ export const ghrelin: SignalDefinition = {
     "The 'hunger' hormone. Ghrelin rises before meals to tell your brain it's time to eat and falls after you've had enough.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const preMeal =
         gaussianPhase(p, hourToPhase(8.5), 1.0) +

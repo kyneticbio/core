@@ -8,7 +8,7 @@ export const ast: SignalDefinition = {
   description: "Aspartate Aminotransferase. Liver/muscle health marker.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: () => 22,
+    setpoint: (ctx, state) => 22,
     tau: 10080,
     production: [],
     clearance: [],

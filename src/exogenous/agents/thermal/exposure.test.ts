@@ -18,7 +18,9 @@ describe('Agent: Thermal Exposure', () => {
         expect(targets).toContain('vagal');
         expect(targets).toContain('inflammation');
         expect(targets).toContain('orexin');
-        expect(targets).toHaveLength(9);
+        expect(targets).toContain('thermogenesis');
+        expect(targets).toContain('heatShockProteins');
+        expect(targets).toHaveLength(11);
       });
 
       it('norepi should be an agonist (cold shock)', () => {
@@ -162,7 +164,9 @@ describe('Agent: Thermal Exposure', () => {
         expect(targets).toContain('vasopressin');
         expect(targets).toContain('orexin');
         expect(targets).toContain('endocannabinoid');
-        expect(targets).toHaveLength(10);
+        expect(targets).toContain('heatShockProteins');
+        expect(targets).toContain('burnRate');
+        expect(targets).toHaveLength(12);
       });
 
       it('growthHormone should be an agonist', () => {

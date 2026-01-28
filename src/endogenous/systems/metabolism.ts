@@ -15,8 +15,12 @@ export const metabolism: BioSystemDef = {
     "energy",
     "mtor",
     "ampk",
+    "caloricIntake",
+    "burnRate",
+    "netEnergy",
+    "weight",
   ],
-  auxiliary: ["hepaticGlycogen", "insulinAction"],
+  auxiliary: ["hepaticGlycogen", "insulinAction", "fatOxidationRate", "fatMass"],
   description:
     "The machinery that converts food into energy and manages fuel storage and utilization across the body.",
   applicationDescription:

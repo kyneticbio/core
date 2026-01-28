@@ -14,7 +14,7 @@ export const orexin: SignalDefinition = {
   description: "The brain's master 'wakefulness' switch.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(7.8), 1.0);
       const feedingCue =

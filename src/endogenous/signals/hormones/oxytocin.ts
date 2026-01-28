@@ -17,7 +17,7 @@ export const oxytocin: SignalDefinition = {
     "The 'bonding hormone,' oxytocin promotes feelings of trust, safety, and social connection.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const social = gaussianPhase(
         p,

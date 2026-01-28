@@ -8,7 +8,7 @@ export const iron: SignalDefinition = {
   description: "Oxygen transport component.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 100,
+    setpoint: (ctx, state) => 100,
     tau: 10080,
     production: [],
     clearance: [],

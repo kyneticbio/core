@@ -10,7 +10,7 @@ export const estrogen: SignalDefinition = {
     "The primary female sex hormone, vital for brain health and mood.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       if (ctx.subject.sex === "male") return 30.0;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =

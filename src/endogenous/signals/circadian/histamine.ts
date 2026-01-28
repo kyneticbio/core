@@ -15,7 +15,7 @@ export const histamine: SignalDefinition = {
     "Beyond its role in allergies, histamine in the brain is a powerful alertness chemical.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wake = sigmoidPhase(p, hourToPhase(7.5), 1.0);
       const day = gaussianPhase(p, hourToPhase(13), 0.8);

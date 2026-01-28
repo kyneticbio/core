@@ -17,7 +17,7 @@ export const vasopressin: SignalDefinition = {
     "The 'antidiuretic' hormone. It regulates your body's water balance and blood pressure.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const couple = gaussianPhase(
         p,

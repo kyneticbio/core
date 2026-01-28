@@ -101,7 +101,7 @@ export function vectorToState(
 export interface PreResolvedDefinition {
   index: number;
   tau: number;
-  setpoint: (ctx: DynamicsContext) => number;
+  setpoint: (ctx: DynamicsContext, state: SimulationState) => number;
   production: Array<{
     coefficient: number;
     sourceIndex: number;
@@ -508,7 +508,7 @@ export function computeDerivativesVector(
 
     let setpoint = 0;
     if (debug.enableBaselines !== false) {
-      setpoint = rd.setpoint(ctx);
+      setpoint = rd.setpoint(ctx, stateProxy);
       const signalKey = signals[i];
       if (
         debug.enableConditions !== false &&
@@ -590,25 +590,27 @@ export function computeDerivativesVector(
                     iv.pharmacology?.pk?.model === "activity-dependent" ||
                     iv.pharmacology?.pk?.delivery === "continuous";
 
+                  // Convert concentration units if needed
+                  let effectiveConc = conc;
+                  const molarMass = iv.pharmacology?.molecule?.molarMass;
+                  if (molarMass && molarMass > 0) {
+                    if (eff.unit === "nM")
+                      effectiveConc = (conc / molarMass) * 1000000;
+                    else if (eff.unit === "uM" || eff.unit === "µM")
+                      effectiveConc = (conc / molarMass) * 1000;
+                    else if (eff.unit === "mg/dL")
+                      effectiveConc = conc * 0.1;
+                  }
+
                   if (isActivityDependent) {
                     // Activity-dependent: concentration is 0-1 (intensity)
-                    // Linear response: Intensity * Efficacy * Density / Tau
-                    response =
-                      (conc * (eff.intrinsicEfficacy ?? 10) * density) / rd.tau;
+                    response = (conc * (eff.intrinsicEfficacy ?? 10) * density) / rd.tau;
+                  } else if (eff.mechanism === "linear") {
+                    // Linear mechanism: response is directly proportional to concentration
+                    // Note: EC50 here acts as a scaling factor: intake = (conc / EC50) * efficacy
+                    response = (effectiveConc / (eff.EC50 ?? 100)) * (eff.intrinsicEfficacy ?? 1.0) * density / rd.tau;
                   } else {
                     // Drug-based: use Hill function with Ki or EC50
-                    // Convert concentration units if needed
-                    let effectiveConc = conc;
-                    const molarMass = iv.pharmacology?.molecule?.molarMass;
-                    if (molarMass && molarMass > 0) {
-                      if (eff.unit === "nM")
-                        effectiveConc = (conc / molarMass) * 1000000;
-                      else if (eff.unit === "uM" || eff.unit === "µM")
-                        effectiveConc = (conc / molarMass) * 1000;
-                      else if (eff.unit === "mg/dL")
-                        effectiveConc = conc * 0.1;
-                    }
-
                     const EC50 = eff.EC50 ?? eff.Ki ?? 100;
                     const occupancy = effectiveConc / (effectiveConc + EC50);
                     const efficacy = eff.tau ?? 10;
@@ -620,7 +622,7 @@ export function computeDerivativesVector(
                       rd.tau;
                   }
 
-                  if (eff.mechanism === "agonist" || eff.mechanism === "PAM") {
+                  if (eff.mechanism === "agonist" || eff.mechanism === "PAM" || eff.mechanism === "linear") {
                     dS += response * tgt.sign;
                   } else if (eff.mechanism === "antagonist") {
                     if (tgt.sign > 0)
@@ -645,7 +647,7 @@ export function computeDerivativesVector(
     let dA = 0;
 
     if (debug.enableHomeostasis !== false) {
-      dA = (rd.setpoint(ctx) - val) / rd.tau;
+      dA = (rd.setpoint(ctx, stateProxy) - val) / rd.tau;
       for (const p of rd.production) {
         const srcVal = p.sourceIndex === -1 ? 1.0 : state[p.sourceIndex];
         dA +=
@@ -1043,7 +1045,7 @@ export function runOptimizedV2(
           (item as any).resolvedPharmacology ||
           (def.pharmacology
             ? typeof def.pharmacology === "function"
-              ? [def.pharmacology(item.meta.params)].flat()
+              ? [def.pharmacology({ ...item.meta.params, durationMin: item.durationMin || def.defaultDurationMin || 30, weight: (options as any)?.subject?.weight ?? 70 })].flat()
               : [def.pharmacology]
             : []);
 
@@ -1062,6 +1064,7 @@ export function runOptimizedV2(
           const F = pk.bioavailability ?? 1.0;
           const ke = pk.eliminationRate ?? 0.693 / (pk.halfLifeMin ?? 60);
           const ka = pk.absorptionRate ?? ke * 4;
+          const duration = item.durationMin || pk.durationMin || def.defaultDurationMin || 30;
 
           let vd = 50;
           const vol = pk.volume;
@@ -1090,7 +1093,7 @@ export function runOptimizedV2(
           pkAgents.push({
             id: agentId,
             startTime: item.startMin + d * 1440,
-            duration: item.durationMin,
+            duration: duration,
             intensity: item.meta.intensity ?? 1.0,
             massMg,
             F,
@@ -1150,6 +1153,7 @@ export function runOptimizedV2(
     Object.keys(initialObjState.receptors),
   );
   const currentStateVector = stateToVector(initialObjState, layout);
+
   const { resSignals, resAux } = resolveDefinitions(
     signals,
     signalDefinitions,
@@ -1171,7 +1175,7 @@ export function runOptimizedV2(
           (item as any).resolvedPharmacology ||
           (def.pharmacology
             ? typeof def.pharmacology === "function"
-              ? [def.pharmacology(item.meta.params)].flat()
+              ? [def.pharmacology({ ...item.meta.params, durationMin: item.durationMin || def.defaultDurationMin || 30, weight: (options as any)?.subject?.weight ?? 70 })].flat()
               : [def.pharmacology]
             : []);
         pharms.forEach((pharm, idx) => {

@@ -15,7 +15,7 @@ export const testosterone: SignalDefinition = {
     "The primary male sex hormone, foundational for muscle mass, bone density, and drive.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const ageFactor = Math.max(
         0.5,
         1 - Math.max(0, ctx.subject.age - 30) * 0.01,

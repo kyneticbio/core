@@ -10,7 +10,7 @@ export const acetylcholine: SignalDefinition = {
     "A critical messenger for both your brain and your muscles. In the brain, it supports learning, memory, and sustained attention. It's often associated with 'speed of thought' and your ability to process new information quickly.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const remDrive = ctx.isAsleep ? 0.8 : 0.4;
       const wakeFocus = windowPhase(p, hourToPhase(10), hourToPhase(12), 0.5);

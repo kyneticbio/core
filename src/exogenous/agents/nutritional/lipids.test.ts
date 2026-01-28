@@ -21,7 +21,8 @@ describe('Agent: Lipids (Fat)', () => {
       expect(targets).toContain('cortisol');
       expect(targets).toContain('inflammation');
       expect(targets).toContain('thyroid');
-      expect(targets).toHaveLength(13);
+      expect(targets).toContain('caloricIntake');
+      expect(targets).toHaveLength(14);
     });
 
     it('ghrelin should be an antagonist (hunger suppression)', () => {
@@ -36,10 +37,10 @@ describe('Agent: Lipids (Fat)', () => {
       expect(effect?.mechanism).toBe('agonist');
     });
 
-    it('glp1 should be an agonist (gut fullness)', () => {
+    it('glp1 should be a linear agonist (gut fullness)', () => {
       const def = Lipids(30);
       const effect = def.pd.find(p => p.target === 'glp1');
-      expect(effect?.mechanism).toBe('agonist');
+      expect(effect?.mechanism).toBe('linear');
     });
 
     it('vagal should be an agonist (rest-and-digest)', () => {
@@ -90,10 +91,10 @@ describe('Agent: Lipids (Fat)', () => {
       expect(effect?.mechanism).toBe('antagonist');
     });
 
-    it('inflammation should be an agonist (post-prandial inflammation)', () => {
+    it('inflammation should be a linear agonist (post-prandial inflammation)', () => {
       const def = Lipids(30);
       const effect = def.pd.find(p => p.target === 'inflammation');
-      expect(effect?.mechanism).toBe('agonist');
+      expect(effect?.mechanism).toBe('linear');
     });
 
     it('thyroid should be an agonist (metabolic cost)', () => {

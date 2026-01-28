@@ -18,7 +18,7 @@ export const hrv: SignalDefinition = {
     "Heart Rate Variability. A powerful marker of your nervous system's balance and resilience.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const nocturnalRise = gaussianPhase(p, hourToPhase(23), 2.0);
       return 45.0 + 35.0 * nocturnalRise;
@@ -47,7 +47,7 @@ export const bloodPressure: SignalDefinition = {
   description: "A proxy for the pressure in your arteries.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeRise = sigmoidPhase(p, hourToPhase(2), 1.0);
       return 100.0 + 20.0 * wakeRise;
@@ -78,7 +78,7 @@ export const vagal: SignalDefinition = {
   description: "A marker of your 'rest and digest' system's activity.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any) => {
+    setpoint: (ctx: any, state: any) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const parasym = windowPhase(
         p,

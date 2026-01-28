@@ -8,7 +8,7 @@ export const copper: SignalDefinition = {
   description: "Connective tissue health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: () => 110,
+    setpoint: (ctx, state) => 110,
     tau: 10080,
     production: [],
     clearance: [],
