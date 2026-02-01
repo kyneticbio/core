@@ -21,7 +21,7 @@ export const Caffeine = (mg: number): PharmacologyDef => ({
       target: "Adenosine_A2a",
       mechanism: "antagonist",
       Ki: CAFFEINE_KI_A2A,
-      intrinsicEfficacy: mg * 0.4,
+      intrinsicEfficacy: mg * 0.8,
       unit: "nM",
       description: "Blocks adenosine from binding, preventing the sleep pressure signal.",
     },
@@ -29,7 +29,7 @@ export const Caffeine = (mg: number): PharmacologyDef => ({
       target: "Adenosine_A1",
       mechanism: "antagonist",
       Ki: CAFFEINE_KI_A1,
-      intrinsicEfficacy: mg * 0.2,
+      intrinsicEfficacy: mg * 0.4,
       unit: "nM",
     },
     {

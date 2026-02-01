@@ -123,15 +123,19 @@ export const muscleMass: AuxiliaryDefinition = {
         coefficient: 1.0,
         transform: (_: any, state: any) => {
           const mps = state.auxiliary?.muscleProteinSynthesis ?? 0;
-          // MPS represents building rate. 1kg muscle ~= 5000 kcal synthesis cost (simplified)
-          // We convert the arbitrary MPS index into kg muscle gain
-          return 0.0001 * mps;
+          // MPS represents building rate.
+          // Calibrated so that sustained high mTOR (mps ~ 20) yields ~1kg muscle/month
+          // 1kg / 43200 mins = 0.000023 kg/min
+          // 0.000023 / 20 = 0.000001
+          return 0.000001 * mps;
         },
       },
     ],
     clearance: [],
   },
   initialValue: 0,
+  min: -50, // Can lose up to 50kg muscle
+  max: 50,  // Can gain up to 50kg muscle
 };
 
 export const strengthReadiness: SignalDefinition = {
@@ -147,15 +151,31 @@ export const strengthReadiness: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.001,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state: any, ctx: any) => {
           // Recovery is boosted by sleep and growth hormone
-          const gh = state.signals.growthHormone;
-          const isAsleep = false; // Need to get this from ctx if possible, or use signals
-          return (gh / 10) * 0.005;
+          const gh = state.signals.growthHormone ?? 5;
+          const sleepBoost = ctx.isAsleep ? 2.0 : 1.0;
+          return (gh / 10) * 0.005 * sleepBoost;
         },
       },
     ],
-    clearance: [{ type: "linear", rate: 0.001 }],
+    clearance: [
+      {
+        type: "linear",
+        rate: 0.001,
+        transform: (_: any, state: any) => {
+          // Exercise directly depletes strength readiness
+          // burnRate above BMR indicates physical activity
+          const burn = state.signals?.burnRate ?? 1.15;
+          const bmrMin = 1.15; // Baseline metabolic rate
+          const exerciseIntensity = Math.max(0, burn - bmrMin);
+
+          // High intensity exercise depletes strength faster
+          // At 10 kcal/min above BMR (intense workout), clearance is 50x baseline
+          return 1 + exerciseIntensity * 5;
+        },
+      },
+    ],
     couplings: [
       { source: "inflammation", effect: "inhibit", strength: 0.2 },
       { source: "cortisol", effect: "inhibit", strength: 0.1 },

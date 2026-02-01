@@ -36,10 +36,19 @@ export const burnRate: SignalDefinition = {
   description: "Real-time caloric expenditure.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any) => {
-      // Base metabolic rate in kcal/min
+    setpoint: (ctx: any, state: any) => {
+      // Base metabolic rate from subject profile
       const bmr = ctx.physiology?.bmr ?? 1660;
-      return bmr / 1440;
+      
+      // Dynamic drift from body composition changes
+      // Muscle adds ~13 kcal/kg/day
+      // Fat adds ~4.5 kcal/kg/day
+      const muscleDelta = state.auxiliary?.muscleMass ?? 0;
+      const fatDelta = state.auxiliary?.fatMass ?? 0;
+      
+      const drift = (muscleDelta * 13 + fatDelta * 4.5);
+      
+      return (bmr + drift) / 1440;
     },
     tau: 15,
     production: [], // Driven by Exercise Interventions
@@ -61,9 +70,9 @@ export const burnRate: SignalDefinition = {
  */
 export const netEnergy: SignalDefinition = {
   key: "netEnergy",
-  label: "Net Energy",
+  label: "Caloric Balance",
   unit: "kcal/min",
-  description: "The current balance between caloric intake and expenditure.",
+  description: "Real-time difference between calories consumed and calories burned. Positive = surplus (storing energy), negative = deficit (burning reserves).",
   idealTendency: "none",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
@@ -126,7 +135,7 @@ export const fatMass: AuxiliaryDefinition = {
   key: "fatMass",
   dynamics: {
     setpoint: (ctx: any, state: any) => 0,
-    tau: 43200, 
+    tau: 43200,
     production: [
       {
         source: "constant",
@@ -135,7 +144,7 @@ export const fatMass: AuxiliaryDefinition = {
           const net = state.signals.netEnergy;
           const insulin = state.signals.insulin;
           const fox = state.auxiliary?.fatOxidationRate ?? 0;
-          
+
           // 1kg fat ~= 7700 kcal
           const gain = net > 0 && insulin > 10 ? net / 7700 : 0;
           const loss = fox / 7700;
@@ -147,6 +156,8 @@ export const fatMass: AuxiliaryDefinition = {
     clearance: [],
   },
   initialValue: 0,
+  min: -50, // Can lose up to 50kg fat
+  max: 100, // Can gain up to 100kg fat
 };
 
 /**
@@ -185,9 +196,9 @@ export const weight: SignalDefinition = {
  */
 export const energyAvailability: SignalDefinition = {
   key: "energyAvailability",
-  label: "Energy Availability",
+  label: "Energy Availability (EA)",
   unit: "kcal/kg",
-  description: "How much energy is available for vital functions after exercise. Critical for metabolic health.",
+  description: "Sports medicine metric: calories available for vital body functions after subtracting exercise expenditure, per kg of lean mass. Below 30 risks RED-S (metabolic dysfunction). Optimal range: 30-45.",
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
@@ -354,13 +365,21 @@ export const hydration: SignalDefinition = {
   description: "Fluid balance status affecting performance and cognitive function.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 0.95,
-    tau: 120,
-    production: [], // Driven by water intake
+    // Setpoint of 0 means without water intake, hydration decays to zero (death)
+    // Water interventions add to production to maintain healthy levels
+    setpoint: (ctx: any, state: any) => 0,
+    tau: 4000, // ~2.8 days - calibrated so critical (0.3) reached in ~3 days
+    production: [], // Driven by water intake interventions
     clearance: [
       {
         type: "linear",
-        rate: 0.002, // Gradual loss through respiration/perspiration
+        rate: 0.0001, // Small additional loss from activity/sweating
+        transform: (value: number, state: any, ctx: any) => {
+          // Exercise increases water loss
+          const burn = state.signals?.burnRate ?? 1.15;
+          const exerciseIntensity = Math.max(0, burn - 1.15);
+          return 1 + exerciseIntensity * 2; // Up to 3x loss during intense exercise
+        },
       },
     ],
     couplings: [],
@@ -371,6 +390,40 @@ export const hydration: SignalDefinition = {
   display: {
     referenceRange: { min: 0.8, max: 1.0 },
   },
+  monitors: [
+    {
+      id: "hydration_mild_dehydration",
+      signal: "hydration",
+      pattern: { type: "falls_below", value: 0.8 },
+      outcome: "warning",
+      message: "Mild dehydration detected",
+      description: "You may experience reduced cognitive performance and energy. Drink water.",
+    },
+    {
+      id: "hydration_moderate_dehydration",
+      signal: "hydration",
+      pattern: { type: "falls_below", value: 0.6 },
+      outcome: "warning",
+      message: "Moderate dehydration - drink water soon",
+      description: "Dehydration is affecting your physical and mental performance.",
+    },
+    {
+      id: "hydration_severe_dehydration",
+      signal: "hydration",
+      pattern: { type: "falls_below", value: 0.4 },
+      outcome: "critical",
+      message: "Severe dehydration - urgent",
+      description: "Critical fluid loss. Immediate rehydration needed.",
+    },
+    {
+      id: "hydration_rapid_loss",
+      signal: "hydration",
+      pattern: { type: "decreases_by", amount: 0.2, mode: "absolute", windowMins: 120 },
+      outcome: "warning",
+      message: "Rapid fluid loss detected",
+      description: "You're losing fluids quickly, likely from exercise or heat. Increase water intake.",
+    },
+  ],
 };
 
 /**

@@ -12,6 +12,10 @@ export interface SolverDebugOptions {
   enableEnzymes?: boolean;
   enableConditions?: boolean;
   receptorKeys?: string[];
+  pkBuffers?: Map<string, Float32Array>;
+  pkMinT?: number;
+  debug?: boolean;
+  clearanceModifiers?: Record<string, number>;
 }
 
 /**
@@ -68,6 +72,197 @@ export interface SignalDynamics {
 
 export type IdealTendency = "higher" | "lower" | "mid" | "none";
 
+// --- Monitor Types ---
+
+/**
+ * The outcome when a monitor's pattern is detected.
+ */
+export type MonitorOutcome = "win" | "warning" | "critical";
+
+/**
+ * Pattern: Value exceeds a threshold
+ */
+export interface ExceedsPattern {
+  type: "exceeds";
+  value: number;
+  sustainedMins?: number;
+}
+
+/**
+ * Pattern: Value falls below a threshold
+ */
+export interface FallsBelowPattern {
+  type: "falls_below";
+  value: number;
+  sustainedMins?: number;
+}
+
+/**
+ * Pattern: Value goes outside a range
+ */
+export interface OutsideRangePattern {
+  type: "outside_range";
+  min?: number;
+  max?: number;
+  sustainedMins?: number;
+}
+
+/**
+ * Pattern: Value deviates from the signal's dynamic setpoint
+ */
+export interface DeviatesFromSetpointPattern {
+  type: "deviates_from_setpoint";
+  deviation: number;
+  mode: "absolute" | "percent";
+  direction: "above" | "below" | "either";
+}
+
+/**
+ * Pattern: Value deviates from a rolling baseline
+ */
+export interface DeviatesFromBaselinePattern {
+  type: "deviates_from_baseline";
+  deviation: number;
+  mode: "absolute" | "percent";
+  direction: "above" | "below" | "either";
+  baselineWindowMins: number;
+}
+
+/**
+ * Pattern: Value increases by amount over time window
+ */
+export interface IncreasesByPattern {
+  type: "increases_by";
+  amount: number;
+  mode: "absolute" | "percent";
+  windowMins: number;
+}
+
+/**
+ * Pattern: Value decreases by amount over time window
+ */
+export interface DecreasesByPattern {
+  type: "decreases_by";
+  amount: number;
+  mode: "absolute" | "percent";
+  windowMins: number;
+}
+
+/**
+ * Pattern: Value shows sustained upward trend
+ */
+export interface TrendingUpPattern {
+  type: "trending_up";
+  windowDays: number;
+  minSlopePerDay?: number;
+  minConfidence?: number;
+}
+
+/**
+ * Pattern: Value shows sustained downward trend
+ */
+export interface TrendingDownPattern {
+  type: "trending_down";
+  windowDays: number;
+  minSlopePerDay?: number;
+  minConfidence?: number;
+}
+
+/**
+ * Pattern: Cumulative exposure (AUC) exceeds threshold
+ */
+export interface HighExposurePattern {
+  type: "high_exposure";
+  windowMins: number;
+  threshold: number;
+}
+
+/**
+ * Pattern: Cumulative exposure (AUC) falls below threshold
+ */
+export interface LowExposurePattern {
+  type: "low_exposure";
+  windowMins: number;
+  threshold: number;
+}
+
+/**
+ * Pattern: Signal shows high variability
+ */
+export interface HighVariabilityPattern {
+  type: "high_variability";
+  windowMins: number;
+  cvThreshold: number;
+}
+
+/**
+ * Pattern: Signal shows low variability
+ */
+export interface LowVariabilityPattern {
+  type: "low_variability";
+  windowMins: number;
+  cvThreshold: number;
+}
+
+/**
+ * Non-composite pattern types (used in composite patterns)
+ */
+export type SimpleMonitorPattern =
+  | ExceedsPattern
+  | FallsBelowPattern
+  | OutsideRangePattern
+  | DeviatesFromSetpointPattern
+  | DeviatesFromBaselinePattern
+  | IncreasesByPattern
+  | DecreasesByPattern
+  | TrendingUpPattern
+  | TrendingDownPattern
+  | HighExposurePattern
+  | LowExposurePattern
+  | HighVariabilityPattern
+  | LowVariabilityPattern;
+
+/**
+ * Pattern: Combines multiple signal patterns
+ */
+export interface CompositePattern {
+  type: "composite";
+  operator: "and" | "or";
+  patterns: Array<{
+    signal: Signal;
+    pattern: SimpleMonitorPattern;
+  }>;
+}
+
+/**
+ * All monitor pattern types
+ */
+export type MonitorPattern = SimpleMonitorPattern | CompositePattern;
+
+/**
+ * A Monitor watches a signal for a specific pattern and reports outcomes.
+ */
+export interface Monitor {
+  id: string;
+  signal: Signal;
+  pattern: MonitorPattern;
+  outcome: MonitorOutcome;
+  message: string;
+  description?: string;
+}
+
+/**
+ * Result when a monitor's pattern has been detected.
+ */
+export interface MonitorResult {
+  monitor: Monitor;
+  detectedAt: Minute;
+  triggerValue: number | number[];
+  context?: Record<string, unknown>;
+}
+
+// --- Signal Definition ---
+
 export interface SignalDefinition {
   key: Signal;
   label: string;
@@ -86,6 +281,8 @@ export interface SignalDefinition {
   goals?: string[];
   isPremium?: boolean;
   group?: string;
+  /** Monitors for detecting patterns in this signal */
+  monitors?: Monitor[];
 }
 
 export interface AuxiliaryDefinition {
@@ -98,6 +295,8 @@ export interface AuxiliaryDefinition {
     clearance: ClearanceTerm[];
   };
   initialValue: number | ((ctx: { subject: any; physiology: any }) => number);
+  min?: number;
+  max?: number;
 }
 
 export interface SimulationState {

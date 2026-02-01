@@ -6,6 +6,30 @@ import type {
   PharmacologyDef,
 } from "./engine";
 
+// Re-export Monitor types from engine for convenience
+export type {
+  Signal,
+  MonitorOutcome,
+  MonitorPattern,
+  SimpleMonitorPattern,
+  Monitor,
+  MonitorResult,
+  ExceedsPattern,
+  FallsBelowPattern,
+  OutsideRangePattern,
+  DeviatesFromSetpointPattern,
+  DeviatesFromBaselinePattern,
+  IncreasesByPattern,
+  DecreasesByPattern,
+  TrendingUpPattern,
+  TrendingDownPattern,
+  HighExposurePattern,
+  LowExposurePattern,
+  HighVariabilityPattern,
+  LowVariabilityPattern,
+  CompositePattern,
+} from "./engine";
+
 // --- Subject & Profile ---
 export * from "./endogenous/subject/types";
 

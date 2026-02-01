@@ -32,4 +32,38 @@ export const glucose: SignalDefinition = {
   display: {
     referenceRange: { min: 70, max: 140 },
   },
+  monitors: [
+    {
+      id: "glucose_hyperglycemia",
+      signal: "glucose",
+      pattern: { type: "exceeds", value: 180, sustainedMins: 15 },
+      outcome: "warning",
+      message: "Glucose spiked above 180 mg/dL",
+      description: "Blood sugar is elevated. This can happen after high-carb meals or during stress.",
+    },
+    {
+      id: "glucose_hypoglycemia",
+      signal: "glucose",
+      pattern: { type: "falls_below", value: 70 },
+      outcome: "warning",
+      message: "Glucose dropped below 70 mg/dL",
+      description: "Low blood sugar can cause shakiness, confusion, and fatigue.",
+    },
+    {
+      id: "glucose_severe_hypoglycemia",
+      signal: "glucose",
+      pattern: { type: "falls_below", value: 55 },
+      outcome: "critical",
+      message: "Glucose critically low (< 55 mg/dL)",
+      description: "Severe hypoglycemia requires immediate attention.",
+    },
+    {
+      id: "glucose_high_variability",
+      signal: "glucose",
+      pattern: { type: "high_variability", windowMins: 1440, cvThreshold: 0.36 },
+      outcome: "warning",
+      message: "High glucose variability detected",
+      description: "Large swings in blood sugar may indicate poor glycemic control.",
+    },
+  ],
 };

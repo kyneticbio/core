@@ -9,6 +9,42 @@ import {
   windowPhase,
 } from "../../utils";
 
+/**
+ * NITRIC OXIDE (NO)
+ * Key vasodilator produced by endothelium.
+ * Critical for blood flow regulation and erectile function.
+ * Produced from L-arginine by nitric oxide synthase (NOS).
+ */
+export const nitricOxide: SignalDefinition = {
+  key: "nitricOxide",
+  label: "Nitric Oxide",
+  unit: "nM",
+  description:
+    "A gaseous signaling molecule that relaxes blood vessels. Essential for healthy blood flow, exercise performance, and erectile function.",
+  idealTendency: "higher",
+  dynamics: {
+    setpoint: (ctx: any, state: any) => {
+      // Baseline NO production, slightly higher during day (activity)
+      const p = minuteToPhase(ctx.minuteOfDay);
+      const dayActivity = gaussianPhase(p, hourToPhase(14), widthToConcentration(480));
+      return 20 + 10 * dayActivity;
+    },
+    tau: 5, // NO has very short half-life (seconds), but we model the steady-state
+    production: [],
+    clearance: [{ type: "linear", rate: 0.2 }],
+    couplings: [
+      { source: "oxygen", effect: "stimulate", strength: 0.5 },
+      // Exercise increases NO via shear stress on endothelium
+    ],
+  },
+  initialValue: 25,
+  min: 0,
+  max: 100,
+  display: {
+    referenceRange: { min: 15, max: 40 },
+  },
+};
+
 export const hrv: SignalDefinition = {
   key: "hrv",
   label: "HRV",

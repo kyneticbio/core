@@ -8,10 +8,10 @@ import {
 
 export const energy: SignalDefinition = {
   key: "energy",
-  label: "Energy",
+  label: "Vitality",
   unit: "index",
   description:
-    "A composite index of your subjective vitality. Driven by fuel availability, arousal chemicals, and your body's overall state, this reflects the 'gas in the tank' you feel for the day's tasks.",
+    "How energetic you feel right now. This subjective sense of 'gas in the tank' is driven by blood sugar, stimulating neurotransmitters, thyroid activity, and inflammation levels.",
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx: any, state: any) => {

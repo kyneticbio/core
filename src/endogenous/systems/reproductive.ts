@@ -12,6 +12,8 @@ export const reproductive: BioSystemDef = {
     "fsh",
     "shbg",
     "dheas",
+    "erectileFunction",
+    "libido",
   ],
   description:
     "The sex organs and hormones that govern reproduction, sexual characteristics, and influence systemic health.",

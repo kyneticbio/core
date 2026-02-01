@@ -15,6 +15,7 @@ export const growth: BioSystemDef = {
     "muscleMass",
     "ghReserve",
     "bdnfExpression",
+    "mitochondrialDensity",
   ],
   description:
     "The anabolic and restorative pathways that rebuild tissue and enhance physical capacity.",

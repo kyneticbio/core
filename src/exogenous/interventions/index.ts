@@ -3,6 +3,7 @@ import { PRESCRIPTION_INTERVENTIONS } from "./prescription.interventions";
 import { SUPPLEMENT_INTERVENTIONS } from "./supplements.interventions";
 import { LIFESTYLE_INTERVENTIONS } from "./lifestyle.interventions";
 import { FOOD_INTERVENTIONS } from "./food.interventions";
+import { HYDRATION_INTERVENTIONS } from "./hydration.interventions";
 
 /* ====================== Interventions ====================== */
 
@@ -18,6 +19,7 @@ export const INTERVENTIONS: InterventionDef[] = [
   ...PRESCRIPTION_INTERVENTIONS,
   ...SUPPLEMENT_INTERVENTIONS,
   ...FOOD_INTERVENTIONS,
+  ...HYDRATION_INTERVENTIONS,
 ];
 
 export const INTERVENTION_MAP = new Map(
@@ -43,4 +45,5 @@ export * from './prescription.interventions';
 export * from './supplements.interventions';
 export * from './lifestyle.interventions';
 export * from './food.interventions';
+export * from './hydration.interventions';
 export * from './validation';

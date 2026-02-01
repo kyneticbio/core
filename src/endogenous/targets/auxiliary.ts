@@ -86,4 +86,19 @@ export const AUXILIARY = {
     system: "Metabolic",
     description: "Accumulated virtual fat mass.",
   } as AuxiliaryTargetDefinition,
+  metabolicAdaptation: {
+    category: "auxiliary",
+    system: "Metabolic",
+    description: "How your metabolism adapts to energy intake over time.",
+  } as AuxiliaryTargetDefinition,
+  muscleGlycogen: {
+    category: "auxiliary",
+    system: "Metabolic",
+    description: "Sugar stored in your muscles for exercise.",
+  } as AuxiliaryTargetDefinition,
+  mitochondrialDensity: {
+    category: "auxiliary",
+    system: "Growth",
+    description: "The density of energy-producing mitochondria in your cells.",
+  } as AuxiliaryTargetDefinition,
 };

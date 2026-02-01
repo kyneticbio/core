@@ -7,4 +7,5 @@ export * from "./adaptogens";
 export * from "./vitamins";
 export * from "./minerals";
 export * from "./performance";
+export * from "./amino-acids";
 export * from "./other";

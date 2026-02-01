@@ -8,6 +8,7 @@ import {
   ActiveIntervention,
   SignalDefinition,
   AuxiliaryDefinition,
+  SolverDebugOptions,
 } from "./types";
 
 // =============================================================================
@@ -174,8 +175,8 @@ function resolveDefinitions(
         index: layout.auxiliary.get(k)!,
         tau: def.dynamics.tau,
         setpoint: def.dynamics.setpoint,
-        min: 0,
-        max: 2.0,
+        min: def.min ?? 0,
+        max: def.max ?? 2.0,
         production: (def.dynamics.production ?? []).map((p: any) => ({
           coefficient: p.coefficient,
           sourceIndex:
@@ -480,22 +481,38 @@ export function computeDerivativesVector(
   resolvedAux: PreResolvedDefinition[],
   signals: readonly Signal[],
   resolver: SystemResolver,
-  options?: { debug?: any; pkAgents?: PKAgent[]; clearanceModifiers?: Record<string, number> },
+  options?: SolverDebugOptions & { pkAgents?: PKAgent[] },
   conditionAdjustments?: any,
 ) {
   derivs.fill(0);
-  const debug = options?.debug || {};
+  const debug = options || {};
   const pkAgents = options?.pkAgents || [];
-  const clearanceModifiers = options?.clearanceModifiers || {};
+  const clearanceModifiers = (options as any)?.clearanceModifiers || {};
 
   // Build PK concentration map for this time point
   const pkConcentrations = new Map<string, number>();
+  const pkBuffers = options?.pkBuffers;
+
   for (const iv of interventions) {
     if (iv.pharmacology?.pk) {
-      pkConcentrations.set(
-        `${iv.id}_central`,
-        computeAnalyticalConcentration(pkAgents, iv.id, t),
-      );
+      if (pkBuffers?.has(iv.id)) {
+        // Use pre-computed buffer if available
+        const buffer = pkBuffers.get(iv.id)!;
+        const pkMinT = options?.pkMinT ?? -1440;
+        const floatIdx = t - pkMinT;
+        const idx0 = Math.floor(floatIdx);
+        if (idx0 < 0) pkConcentrations.set(`${iv.id}_central`, buffer[0] ?? 0);
+        else if (idx0 >= buffer.length - 1) pkConcentrations.set(`${iv.id}_central`, buffer[buffer.length - 1] ?? 0);
+        else {
+          const val = buffer[idx0] + (buffer[idx0 + 1] - buffer[idx0]) * (floatIdx - idx0);
+          pkConcentrations.set(`${iv.id}_central`, val);
+        }
+      } else {
+        pkConcentrations.set(
+          `${iv.id}_central`,
+          computeAnalyticalConcentration(pkAgents, iv.id, t),
+        );
+      }
     }
   }
 
@@ -505,11 +522,11 @@ export function computeDerivativesVector(
   for (let i = 0; i < resolvedSignals.length; i++) {
     const rd = resolvedSignals[i];
     const val = state[rd.index];
+    const signalKey = signals[i];
 
     let setpoint = 0;
     if (debug.enableBaselines !== false) {
       setpoint = rd.setpoint(ctx, stateProxy);
-      const signalKey = signals[i];
       if (
         debug.enableConditions !== false &&
         conditionAdjustments?.baselines?.[signalKey]?.amplitude
@@ -563,7 +580,6 @@ export function computeDerivativesVector(
 
     // PD effects from interventions
     if (debug.enableInterventions !== false) {
-      const signalKey = signals[i];
       for (const iv of interventions) {
         // Rate-based interventions (direct effect)
         if ((iv as any).target === signalKey && (iv as any).type === "rate") {
@@ -625,9 +641,20 @@ export function computeDerivativesVector(
                   if (eff.mechanism === "agonist" || eff.mechanism === "PAM" || eff.mechanism === "linear") {
                     dS += response * tgt.sign;
                   } else if (eff.mechanism === "antagonist") {
-                    if (tgt.sign > 0)
+                    // Antagonist logic:
+                    // 1. Blocking an EXCITATORY target (sign > 0) -> Reduces signal.
+                    //    Scale by current value to prevent going below zero.
+                    // 2. Blocking an INHIBITORY target (sign < 0) -> Increases signal (Disinhibition).
+                    //    Add directly (like an agonist) since we are releasing the brake.
+                    if (tgt.sign > 0) {
                       dS -= response * tgt.sign * (val / (val + 20));
-                    else dS -= response * tgt.sign;
+                    } else {
+                      dS -= response * tgt.sign;
+                    }
+                  }
+
+                  if (signalKey === 'dopamine' && Math.abs(response) > 0.01 && Math.floor(t) % 60 === 0) {
+                    console.log(`[Trace] DA elevation: ${response.toFixed(3)} nM/min from ${iv.key} at t=${t.toFixed(0)}`);
                   }
                 }
               }
@@ -635,6 +662,19 @@ export function computeDerivativesVector(
           }
         }
       }
+    }
+
+    if (signalKey === 'melatonin' && val > 10 && Math.floor(t) % 60 === 0) {
+       // Check if dopamine inhibition is firing
+       for (const cp of rd.couplings) {
+         if (layout.keys[cp.sourceIndex] === 'dopamine') {
+           const srcVal = state[cp.sourceIndex];
+           const inhibition = cp.normalizedStrength * srcVal;
+           if (inhibition > 0.1) {
+             console.log(`[Trace] Melatonin inhibited by DA: -${inhibition.toFixed(3)} pg/mL/min. Current DA: ${srcVal.toFixed(1)} nM`);
+           }
+         }
+       }
     }
 
     derivs[rd.index] = dS;
@@ -827,7 +867,7 @@ export function integrateStepVector(
       (state[rs.index] = Math.max(rs.min, Math.min(rs.max, state[rs.index]))),
   );
   resAux.forEach(
-    (ra) => (state[ra.index] = Math.max(0, Math.min(2.0, state[ra.index]))),
+    (ra) => (state[ra.index] = Math.max(ra.min, Math.min(ra.max, state[ra.index]))),
   );
 }
 
@@ -953,7 +993,7 @@ export function computeDerivatives(
     resAux,
     signals,
     resolver,
-    { debug, pkAgents, clearanceModifiers },
+    { ...debug, pkAgents, clearanceModifiers },
   );
 
   const result = vectorToState(derivs, layout);
@@ -1273,17 +1313,6 @@ export function runOptimizedV2(
         physiology: options?.physiology ?? ({} as any),
       };
 
-      // Use pre-computed PK for warm-up
-      const pkConcentrations = new Map<string, number>();
-      for (const iv of activeSet) {
-        if (iv.pharmacology?.pk) {
-          pkConcentrations.set(
-            `${iv.id}_central`,
-            getAnalyticalConc(iv.id, t_warm),
-          );
-        }
-      }
-
       computeDerivativesVector(
         currentStateVector,
         t_warm,
@@ -1295,7 +1324,7 @@ export function runOptimizedV2(
         resAux,
         signals,
         resolver,
-        { debug: options?.debug, pkAgents, clearanceModifiers },
+        { debug: options?.debug, pkAgents, clearanceModifiers, pkBuffers, pkMinT },
         conditionAdjustments,
       );
       for (let i = 0; i < layout.size; i++) currentStateVector[i] += k1_ws[i];
@@ -1309,8 +1338,8 @@ export function runOptimizedV2(
       resAux.forEach(
         (ra) =>
           (currentStateVector[ra.index] = Math.max(
-            0,
-            Math.min(2.0, currentStateVector[ra.index]),
+            ra.min,
+            Math.min(ra.max, currentStateVector[ra.index]),
           )),
       );
     }
@@ -1364,7 +1393,7 @@ export function runOptimizedV2(
         };
 
         // RK4 with analytical PK lookup
-        const opts = { debug: options?.debug, pkAgents, clearanceModifiers };
+        const opts = { debug: options?.debug, pkAgents, clearanceModifiers, pkBuffers, pkMinT };
         computeDerivativesVector(
           currentStateVector,
           t,
@@ -1441,8 +1470,8 @@ export function runOptimizedV2(
         resAux.forEach(
           (ra) =>
             (currentStateVector[ra.index] = Math.max(
-              0,
-              Math.min(2.0, currentStateVector[ra.index]),
+              ra.min,
+              Math.min(ra.max, currentStateVector[ra.index]),
             )),
         );
       }
