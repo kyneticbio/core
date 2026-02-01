@@ -43,4 +43,14 @@ export const oxytocin: SignalDefinition = {
   display: {
     referenceRange: { min: 1, max: 10 },
   },
+  monitors: [
+    {
+      id: "oxytocin_peak",
+      signal: "oxytocin",
+      pattern: { type: "exceeds", value: 8, sustainedMins: 30 },
+      outcome: "win",
+      message: "Strong Social Connection",
+      description: "Oxytocin levels are high, promoting trust and safety.",
+    },
+  ],
 };

@@ -19,4 +19,14 @@ export const ferritin: SignalDefinition = {
   display: {
     referenceRange: { min: 30, max: 300 },
   },
+  monitors: [
+    {
+      id: "low_ferritin",
+      signal: "ferritin",
+      pattern: { type: "falls_below", value: 30, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Iron Stores (Ferritin)",
+      description: "Insufficient iron stores can lead to anemia and fatigue.",
+    },
+  ],
 };

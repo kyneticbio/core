@@ -48,6 +48,24 @@ export const growthHormone: SignalDefinition = {
   display: {
     referenceRange: { min: 0.1, max: 10 },
   },
+  monitors: [
+    {
+      id: "gh_deep_sleep_pulse",
+      signal: "growthHormone",
+      pattern: { type: "exceeds", value: 6, sustainedMins: 20 },
+      outcome: "win",
+      message: "Anabolic Sleep Pulse (GH)",
+      description: "Significant Growth Hormone release detected. This is vital for tissue repair and muscle growth.",
+    },
+    {
+      id: "gh_suppression",
+      signal: "growthHormone",
+      pattern: { type: "falls_below", value: 0.2, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Growth Hormone activity",
+      description: "Chronic lack of GH pulses can impair recovery and body composition. Check sleep and stress levels.",
+    },
+  ],
 };
 
 export const ghReserve: AuxiliaryDefinition = {

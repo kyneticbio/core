@@ -47,4 +47,22 @@ export const norepi: SignalDefinition = {
   display: {
     referenceRange: { min: 100, max: 450 },
   },
+  monitors: [
+    {
+      id: "norepi_alertness",
+      signal: "norepi",
+      pattern: { type: "exceeds", value: 600, sustainedMins: 15 },
+      outcome: "win",
+      message: "Hyper-Alertness (Norepinephrine)",
+      description: "High norepinephrine levels are sharpening your focus and preparing you for action.",
+    },
+    {
+      id: "norepi_anxiety_risk",
+      signal: "norepi",
+      pattern: { type: "exceeds", value: 1000, sustainedMins: 15 },
+      outcome: "warning",
+      message: "Anxiety Risk (Extreme Norepi)",
+      description: "Excessive norepinephrine can cause jitteriness, racing heart, and anxiety.",
+    },
+  ],
 };

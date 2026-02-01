@@ -29,4 +29,14 @@ export const endocannabinoid: SignalDefinition = {
   display: {
     referenceRange: { min: 1, max: 10 },
   },
+  monitors: [
+    {
+      id: "endocannabinoid_bliss",
+      signal: "endocannabinoid",
+      pattern: { type: "exceeds", value: 12, sustainedMins: 30 },
+      outcome: "win",
+      message: "Endogenous Bliss (Anandamide boost)",
+      description: "Higher endocannabinoid levels promote calm, reduce pain perception, and improve mood.",
+    },
+  ],
 };

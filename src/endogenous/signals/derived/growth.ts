@@ -29,6 +29,16 @@ export const bdnf: SignalDefinition = {
   display: {
     referenceRange: { min: 10, max: 30 },
   },
+  monitors: [
+    {
+      id: "bdnf_boost",
+      signal: "bdnf",
+      pattern: { type: "increases_by", amount: 5, mode: "absolute", windowMins: 120 },
+      outcome: "win",
+      message: "BDNF Boost",
+      description: "Neuroplasticity signaling is active. Good for learning and memory.",
+    },
+  ],
 };
 
 export const bdnfExpression: AuxiliaryDefinition = {
@@ -48,7 +58,7 @@ export const mtor: SignalDefinition = {
   key: "mtor",
   label: "mTOR",
   isPremium: true,
-  unit: "fold-change",
+  unit: "x",
   description: "The body's primary 'build and grow' pathway.",
   idealTendency: "mid",
   dynamics: {
@@ -66,13 +76,23 @@ export const mtor: SignalDefinition = {
   display: {
     referenceRange: { min: 0.5, max: 2.0 },
   },
+  monitors: [
+    {
+      id: "mtor_anabolic",
+      signal: "mtor",
+      pattern: { type: "exceeds", value: 1.5, sustainedMins: 30 },
+      outcome: "win",
+      message: "Anabolic state (mTOR active)",
+      description: "Your body is primed for muscle growth and repair.",
+    },
+  ],
 };
 
 export const ampk: SignalDefinition = {
   key: "ampk",
   label: "AMPK",
   isPremium: true,
-  unit: "fold-change",
+  unit: "x",
   description: "Your body's 'energy sensor' and fuel gauge.",
   idealTendency: "mid",
   dynamics: {
@@ -88,6 +108,16 @@ export const ampk: SignalDefinition = {
   display: {
     referenceRange: { min: 0.2, max: 0.8 },
   },
+  monitors: [
+    {
+      id: "ampk_fasting",
+      signal: "ampk",
+      pattern: { type: "exceeds", value: 1.2, sustainedMins: 60 },
+      outcome: "win",
+      message: "Metabolic reset (AMPK active)",
+      description: "Energy sensing pathways active. Promotes autophagy and fat burning.",
+    },
+  ],
 };
 
 export const muscleProteinSynthesis: AuxiliaryDefinition = {
@@ -141,7 +171,7 @@ export const muscleMass: AuxiliaryDefinition = {
 export const strengthReadiness: SignalDefinition = {
   key: "strengthReadiness",
   label: "Strength Readiness",
-  unit: "index",
+  unit: "x",
   description: "Your immediate capacity for peak physical output.",
   idealTendency: "higher",
   dynamics: {
@@ -187,12 +217,30 @@ export const strengthReadiness: SignalDefinition = {
   display: {
     referenceRange: { min: 0.5, max: 1.5 },
   },
+  monitors: [
+    {
+      id: "strength_fatigue",
+      signal: "strengthReadiness",
+      pattern: { type: "falls_below", value: 0.6, sustainedMins: 60 },
+      outcome: "warning",
+      message: "High muscular fatigue",
+      description: "Your strength readiness is low. Consider rest or light recovery.",
+    },
+    {
+      id: "strength_peak",
+      signal: "strengthReadiness",
+      pattern: { type: "exceeds", value: 1.3, sustainedMins: 30 },
+      outcome: "win",
+      message: "Peak Strength Readiness",
+      description: "Your body is primed for high-intensity effort.",
+    },
+  ],
 };
 
 export const neuroplasticityScore: SignalDefinition = {
   key: "neuroplasticityScore",
   label: "Neuroplasticity",
-  unit: "index",
+  unit: "x",
   description: "The brain's current readiness for learning and adaptation.",
   idealTendency: "higher",
   dynamics: {
@@ -217,4 +265,14 @@ export const neuroplasticityScore: SignalDefinition = {
   display: {
     referenceRange: { min: 0.5, max: 1.5 },
   },
+  monitors: [
+    {
+      id: "neuroplasticity_peak",
+      signal: "neuroplasticityScore",
+      pattern: { type: "exceeds", value: 1.3, sustainedMins: 30 },
+      outcome: "win",
+      message: "Peak Neuroplasticity",
+      description: "Your brain is in an optimal state for learning and creating new neural connections.",
+    },
+  ],
 };

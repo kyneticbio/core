@@ -92,6 +92,24 @@ export const netEnergy: SignalDefinition = {
   display: {
     referenceRange: { min: -5, max: 5 },
   },
+  monitors: [
+    {
+      id: "caloric_surplus",
+      signal: "netEnergy",
+      pattern: { type: "high_exposure", windowMins: 1440, threshold: 500 }, // +500 kcal surplus over 24h
+      outcome: "warning",
+      message: "Significant Caloric Surplus",
+      description: "You've maintained a caloric surplus today, which promotes energy storage.",
+    },
+    {
+      id: "caloric_deficit",
+      signal: "netEnergy",
+      pattern: { type: "low_exposure", windowMins: 1440, threshold: -500 }, // -500 kcal deficit over 24h
+      outcome: "win",
+      message: "Caloric Deficit maintained",
+      description: "You've maintained a caloric deficit, which promotes weight loss.",
+    },
+  ],
 };
 
 /**
@@ -229,6 +247,24 @@ export const energyAvailability: SignalDefinition = {
   display: {
     referenceRange: { min: 30, max: 45 },
   },
+  monitors: [
+    {
+      id: "low_energy_availability",
+      signal: "energyAvailability",
+      pattern: { type: "falls_below", value: 30, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Energy Availability (RED-S risk)",
+      description: "You're not consuming enough calories to support basic vital functions after exercise. This can lead to metabolic and hormonal dysfunction.",
+    },
+    {
+      id: "severe_energy_deficit",
+      signal: "energyAvailability",
+      pattern: { type: "falls_below", value: 15, sustainedMins: 720 },
+      outcome: "critical",
+      message: "Severe Energy Deficit",
+      description: "Critical lack of fuel for vital organs. Immediate nutrition required.",
+    },
+  ],
 };
 
 /**
@@ -361,14 +397,14 @@ export const muscleGlycogen: AuxiliaryDefinition = {
 export const hydration: SignalDefinition = {
   key: "hydration",
   label: "Hydration",
-  unit: "index",
+  unit: "%",
   description: "Fluid balance status affecting performance and cognitive function.",
   idealTendency: "higher",
   dynamics: {
     // Setpoint of 0 means without water intake, hydration decays to zero (death)
     // Water interventions add to production to maintain healthy levels
     setpoint: (ctx: any, state: any) => 0,
-    tau: 4000, // ~2.8 days - calibrated so critical (0.3) reached in ~3 days
+    tau: 4000, // ~2.8 days - calibrated so critical (30%) reached in ~3 days
     production: [], // Driven by water intake interventions
     clearance: [
       {
@@ -384,17 +420,17 @@ export const hydration: SignalDefinition = {
     ],
     couplings: [],
   },
-  initialValue: 0.95,
+  initialValue: 95,
   min: 0,
-  max: 1.0,
+  max: 120,
   display: {
-    referenceRange: { min: 0.8, max: 1.0 },
+    referenceRange: { min: 80, max: 100 },
   },
   monitors: [
     {
       id: "hydration_mild_dehydration",
       signal: "hydration",
-      pattern: { type: "falls_below", value: 0.8 },
+      pattern: { type: "falls_below", value: 80 },
       outcome: "warning",
       message: "Mild dehydration detected",
       description: "You may experience reduced cognitive performance and energy. Drink water.",
@@ -402,7 +438,7 @@ export const hydration: SignalDefinition = {
     {
       id: "hydration_moderate_dehydration",
       signal: "hydration",
-      pattern: { type: "falls_below", value: 0.6 },
+      pattern: { type: "falls_below", value: 60 },
       outcome: "warning",
       message: "Moderate dehydration - drink water soon",
       description: "Dehydration is affecting your physical and mental performance.",
@@ -410,7 +446,7 @@ export const hydration: SignalDefinition = {
     {
       id: "hydration_severe_dehydration",
       signal: "hydration",
-      pattern: { type: "falls_below", value: 0.4 },
+      pattern: { type: "falls_below", value: 40 },
       outcome: "critical",
       message: "Severe dehydration - urgent",
       description: "Critical fluid loss. Immediate rehydration needed.",
@@ -418,10 +454,26 @@ export const hydration: SignalDefinition = {
     {
       id: "hydration_rapid_loss",
       signal: "hydration",
-      pattern: { type: "decreases_by", amount: 0.2, mode: "absolute", windowMins: 120 },
+      pattern: { type: "decreases_by", amount: 20, mode: "absolute", windowMins: 120 },
       outcome: "warning",
       message: "Rapid fluid loss detected",
       description: "You're losing fluids quickly, likely from exercise or heat. Increase water intake.",
+    },
+    {
+      id: "hydration_overhydration",
+      signal: "hydration",
+      pattern: { type: "exceeds", value: 110 },
+      outcome: "warning",
+      message: "Over-hydration detected",
+      description: "Excessive fluid intake can lead to electrolyte imbalance (hyponatremia). Slow down your water consumption.",
+    },
+    {
+      id: "hydration_too_fast",
+      signal: "hydration",
+      pattern: { type: "increases_by", amount: 10, mode: "absolute", windowMins: 15 },
+      outcome: "warning",
+      message: "Drinking too much too fast",
+      description: "You are hydrating very rapidly. Ensure you are also maintaining electrolyte balance to avoid water intoxication.",
     },
   ],
 };
@@ -434,7 +486,7 @@ export const hydration: SignalDefinition = {
 export const heatShockProteins: SignalDefinition = {
   key: "heatShockProteins",
   label: "Heat Shock Proteins",
-  unit: "fold-change",
+  unit: "x",
   description: "Cellular stress response proteins that promote repair and longevity.",
   idealTendency: "higher",
   dynamics: {

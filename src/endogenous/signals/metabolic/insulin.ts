@@ -37,4 +37,22 @@ export const insulin: SignalDefinition = {
   display: {
     referenceRange: { min: 2, max: 25 },
   },
+  monitors: [
+    {
+      id: "hyperinsulinemia",
+      signal: "insulin",
+      pattern: { type: "exceeds", value: 60, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Hyperinsulinemia detected",
+      description: "Significantly high insulin levels. May indicate insulin resistance or a very high glycemic load.",
+    },
+    {
+      id: "fasting_hyperinsulinemia",
+      signal: "insulin",
+      pattern: { type: "exceeds", value: 15, sustainedMins: 480 }, // 8 hours (sleep)
+      outcome: "warning",
+      message: "Elevated Fasting Insulin",
+      description: "Insulin remains high even while fasting. A strong marker for insulin resistance.",
+    },
+  ],
 };

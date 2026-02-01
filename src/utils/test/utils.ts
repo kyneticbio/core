@@ -8,7 +8,8 @@ import type {
   InterventionDef,
   SimulationState, 
   DynamicsContext, 
-  ActiveIntervention
+  ActiveIntervention,
+  MonitorResult
 } from '../../index';
 import { SIGNALS_ALL } from '../../index';
 import { rangeMinutes } from '../time';
@@ -73,6 +74,8 @@ export interface EngineResult {
   gridMins: Minute[];
   /** Config used */
   config: TestEngineConfig;
+  /** Detected patterns */
+  monitorResults: MonitorResult[];
 }
 
 export interface SignalStats {
@@ -205,13 +208,14 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
   };
 
   // Run computation (import worker logic)
-  const { signals, auxiliarySeries } = await computeEngineSync(request, includeSignals);
+  const { signals, auxiliarySeries, monitorResults } = await computeEngineSync(request, includeSignals);
 
   return {
     signals,
     auxiliarySeries,
     gridMins,
     config,
+    monitorResults,
   };
 }
 
@@ -222,7 +226,11 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
 async function computeEngineSync(
   request: WorkerComputeRequest,
   includeSignals: readonly Signal[]
-): Promise<{ signals: Record<Signal, Float32Array>; auxiliarySeries: Record<string, Float32Array> }> {
+): Promise<{ 
+  signals: Record<Signal, Float32Array>; 
+  auxiliarySeries: Record<string, Float32Array>;
+  monitorResults: MonitorResult[];
+}> {
   const signalDefinitions = getAllUnifiedDefinitions();
   const auxDefinitions = AUXILIARY_DEFINITIONS;
 
@@ -246,7 +254,11 @@ async function computeEngineSync(
     createInitialState
   };
   const response = runOptimizedV2(request, system as any);
-  return { signals: response.series, auxiliarySeries: response.auxiliarySeries };
+  return { 
+    signals: response.series, 
+    auxiliarySeries: response.auxiliarySeries,
+    monitorResults: response.monitorResults
+  };
 }
 
 // --- Analysis Utilities ---

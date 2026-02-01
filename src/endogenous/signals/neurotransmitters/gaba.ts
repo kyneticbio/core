@@ -36,4 +36,22 @@ export const gaba: SignalDefinition = {
   display: {
     referenceRange: { min: 100, max: 500 },
   },
+  monitors: [
+    {
+      id: "gaba_relaxation",
+      signal: "gaba",
+      pattern: { type: "exceeds", value: 600, sustainedMins: 30 },
+      outcome: "win",
+      message: "Deep Relaxation (GABA)",
+      description: "High GABA levels are promoting calm and reducing neural over-activity.",
+    },
+    {
+      id: "gaba_deficiency",
+      signal: "gaba",
+      pattern: { type: "falls_below", value: 150, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Neural Over-excitement (Low GABA)",
+      description: "Low GABA can lead to anxiety, restlessness, and racing thoughts.",
+    },
+  ],
 };

@@ -31,4 +31,22 @@ export const progesterone: SignalDefinition = {
   display: {
     referenceRange: { min: 0.1, max: 20 },
   },
+  monitors: [
+    {
+      id: "progesterone_luteal_peak",
+      signal: "progesterone",
+      pattern: { type: "exceeds", value: 10, sustainedMins: 1440 },
+      outcome: "win",
+      message: "Luteal Phase confirmed (High Progesterone)",
+      description: "Strong progesterone levels indicate a healthy luteal phase and successful ovulation.",
+    },
+    {
+      id: "progesterone_deficiency",
+      signal: "progesterone",
+      pattern: { type: "falls_below", value: 5, sustainedMins: 10080 }, // 7 days in late cycle
+      outcome: "warning",
+      message: "Potential Luteal Phase defect",
+      description: "Low progesterone in the second half of your cycle can lead to anxiety, sleep issues, and PMS.",
+    },
+  ],
 };

@@ -29,4 +29,22 @@ export const adrenaline: SignalDefinition = {
   display: {
     referenceRange: { min: 10, max: 100 },
   },
+  monitors: [
+    {
+      id: "adrenaline_panic_threshold",
+      signal: "adrenaline",
+      pattern: { type: "exceeds", value: 500, sustainedMins: 5 },
+      outcome: "critical",
+      message: "Extreme Adrenaline (Panic/Shock)",
+      description: "Adrenaline has reached levels associated with extreme fear, panic, or physical shock.",
+    },
+    {
+      id: "adrenaline_fight_or_flight",
+      signal: "adrenaline",
+      pattern: { type: "exceeds", value: 200, sustainedMins: 10 },
+      outcome: "warning",
+      message: "Fight-or-Flight activated",
+      description: "Significant acute stress response. Heart rate and focus are likely elevated.",
+    },
+  ],
 };

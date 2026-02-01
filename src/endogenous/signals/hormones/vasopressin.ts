@@ -41,4 +41,14 @@ export const vasopressin: SignalDefinition = {
   display: {
     referenceRange: { min: 1, max: 5 },
   },
+  monitors: [
+    {
+      id: "high_vasopressin",
+      signal: "vasopressin",
+      pattern: { type: "exceeds", value: 8, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Fluid retention signal (High Vasopressin)",
+      description: "High vasopressin promotes water retention and can increase blood pressure.",
+    },
+  ],
 };

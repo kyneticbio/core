@@ -18,4 +18,14 @@ export const folate: SignalDefinition = {
   display: {
     referenceRange: { min: 4, max: 20 },
   },
+  monitors: [
+    {
+      id: "low_folate",
+      signal: "folate",
+      pattern: { type: "falls_below", value: 4, sustainedMins: 10080 },
+      outcome: "warning",
+      message: "Folate Deficiency",
+      description: "Low folate affects cell repair and mood.",
+    },
+  ],
 };

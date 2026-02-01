@@ -36,4 +36,14 @@ export const glutamate: SignalDefinition = {
   display: {
     referenceRange: { min: 1, max: 10 },
   },
+  monitors: [
+    {
+      id: "glutamate_excitotoxicity_risk",
+      signal: "glutamate",
+      pattern: { type: "exceeds", value: 15, sustainedMins: 30 },
+      outcome: "critical",
+      message: "Excitotoxicity Risk (High Glutamate)",
+      description: "Extremely high glutamate can be toxic to neurons. Often associated with severe stress or neurological events.",
+    },
+  ],
 };

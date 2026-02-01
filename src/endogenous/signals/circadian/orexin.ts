@@ -40,4 +40,22 @@ export const orexin: SignalDefinition = {
   display: {
     referenceRange: { min: 200, max: 600 },
   },
+  monitors: [
+    {
+      id: "orexin_excessive_wakefulness",
+      signal: "orexin",
+      pattern: { type: "exceeds", value: 550, sustainedMins: 60 },
+      outcome: "warning",
+      message: "High wakefulness drive at night",
+      description: "Elevated orexin may make it difficult to fall asleep.",
+    },
+    {
+      id: "orexin_crash",
+      signal: "orexin",
+      pattern: { type: "falls_below", value: 150, sustainedMins: 30 },
+      outcome: "warning",
+      message: "Orexin crash detected",
+      description: "Sudden drop in wakefulness. You may feel an irresistible urge to sleep (narcolepsy-like trait).",
+    },
+  ],
 };

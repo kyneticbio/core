@@ -28,4 +28,14 @@ export const glucagon: SignalDefinition = {
   display: {
     referenceRange: { min: 50, max: 150 },
   },
+  monitors: [
+    {
+      id: "glucagon_high",
+      signal: "glucagon",
+      pattern: { type: "exceeds", value: 180, sustainedMins: 60 },
+      outcome: "warning",
+      message: "High Glucagon drive",
+      description: "Excessive glucagon can drive up blood sugar even while fasting.",
+    },
+  ],
 };

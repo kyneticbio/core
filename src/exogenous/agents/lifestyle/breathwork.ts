@@ -26,7 +26,7 @@ export const Breathwork = (
       target: "vagal",
       mechanism: "agonist",
       intrinsicEfficacy: vagal,
-      unit: "index",
+      unit: "x",
       tau: 2,
     },
     {

@@ -65,5 +65,21 @@ export const glucose: SignalDefinition = {
       message: "High glucose variability detected",
       description: "Large swings in blood sugar may indicate poor glycemic control.",
     },
+    {
+      id: "glucose_rapid_rise",
+      signal: "glucose",
+      pattern: { type: "increases_by", amount: 60, mode: "absolute", windowMins: 30 },
+      outcome: "warning",
+      message: "Rapid Glucose rise",
+      description: "Blood sugar is rising very quickly, likely from high-glycemic carbohydrates.",
+    },
+    {
+      id: "glucose_stability",
+      signal: "glucose",
+      pattern: { type: "low_variability", windowMins: 1440, cvThreshold: 0.1 },
+      outcome: "win",
+      message: "Excellent Glycemic Stability",
+      description: "Your blood sugar has remained remarkably steady today. Great for energy and metabolic health.",
+    },
   ],
 };

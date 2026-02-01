@@ -18,4 +18,14 @@ export const ast: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 40 },
   },
+  monitors: [
+    {
+      id: "high_ast",
+      signal: "ast",
+      pattern: { type: "exceeds", value: 45, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Elevated AST",
+      description: "AST is elevated, which can indicate liver or muscle stress.",
+    },
+  ],
 };

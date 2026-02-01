@@ -36,7 +36,7 @@ export const AlphaGPC = (mg: number): PharmacologyDef => {
         target: "vagal",
         mechanism: "agonist",
         intrinsicEfficacy: vagalSupport,
-        unit: "index",
+        unit: "x",
         tau: 60,
       },
       {

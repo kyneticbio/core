@@ -18,4 +18,14 @@ export const copper: SignalDefinition = {
   display: {
     referenceRange: { min: 70, max: 150 },
   },
+  monitors: [
+    {
+      id: "low_copper",
+      signal: "copper",
+      pattern: { type: "falls_below", value: 70, sustainedMins: 10080 },
+      outcome: "warning",
+      message: "Low Copper",
+      description: "Copper is essential for energy production and connective tissue.",
+    },
+  ],
 };

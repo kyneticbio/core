@@ -8,7 +8,7 @@ import type { SignalDefinition } from "../../../engine";
 export const erectileFunction: SignalDefinition = {
   key: "erectileFunction",
   label: "Erectile Function",
-  unit: "index",
+  unit: "%",
   description:
     "Male erectile quality driven by blood flow (nitric oxide), testosterone, and psychological state. Higher values indicate stronger, more reliable erections.",
   idealTendency: "higher",
@@ -54,6 +54,16 @@ export const erectileFunction: SignalDefinition = {
   display: {
     referenceRange: { min: 60, max: 90 },
   },
+  monitors: [
+    {
+      id: "erectile_dysfunction_risk",
+      signal: "erectileFunction",
+      pattern: { type: "falls_below", value: 40, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Erectile Function impaired",
+      description: "Low nitric oxide, low testosterone, or high stress is affecting function.",
+    },
+  ],
 };
 
 /**
@@ -64,7 +74,7 @@ export const erectileFunction: SignalDefinition = {
 export const libido: SignalDefinition = {
   key: "libido",
   label: "Libido",
-  unit: "index",
+  unit: "%",
   description:
     "Sexual desire and drive. Influenced by testosterone, dopamine, energy levels, and stress.",
   idealTendency: "higher",
@@ -109,4 +119,14 @@ export const libido: SignalDefinition = {
   display: {
     referenceRange: { min: 40, max: 80 },
   },
+  monitors: [
+    {
+      id: "libido_low",
+      signal: "libido",
+      pattern: { type: "falls_below", value: 30, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Libido",
+      description: "Hormonal or stress factors are suppressing sexual drive.",
+    },
+  ],
 };

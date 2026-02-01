@@ -143,8 +143,8 @@ function evalOutsideRange(
 }
 
 /**
- * Increases By: Compare first and last values in window
- * O(1) - just two array accesses
+ * Increases By: Find if any window of windowMins shows an increase >= amount
+ * O(n) - sliding window
  */
 function evalIncreasesBy(
   ctx: EvalContext,
@@ -155,32 +155,28 @@ function evalIncreasesBy(
   const { data, gridStep, startMin } = ctx;
   const windowSteps = Math.ceil(windowMins / gridStep);
 
-  // Need at least windowSteps of data
   if (data.length < windowSteps) return { triggered: false };
 
-  const startIdx = 0;
-  const endIdx = Math.min(windowSteps, data.length - 1);
-  const startVal = data[startIdx];
-  const endVal = data[endIdx];
+  for (let i = 0; i <= data.length - windowSteps; i++) {
+    const startVal = data[i];
+    const endVal = data[i + windowSteps - 1]; // Use the actual window end
+    const increase = endVal - startVal;
+    const threshold = mode === "percent" ? startVal * (amount / 100) : amount;
 
-  const increase = endVal - startVal;
-  const threshold = mode === "percent"
-    ? startVal * (amount / 100)
-    : amount;
-
-  if (increase >= threshold) {
-    return {
-      triggered: true,
-      detectedAt: startMin + endIdx * gridStep,
-      triggerValue: [startVal, endVal],
-    };
+    if (increase >= threshold) {
+      return {
+        triggered: true,
+        detectedAt: startMin + (i + windowSteps - 1) * gridStep,
+        triggerValue: [startVal, endVal],
+      };
+    }
   }
   return { triggered: false };
 }
 
 /**
- * Decreases By: Compare first and last values in window
- * O(1) - just two array accesses
+ * Decreases By: Find if any window of windowMins shows a decrease >= amount
+ * O(n) - sliding window
  */
 function evalDecreasesBy(
   ctx: EvalContext,
@@ -193,22 +189,19 @@ function evalDecreasesBy(
 
   if (data.length < windowSteps) return { triggered: false };
 
-  const startIdx = 0;
-  const endIdx = Math.min(windowSteps, data.length - 1);
-  const startVal = data[startIdx];
-  const endVal = data[endIdx];
+  for (let i = 0; i <= data.length - windowSteps; i++) {
+    const startVal = data[i];
+    const endVal = data[i + windowSteps - 1];
+    const decrease = startVal - endVal;
+    const threshold = mode === "percent" ? startVal * (amount / 100) : amount;
 
-  const decrease = startVal - endVal;
-  const threshold = mode === "percent"
-    ? startVal * (amount / 100)
-    : amount;
-
-  if (decrease >= threshold) {
-    return {
-      triggered: true,
-      detectedAt: startMin + endIdx * gridStep,
-      triggerValue: [startVal, endVal],
-    };
+    if (decrease >= threshold) {
+      return {
+        triggered: true,
+        detectedAt: startMin + (i + windowSteps - 1) * gridStep,
+        triggerValue: [startVal, endVal],
+      };
+    }
   }
   return { triggered: false };
 }

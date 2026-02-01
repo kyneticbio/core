@@ -18,4 +18,14 @@ export const choline: SignalDefinition = {
   display: {
     referenceRange: { min: 7, max: 20 },
   },
+  monitors: [
+    {
+      id: "low_choline",
+      signal: "choline",
+      pattern: { type: "falls_below", value: 7, sustainedMins: 10080 },
+      outcome: "warning",
+      message: "Low Choline",
+      description: "Choline is vital for liver health and brain function (ACh precursor).",
+    },
+  ],
 };

@@ -12,21 +12,29 @@ export const lh: SignalDefinition = {
     setpoint: (ctx: any, state: any) => {
       if (ctx.subject.sex === "male") return 5.0;
       const cycleLength = ctx.subject.cycleLength || 28;
-      const cycleDay =
-        (ctx.subject.cycleDay || 0) +
-        Math.floor(ctx.circadianMinuteOfDay / 1440);
+      const cycleDay = (ctx.subject.cycleDay || 1) + (ctx.dayOfYear - 1);
       const effectiveDay = cycleDay % cycleLength;
       return 2.0 + 30.0 * getMenstrualHormones(effectiveDay, cycleLength).lh;
     },
     tau: 60,
     production: [],
-    clearance: [{ type: "linear", rate: 0.02 }],
+    clearance: [],
     couplings: [],
   },
   initialValue: 5,
   display: {
     referenceRange: { min: 2, max: 15 },
   },
+  monitors: [
+    {
+      id: "lh_surge",
+      signal: "lh",
+      pattern: { type: "increases_by", amount: 8, mode: "absolute", windowMins: 1440 },
+      outcome: "win",
+      message: "LH Surge detected",
+      description: "A sharp rise in Luteinizing Hormone indicates that ovulation is likely to occur in the next 24-36 hours.",
+    },
+  ],
 };
 
 export const fsh: SignalDefinition = {
@@ -40,9 +48,7 @@ export const fsh: SignalDefinition = {
     setpoint: (ctx: any, state: any) => {
       if (ctx.subject.sex === "male") return 5.0;
       const cycleLength = ctx.subject.cycleLength || 28;
-      const cycleDay =
-        (ctx.subject.cycleDay || 0) +
-        Math.floor(ctx.circadianMinuteOfDay / 1440);
+      const cycleDay = (ctx.subject.cycleDay || 1) + (ctx.dayOfYear - 1);
       const effectiveDay = cycleDay % cycleLength;
       return 3.0 + 12.0 * getMenstrualHormones(effectiveDay, cycleLength).fsh;
     },

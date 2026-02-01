@@ -18,4 +18,14 @@ export const shbg: SignalDefinition = {
   display: {
     referenceRange: { min: 20, max: 100 },
   },
+  monitors: [
+    {
+      id: "high_shbg",
+      signal: "shbg",
+      pattern: { type: "exceeds", value: 100, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "High SHBG",
+      description: "Elevated SHBG can bind up sex hormones, reducing the amount of 'free' testosterone and estrogen available to tissues.",
+    },
+  ],
 };

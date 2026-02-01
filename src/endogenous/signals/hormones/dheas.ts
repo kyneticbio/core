@@ -18,4 +18,14 @@ export const dheas: SignalDefinition = {
   display: {
     referenceRange: { min: 100, max: 500 },
   },
+  monitors: [
+    {
+      id: "low_dheas",
+      signal: "dheas",
+      pattern: { type: "falls_below", value: 100, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low DHEA-S",
+      description: "Low DHEA-S is often associated with aging and reduced adrenal reserve.",
+    },
+  ],
 };

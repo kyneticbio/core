@@ -74,7 +74,7 @@ export const Nicotine = (
         target: "endorphin",
         mechanism: "agonist",
         intrinsicEfficacy: mg * 2.0,
-        unit: "index",
+        unit: "x",
         tau: 15,
       },
     ],

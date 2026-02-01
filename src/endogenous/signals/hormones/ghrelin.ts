@@ -38,4 +38,14 @@ export const ghrelin: SignalDefinition = {
   display: {
     referenceRange: { min: 500, max: 1500 },
   },
+  monitors: [
+    {
+      id: "ghrelin_hunger_peak",
+      signal: "ghrelin",
+      pattern: { type: "exceeds", value: 1400, sustainedMins: 15 },
+      outcome: "warning",
+      message: "High Hunger Drive",
+      description: "Ghrelin is elevated, signaling strong physiological hunger.",
+    },
+  ],
 };

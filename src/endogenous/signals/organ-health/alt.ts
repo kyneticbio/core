@@ -18,4 +18,14 @@ export const alt: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 40 },
   },
+  monitors: [
+    {
+      id: "high_alt",
+      signal: "alt",
+      pattern: { type: "exceeds", value: 45, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Elevated Liver Stress (ALT)",
+      description: "Elevated ALT can indicate liver inflammation or stress.",
+    },
+  ],
 };

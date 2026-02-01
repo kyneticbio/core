@@ -18,4 +18,14 @@ export const selenium: SignalDefinition = {
   display: {
     referenceRange: { min: 70, max: 150 },
   },
+  monitors: [
+    {
+      id: "low_selenium",
+      signal: "selenium",
+      pattern: { type: "falls_below", value: 70, sustainedMins: 10080 },
+      outcome: "warning",
+      message: "Low Selenium",
+      description: "Selenium is vital for antioxidant defense and thyroid health.",
+    },
+  ],
 };

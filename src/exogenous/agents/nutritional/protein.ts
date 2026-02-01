@@ -45,7 +45,7 @@ export const Protein = (
         mechanism: "linear",
         EC50: 100,
         intrinsicEfficacy: 2.0,
-        unit: "fold-change",
+        unit: "x",
         tau: 90,
         description: "Protein flips the build muscle switch.",
       },

@@ -41,4 +41,14 @@ export const prolactin: SignalDefinition = {
   display: {
     referenceRange: { min: 5, max: 20 },
   },
+  monitors: [
+    {
+      id: "hyperprolactinemia",
+      signal: "prolactin",
+      pattern: { type: "exceeds", value: 30, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Elevated Prolactin",
+      description: "High prolactin can suppress reproductive hormones and libido.",
+    },
+  ],
 };

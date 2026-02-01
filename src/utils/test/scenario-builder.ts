@@ -169,4 +169,65 @@ class AssertionBuilder {
     });
     return this.parent;
   }
+
+  /**
+   * Asserts that a specific monitor was triggered.
+   */
+  public toTriggerMonitor(monitorId: string): ScenarioBuilder {
+    this.parent.addAssertion((result) => {
+      const monitor = result.monitorResults.find((r: any) => r.monitor.id === monitorId);
+      
+      if (!monitor) {
+        const available = result.monitorResults
+          .filter((r: any) => r.monitor.signal === this.key)
+          .map((r: any) => r.monitor.id)
+          .join(', ');
+          
+        throw new Error(
+          `Expected monitor "${monitorId}" to trigger for signal "${this.key}", but it did not.\n` +
+          `Monitors that DID trigger for this signal: [${available || 'none'}]\n` +
+          `Total triggers: ${result.monitorResults.length}`
+        );
+      }
+    });
+    return this.parent;
+  }
+
+  /**
+   * Asserts that a specific monitor was NOT triggered.
+   */
+  public toNotTriggerMonitor(monitorId: string): ScenarioBuilder {
+    this.parent.addAssertion((result) => {
+      const monitor = result.monitorResults.find((r: any) => r.monitor.id === monitorId);
+      
+      if (monitor) {
+        throw new Error(
+          `Expected monitor "${monitorId}" NOT to trigger, but it triggered at minute ${monitor.detectedAt}.\n` +
+          `Message: ${monitor.monitor.message}\n` +
+          `Description: ${monitor.monitor.description}\n` +
+          `Value: ${JSON.stringify(monitor.triggerValue)}`
+        );
+      }
+    });
+    return this.parent;
+  }
+
+  /**
+   * Asserts that NO monitors triggered for this signal.
+   */
+  public toHaveNoMonitorAlerts(): ScenarioBuilder {
+    this.parent.addAssertion((result) => {
+      const signalMonitors = result.monitorResults.filter((r: any) => r.monitor.signal === this.key);
+      if (signalMonitors.length > 0) {
+        const list = signalMonitors.map((r: any) => 
+          `  - ${r.monitor.id} (${r.monitor.message}) at min ${r.detectedAt}, val: ${JSON.stringify(r.triggerValue)}`
+        ).join('\n');
+        
+        throw new Error(
+          `Expected signal "${this.key}" to have NO monitor alerts, but found ${signalMonitors.length}:\n${list}`
+        );
+      }
+    });
+    return this.parent;
+  }
 }

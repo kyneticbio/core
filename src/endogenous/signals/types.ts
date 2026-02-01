@@ -33,11 +33,15 @@ export type Signal =
   | NutrientSignal;
 
 function isSignal(def: any): boolean {
-  return def && def.dynamics && Array.isArray(def.dynamics.couplings);
+  return def && typeof def.key === "string" && !isAuxiliary(def);
 }
 
 function isAuxiliary(def: any): boolean {
-  return def && def.dynamics && !Array.isArray(def.dynamics.couplings);
+  return (
+    def &&
+    def.dynamics &&
+    (!def.dynamics.couplings || !Array.isArray(def.dynamics.couplings))
+  );
 }
 
 const ALL_MODULES = [

@@ -24,4 +24,22 @@ export const melatonin: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 100 },
   },
+  monitors: [
+    {
+      id: "melatonin_dim_light_onset",
+      signal: "melatonin",
+      pattern: { type: "increases_by", amount: 10, mode: "absolute", windowMins: 60 },
+      outcome: "win",
+      message: "Dim Light Melatonin Onset (DLMO)",
+      description: "Your body is preparing for sleep. This is the ideal time to reduce light exposure.",
+    },
+    {
+      id: "melatonin_suppression",
+      signal: "melatonin",
+      pattern: { type: "falls_below", value: 10, sustainedMins: 30 },
+      outcome: "warning",
+      message: "Melatonin suppressed at night",
+      description: "Bright light or stress may be suppressing your natural sleep signal.",
+    },
+  ],
 };

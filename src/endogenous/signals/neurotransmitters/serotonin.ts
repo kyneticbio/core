@@ -42,4 +42,22 @@ export const serotonin: SignalDefinition = {
   display: {
     referenceRange: { min: 1, max: 10 },
   },
+  monitors: [
+    {
+      id: "serotonin_boost",
+      signal: "serotonin",
+      pattern: { type: "exceeds", value: 12, sustainedMins: 30 },
+      outcome: "win",
+      message: "Emotional Resilience boost",
+      description: "Serotonin levels are high, promoting contentment and mental stability.",
+    },
+    {
+      id: "serotonin_crash",
+      signal: "serotonin",
+      pattern: { type: "falls_below", value: 0.5, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Serotonin drive",
+      description: "May lead to irritability, anxiety, and sleep disturbances.",
+    },
+  ],
 };

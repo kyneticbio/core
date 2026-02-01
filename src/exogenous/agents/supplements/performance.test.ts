@@ -30,7 +30,7 @@ describe('Agent: Performance Supplements', () => {
       const highEnergy = high.pd.find(p => p.target === 'energy')?.intrinsicEfficacy ?? 0;
 
       expect(highEnergy).toBeGreaterThan(lowEnergy);
-      expect(highEnergy).toBeLessThanOrEqual(0.1); // capped
+      expect(highEnergy).toBeLessThanOrEqual(10); // capped
     });
   });
 

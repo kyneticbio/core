@@ -53,7 +53,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "adenosinePressure",
           mechanism: "antagonist",
           intrinsicEfficacy: 0.08,
-          unit: "index",
+          unit: "x",
           tau: 60,
           description:
             "Clears out the 'sleep pressure' that's been building up every minute you were awake.",
@@ -128,7 +128,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
       {
         key: "quality",
         label: "Refreshment",
-        unit: "index",
+        unit: "x",
         type: "slider",
         min: 0,
         max: 2,
@@ -180,7 +180,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "adenosinePressure",
           mechanism: "antagonist",
           intrinsicEfficacy: 0.04,
-          unit: "index",
+          unit: "x",
           tau: 20,
           description:
             "Takes the edge off the sleep debt that's been building since you woke up.",
@@ -362,7 +362,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "vagal",
           mechanism: "agonist",
           intrinsicEfficacy: 0.4,
-          unit: "index",
+          unit: "x",
           description:
             "Face-to-face connection activates the 'social engagement' part of the vagus nerve.",
         },
@@ -395,7 +395,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "vagal",
           mechanism: "agonist",
           intrinsicEfficacy: 0.6,
-          unit: "index",
+          unit: "x",
           tau: 5,
           description:
             "Conscious breathing directly activates the vagus nerve, the body's main 'calm down' highway.",
@@ -437,7 +437,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "inflammation",
           mechanism: "antagonist",
           intrinsicEfficacy: 0.2,
-          unit: "index",
+          unit: "x",
           description:
             "Over time, mindfulness practice can actually lower markers of systemic inflammation.",
         },

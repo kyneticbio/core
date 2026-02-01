@@ -1,4 +1,9 @@
 import {
+  collectSignalMonitors,
+  evaluateMonitors,
+} from "./monitors";
+
+import {
   Minute,
   Signal,
   WorkerComputeRequest,
@@ -1386,7 +1391,7 @@ export function runOptimizedV2(
         const dCtx: DynamicsContext = {
           minuteOfDay: currentMin,
           circadianMinuteOfDay: (currentMin + circShift + 1440) % 1440,
-          dayOfYear: 1,
+          dayOfYear: 1 + Math.floor(t / 1440),
           isAsleep,
           subject: options?.subject ?? ({} as any),
           physiology: options?.physiology ?? ({} as any),
@@ -1488,10 +1493,15 @@ export function runOptimizedV2(
     });
   });
 
+  // Evaluate monitors
+  const monitors = collectSignalMonitors(signalDefinitions);
+  const monitorResults = evaluateMonitors(monitors, series, gridStep, gridMins[0]);
+
   return {
     series,
     auxiliarySeries: auxSeries,
     finalHomeostasisState: vectorToState(currentStateVector, layout) as any,
     homeostasisSeries: {} as any, // To be filled by the caller or specialized series
+    monitorResults,
   };
 }

@@ -43,4 +43,22 @@ export const dopamine: SignalDefinition = {
   display: {
     referenceRange: { min: 5, max: 20 },
   },
+  monitors: [
+    {
+      id: "dopamine_peak",
+      signal: "dopamine",
+      pattern: { type: "exceeds", value: 25, sustainedMins: 15 },
+      outcome: "win",
+      message: "Peak Motivation (Dopamine)",
+      description: "You're in a high-drive state. Ideal for goal-oriented tasks and focus.",
+    },
+    {
+      id: "dopamine_crash",
+      signal: "dopamine",
+      pattern: { type: "falls_below", value: 3, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Dopamine deficiency",
+      description: "Low dopamine can lead to lack of motivation, brain fog, and low mood.",
+    },
+  ],
 };

@@ -18,4 +18,14 @@ export const iron: SignalDefinition = {
   display: {
     referenceRange: { min: 60, max: 170 },
   },
+  monitors: [
+    {
+      id: "low_iron",
+      signal: "iron",
+      pattern: { type: "falls_below", value: 60, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Serum Iron",
+      description: "Low iron can impair oxygen transport and cause fatigue.",
+    },
+  ],
 };

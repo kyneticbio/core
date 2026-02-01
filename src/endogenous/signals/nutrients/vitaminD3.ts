@@ -18,4 +18,14 @@ export const vitaminD3: SignalDefinition = {
   display: {
     referenceRange: { min: 30, max: 80 },
   },
+  monitors: [
+    {
+      id: "low_vitamin_d",
+      signal: "vitaminD3",
+      pattern: { type: "falls_below", value: 30, sustainedMins: 10080 },
+      outcome: "warning",
+      message: "Vitamin D Deficiency",
+      description: "Low Vitamin D affects immunity, bone health, and mood.",
+    },
+  ],
 };

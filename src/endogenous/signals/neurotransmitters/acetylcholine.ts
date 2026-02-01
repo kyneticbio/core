@@ -27,4 +27,14 @@ export const acetylcholine: SignalDefinition = {
   display: {
     referenceRange: { min: 1, max: 20 },
   },
+  monitors: [
+    {
+      id: "acetylcholine_focus",
+      signal: "acetylcholine",
+      pattern: { type: "exceeds", value: 25, sustainedMins: 30 },
+      outcome: "win",
+      message: "Peak Cognitive Focus",
+      description: "High acetylcholine supports learning, memory, and sustained attention.",
+    },
+  ],
 };

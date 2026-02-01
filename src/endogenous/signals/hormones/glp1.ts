@@ -31,4 +31,14 @@ export const glp1: SignalDefinition = {
   display: {
     referenceRange: { min: 5, max: 50 },
   },
+  monitors: [
+    {
+      id: "glp1_satiety",
+      signal: "glp1",
+      pattern: { type: "exceeds", value: 35, sustainedMins: 30 },
+      outcome: "win",
+      message: "Strong Satiety Signal (GLP-1)",
+      description: "GLP-1 is elevated, which slows digestion and suppresses appetite. Good for weight management.",
+    },
+  ],
 };

@@ -39,4 +39,22 @@ export const testosterone: SignalDefinition = {
   display: {
     referenceRange: { min: 300, max: 1000 },
   },
+  monitors: [
+    {
+      id: "low_testosterone",
+      signal: "testosterone",
+      pattern: { type: "falls_below", value: 300, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Testosterone detected",
+      description: "Testosterone is below the healthy range. This can affect drive, muscle mass, and mood.",
+    },
+    {
+      id: "peak_testosterone",
+      signal: "testosterone",
+      pattern: { type: "exceeds", value: 800, sustainedMins: 60 },
+      outcome: "win",
+      message: "Optimal Testosterone Drive",
+      description: "Testosterone is in the upper healthy range, supporting physical performance and recovery.",
+    },
+  ],
 };

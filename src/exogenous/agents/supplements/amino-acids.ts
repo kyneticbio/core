@@ -35,7 +35,7 @@ export const LCitrulline = (mg: number = 3000): PharmacologyDef => ({
       mechanism: "agonist",
       EC50: 20000,
       intrinsicEfficacy: Math.min(15, mg * 0.003),
-      unit: "index",
+      unit: "%",
       tau: 45,
     },
     {
@@ -84,7 +84,7 @@ export const LArginine = (mg: number = 3000): PharmacologyDef => ({
       mechanism: "agonist",
       EC50: 30000,
       intrinsicEfficacy: Math.min(10, mg * 0.002),
-      unit: "index",
+      unit: "%",
       tau: 45,
     },
     {
@@ -135,7 +135,7 @@ export const CitrullineMalate = (mg: number = 6000): PharmacologyDef => {
         mechanism: "agonist",
         EC50: 18000,
         intrinsicEfficacy: Math.min(15, citrullineContent * 0.003),
-        unit: "index",
+        unit: "%",
         tau: 45,
       },
       {
@@ -151,7 +151,7 @@ export const CitrullineMalate = (mg: number = 6000): PharmacologyDef => {
         mechanism: "agonist",
         EC50: 20000,
         intrinsicEfficacy: Math.min(5, mg * 0.001),
-        unit: "index",
+        unit: "%",
         tau: 30,
       },
     ],

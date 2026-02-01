@@ -18,4 +18,14 @@ export const b12: SignalDefinition = {
   display: {
     referenceRange: { min: 200, max: 900 },
   },
+  monitors: [
+    {
+      id: "low_b12",
+      signal: "b12",
+      pattern: { type: "falls_below", value: 200, sustainedMins: 10080 },
+      outcome: "warning",
+      message: "B12 Deficiency",
+      description: "Low B12 can affect energy levels and nerve health.",
+    },
+  ],
 };

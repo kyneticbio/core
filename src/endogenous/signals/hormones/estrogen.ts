@@ -30,4 +30,22 @@ export const estrogen: SignalDefinition = {
   display: {
     referenceRange: { min: 50, max: 400 },
   },
+  monitors: [
+    {
+      id: "estrogen_dominance",
+      signal: "estrogen",
+      pattern: { type: "exceeds", value: 450, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "High Estrogen (Estrogen Dominance)",
+      description: "Elevated estrogen can cause water retention, mood swings, and other issues if not balanced by progesterone.",
+    },
+    {
+      id: "estrogen_deficiency",
+      signal: "estrogen",
+      pattern: { type: "falls_below", value: 20, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Estrogen",
+      description: "Very low estrogen can affect mood, bone density, and cognitive function.",
+    },
+  ],
 };

@@ -9,7 +9,7 @@ import {
 export const energy: SignalDefinition = {
   key: "energy",
   label: "Vitality",
-  unit: "index",
+  unit: "%",
   description:
     "How energetic you feel right now. This subjective sense of 'gas in the tank' is driven by blood sugar, stimulating neurotransmitters, thyroid activity, and inflammation levels.",
   idealTendency: "higher",
@@ -51,4 +51,22 @@ export const energy: SignalDefinition = {
   display: {
     referenceRange: { min: 40, max: 80 },
   },
+  monitors: [
+    {
+      id: "vitality_peak",
+      signal: "energy",
+      pattern: { type: "exceeds", value: 90, sustainedMins: 30 },
+      outcome: "win",
+      message: "Peak Vitality",
+      description: "You're in a high-energy, high-alert state. Ideal for focus or intense activity.",
+    },
+    {
+      id: "vitality_crash",
+      signal: "energy",
+      pattern: { type: "falls_below", value: 25, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Low Vitality (Crash)",
+      description: "You're feeling significantly drained. Check glucose, stress, or sleep debt.",
+    },
+  ],
 };

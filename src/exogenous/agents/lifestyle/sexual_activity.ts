@@ -49,8 +49,8 @@ export const SexualActivity = (
       {
         target: "endorphin",
         mechanism: "agonist",
-        intrinsicEfficacy: 20 * orgasmFactor,
-        unit: "index",
+        intrinsicEfficacy: 2.0 * orgasmFactor,
+        unit: "x",
         tau: 10,
       },
     ],

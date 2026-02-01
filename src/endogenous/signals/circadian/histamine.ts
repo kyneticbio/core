@@ -36,4 +36,14 @@ export const histamine: SignalDefinition = {
   display: {
     referenceRange: { min: 5, max: 50 },
   },
+  monitors: [
+    {
+      id: "histamine_intolerance",
+      signal: "histamine",
+      pattern: { type: "exceeds", value: 100, sustainedMins: 120 },
+      outcome: "warning",
+      message: "Potential histamine intolerance",
+      description: "Sustained high histamine can cause headaches, flushing, and digestive issues.",
+    },
+  ],
 };

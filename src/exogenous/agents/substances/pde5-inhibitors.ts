@@ -26,7 +26,7 @@ export const Sildenafil = (mg: number = 50): PharmacologyDef => ({
       mechanism: "agonist",
       EC50: 25,
       intrinsicEfficacy: Math.min(30, mg * 0.5),
-      unit: "index",
+      unit: "%",
       tau: 15,
     },
     {
@@ -74,7 +74,7 @@ export const Tadalafil = (mg: number = 10): PharmacologyDef => ({
       mechanism: "agonist",
       EC50: 5,
       intrinsicEfficacy: Math.min(30, mg * 2.5),
-      unit: "index",
+      unit: "%",
       tau: 20,
     },
     {
@@ -121,7 +121,7 @@ export const Vardenafil = (mg: number = 10): PharmacologyDef => ({
       mechanism: "agonist",
       EC50: 15,
       intrinsicEfficacy: Math.min(30, mg * 2.0),
-      unit: "index",
+      unit: "%",
       tau: 15,
     },
     {

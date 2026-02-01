@@ -18,4 +18,14 @@ export const egfr: SignalDefinition = {
   display: {
     referenceRange: { min: 90, max: 120 },
   },
+  monitors: [
+    {
+      id: "low_egfr",
+      signal: "egfr",
+      pattern: { type: "falls_below", value: 60, sustainedMins: 1440 },
+      outcome: "critical",
+      message: "Low Kidney Function (eGFR)",
+      description: "Kidney filtration rate is significantly low.",
+    },
+  ],
 };

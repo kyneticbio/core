@@ -59,7 +59,7 @@ export const Magnesium = (mg: number): PharmacologyDef => {
         target: "vagal",
         mechanism: "agonist",
         intrinsicEfficacy: muscleRelaxation,
-        unit: "index",
+        unit: "x",
         tau: 120,
       },
       {

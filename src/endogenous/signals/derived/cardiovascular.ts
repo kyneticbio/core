@@ -43,6 +43,16 @@ export const nitricOxide: SignalDefinition = {
   display: {
     referenceRange: { min: 15, max: 40 },
   },
+  monitors: [
+    {
+      id: "no_boost",
+      signal: "nitricOxide",
+      pattern: { type: "increases_by", amount: 10, mode: "absolute", windowMins: 30 },
+      outcome: "win",
+      message: "Nitric Oxide boost",
+      description: "Vasodilation detected. Blood flow and oxygen delivery are improved.",
+    },
+  ],
 };
 
 export const hrv: SignalDefinition = {
@@ -73,6 +83,24 @@ export const hrv: SignalDefinition = {
   display: {
     referenceRange: { min: 20, max: 100 },
   },
+  monitors: [
+    {
+      id: "hrv_recovery",
+      signal: "hrv",
+      pattern: { type: "increases_by", amount: 15, mode: "absolute", windowMins: 60 },
+      outcome: "win",
+      message: "HRV Recovery",
+      description: "Your nervous system is entering a restorative state.",
+    },
+    {
+      id: "hrv_stress",
+      signal: "hrv",
+      pattern: { type: "falls_below", value: 30, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Low HRV detected",
+      description: "Indicates high stress load or poor recovery.",
+    },
+  ],
 };
 
 export const bloodPressure: SignalDefinition = {
@@ -104,13 +132,31 @@ export const bloodPressure: SignalDefinition = {
   display: {
     referenceRange: { min: 90, max: 120 },
   },
+  monitors: [
+    {
+      id: "bp_hypertension",
+      signal: "bloodPressure",
+      pattern: { type: "exceeds", value: 140, sustainedMins: 30 },
+      outcome: "warning",
+      message: "Blood Pressure elevated",
+      description: "Sustained high blood pressure detected.",
+    },
+    {
+      id: "bp_hypotension",
+      signal: "bloodPressure",
+      pattern: { type: "falls_below", value: 90, sustainedMins: 30 },
+      outcome: "warning",
+      message: "Low Blood Pressure",
+      description: "You may feel lightheaded or dizzy.",
+    },
+  ],
 };
 
 export const vagal: SignalDefinition = {
   key: "vagal",
   label: "Vagal Tone",
   isPremium: true,
-  unit: "index",
+  unit: "x",
   description: "A marker of your 'rest and digest' system's activity.",
   idealTendency: "higher",
   dynamics: {
@@ -141,4 +187,14 @@ export const vagal: SignalDefinition = {
   display: {
     referenceRange: { min: 0.3, max: 0.7 },
   },
+  monitors: [
+    {
+      id: "vagal_activation",
+      signal: "vagal",
+      pattern: { type: "increases_by", amount: 0.2, mode: "absolute", windowMins: 30 },
+      outcome: "win",
+      message: "Parasympathetic Activation",
+      description: "Your 'rest and digest' system is active, promoting recovery.",
+    },
+  ],
 };

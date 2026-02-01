@@ -18,4 +18,14 @@ export const zinc: SignalDefinition = {
   display: {
     referenceRange: { min: 70, max: 120 },
   },
+  monitors: [
+    {
+      id: "low_zinc",
+      signal: "zinc",
+      pattern: { type: "falls_below", value: 70, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Zinc Deficiency",
+      description: "Zinc is essential for immunity and hormone production.",
+    },
+  ],
 };

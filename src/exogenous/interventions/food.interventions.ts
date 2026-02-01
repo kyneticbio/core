@@ -69,7 +69,7 @@ export const FOOD_INTERVENTIONS: InterventionDef[] = [
       {
         key: "glycemicIndex",
         label: "Glycemic Index",
-        unit: "index",
+        unit: "%",
         type: "slider",
         min: 20,
         max: 100,

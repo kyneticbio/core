@@ -59,7 +59,7 @@ export const Caffeine = (mg: number): PharmacologyDef => ({
       mechanism: "agonist",
       EC50: 20000,
       intrinsicEfficacy: Math.min(0.5, mg * 0.002),
-      unit: "fold-change",
+      unit: "x",
       tau: 30,
       description: "Activates fat-burning pathways via catecholamine release.",
     },

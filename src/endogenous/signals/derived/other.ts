@@ -10,7 +10,7 @@ export const inflammation: SignalDefinition = {
   key: "inflammation",
   label: "Inflammation",
   isPremium: true,
-  unit: "index",
+  unit: "x",
   description: "A measure of your body's immune activation.",
   idealTendency: "lower",
   dynamics: {
@@ -40,6 +40,16 @@ export const inflammation: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 2 },
   },
+  monitors: [
+    {
+      id: "inflammation_spike",
+      signal: "inflammation",
+      pattern: { type: "exceeds", value: 3.0, sustainedMins: 60 },
+      outcome: "warning",
+      message: "Inflammation spike",
+      description: "Significant immune activation detected. May be due to intense exercise, stress, or dietary triggers.",
+    },
+  ],
 };
 
 export const ketone: SignalDefinition = {
@@ -75,6 +85,24 @@ export const ketone: SignalDefinition = {
   display: {
     referenceRange: { min: 0.1, max: 0.5 },
   },
+  monitors: [
+    {
+      id: "ketosis_nutritional",
+      signal: "ketone",
+      pattern: { type: "exceeds", value: 0.5, sustainedMins: 60 },
+      outcome: "win",
+      message: "Nutritional Ketosis",
+      description: "You have entered a state of fat adaptation (ketosis).",
+    },
+    {
+      id: "ketosis_deep",
+      signal: "ketone",
+      pattern: { type: "exceeds", value: 1.5, sustainedMins: 60 },
+      outcome: "win",
+      message: "Deep Ketosis",
+      description: "Significant ketone production for fuel.",
+    },
+  ],
 };
 
 export const ethanol: SignalDefinition = {
@@ -88,7 +116,7 @@ export const ethanol: SignalDefinition = {
     setpoint: (ctx, state) => 0,
     tau: 60,
     production: [],
-    clearance: [{ type: "linear", rate: 0.015 }],
+    clearance: [{ type: "linear", rate: 0.003 }],
     couplings: [],
   },
   initialValue: 0,
@@ -97,6 +125,24 @@ export const ethanol: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 0 },
   },
+  monitors: [
+    {
+      id: "ethanol_intoxication",
+      signal: "ethanol",
+      pattern: { type: "exceeds", value: 80, sustainedMins: 15 }, // 0.08 BAC
+      outcome: "warning",
+      message: "Legal Intoxication level",
+      description: "Blood alcohol concentration is at or above the legal driving limit (0.08%). Coordination and judgment are impaired.",
+    },
+    {
+      id: "ethanol_danger",
+      signal: "ethanol",
+      pattern: { type: "exceeds", value: 120, sustainedMins: 15 },
+      outcome: "critical",
+      message: "Dangerous Alcohol level",
+      description: "High risk of alcohol poisoning and respiratory depression.",
+    },
+  ],
 };
 
 export const acetaldehyde: SignalDefinition = {
@@ -109,7 +155,7 @@ export const acetaldehyde: SignalDefinition = {
   dynamics: {
     setpoint: (ctx, state) => 0,
     tau: 60,
-    production: [{ source: "ethanol", coefficient: 0.3 }],
+    production: [{ source: "ethanol", coefficient: 0.005 }],
     clearance: [{ type: "linear", rate: 0.03 }],
     couplings: [],
   },
@@ -119,6 +165,16 @@ export const acetaldehyde: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 2 },
   },
+  monitors: [
+    {
+      id: "acetaldehyde_toxicity",
+      signal: "acetaldehyde",
+      pattern: { type: "exceeds", value: 5, sustainedMins: 30 },
+      outcome: "warning",
+      message: "Acetaldehyde Toxicity (Hangover)",
+      description: "High levels of acetaldehyde cause flushing, nausea, and rapid heart rate. This is the primary driver of hangover symptoms.",
+    },
+  ],
 };
 
 export const magnesium: SignalDefinition = {
@@ -141,20 +197,30 @@ export const magnesium: SignalDefinition = {
   display: {
     referenceRange: { min: 1.7, max: 2.3 },
   },
+  monitors: [
+    {
+      id: "low_magnesium",
+      signal: "magnesium",
+      pattern: { type: "falls_below", value: 1.7, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Magnesium",
+      description: "Deficiency can cause muscle cramps, fatigue, and irritability.",
+    },
+  ],
 };
 
 export const sensoryLoad: SignalDefinition = {
   key: "sensoryLoad",
   label: "Sensory Load",
   isPremium: true,
-  unit: "index",
+  unit: "%",
   description:
     "A measure of the total cognitive and sensory input your brain is currently processing.",
   idealTendency: "lower",
   dynamics: {
     setpoint: (ctx, state) => 0.1,
     tau: 15,
-    production: [{ source: "adrenaline", coefficient: 0.2 }],
+    production: [{ source: "adrenaline", coefficient: 0.05 }],
     clearance: [{ type: "linear", rate: 0.1 }],
     couplings: [{ source: "gaba", effect: "inhibit", strength: 0.15 }],
   },
@@ -164,6 +230,16 @@ export const sensoryLoad: SignalDefinition = {
   display: {
     referenceRange: { min: 0, max: 50 },
   },
+  monitors: [
+    {
+      id: "sensory_overload",
+      signal: "sensoryLoad",
+      pattern: { type: "exceeds", value: 80, sustainedMins: 30 },
+      outcome: "warning",
+      message: "Sensory Overload",
+      description: "Total cognitive load is very high. Risk of burnout, irritability, and reduced focus.",
+    },
+  ],
 };
 
 export const oxygen: SignalDefinition = {
@@ -187,4 +263,14 @@ export const oxygen: SignalDefinition = {
   display: {
     referenceRange: { min: 95, max: 100 },
   },
+  monitors: [
+    {
+      id: "hypoxia",
+      signal: "oxygen",
+      pattern: { type: "falls_below", value: 90, sustainedMins: 5 },
+      outcome: "critical",
+      message: "Hypoxia detected",
+      description: "Blood oxygen saturation is dangerously low. Seek fresh air or medical attention.",
+    },
+  ],
 };

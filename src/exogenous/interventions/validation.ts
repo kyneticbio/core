@@ -85,7 +85,7 @@ export function validateInterventionPharmacology(
       const isModulator = pd.mechanism === "PAM" || pd.mechanism === "NAM";
       if (
         isModulator &&
-        (effectUnit === "fold-change" || effectUnit === "index")
+        (effectUnit === "fold-change" || effectUnit === "index" || effectUnit === "x")
       ) {
         return;
       }

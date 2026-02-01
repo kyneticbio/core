@@ -11,7 +11,7 @@ const ETHANOL_DISTRIBUTION = {
 } as const;
 
 const ETHANOL_KINETICS = {
-  VMAX_DEFAULT: 0.2,
+  VMAX_DEFAULT: 1.0,
   KM_MGDL: 10,
 } as const;
 
@@ -51,14 +51,14 @@ export const Alcohol = (units: number): PharmacologyDef => {
         target: "GABA_A",
         mechanism: "PAM",
         EC50: 500,
-        intrinsicEfficacy: 100 * units,
-        unit: "fold-change",
+        intrinsicEfficacy: 0.5 * units,
+        unit: "x",
       },
       {
         target: "ethanol",
         mechanism: "agonist",
         EC50: 500,
-        intrinsicEfficacy: 100, 
+        intrinsicEfficacy: 500, 
         unit: "mg/dL",
       },
       {
@@ -73,8 +73,8 @@ export const Alcohol = (units: number): PharmacologyDef => {
         target: "NMDA",
         mechanism: "NAM",
         EC50: 500,
-        intrinsicEfficacy: 40 * units,
-        unit: "fold-change",
+        intrinsicEfficacy: 0.2 * units,
+        unit: "x",
       },
       {
         target: "vasopressin",
@@ -94,8 +94,8 @@ export const Alcohol = (units: number): PharmacologyDef => {
         target: "inflammation",
         mechanism: "agonist",
         EC50: 500,
-        intrinsicEfficacy: 10 * units,
-        unit: "index",
+        intrinsicEfficacy: 0.1 * units,
+        unit: "x",
       },
     ],
   };
