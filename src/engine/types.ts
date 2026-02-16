@@ -368,6 +368,8 @@ export interface PKDef {
   Vmax?: number;
   Km?: number;
   volume?: PKVolumeConfig;
+  k_12?: number;
+  k_21?: number;
   clearance?: {
     hepatic?: {
       baseCL_mL_min: number;
