@@ -15,7 +15,7 @@ coverage
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-tsbuildinfo
+*.tsbuildinfo
 .npm
 
 # Documentation
