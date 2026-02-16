@@ -31,19 +31,26 @@ const { Layout } = DefaultTheme
   }
 }
 
-/* Deep override to make the demo look more compact on the home page */
 :deep(.simulator-demo) {
   padding: 1rem;
   margin: 0;
   background: var(--vp-c-bg-alt);
 }
 
-:deep(.controls-grid) {
-  grid-template-columns: 1fr;
-  gap: 1rem;
+:deep(.scenario-tabs) {
+  gap: 0.35rem;
 }
 
-:deep(.chart-container) {
-  margin-top: 1rem;
+:deep(.scenario-tab) {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+}
+
+:deep(.chart-grid) {
+  gap: 0.75rem;
+}
+
+:deep(.chart-card) {
+  padding: 0.5rem 0.5rem 0.35rem;
 }
 </style>
