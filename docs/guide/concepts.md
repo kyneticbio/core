@@ -1,11 +1,13 @@
 # Core Concepts
 
-In KyneticBio Core, the simulation process is very straightforward:
+KyneticBio models your body as a system of interacting signals — neurotransmitters, hormones, metabolic markers — that respond to the things you do: take a supplement, drink coffee, exercise, sleep. Instead of guessing what happens, you simulate it.
 
-> The **Engine** takes a **Subject** (a person) with specific **Conditions**, applies **Interventions** over time, and produces **Signals** as the output.
+The core idea is simple:
 
-### A Concrete Example:
-The **Engine** simulates a **Subject** (a 30-year-old male) who has **ADHD** (Condition). When he drinks a cup of **Caffeine** (Intervention), the engine calculates how his **Dopamine** (Signal) levels will change over the next few hours.
+> **You** (a Subject) have a unique physiology and **Conditions**. When you apply **Interventions** (drugs, supplements, lifestyle), the **Engine** calculates how your **Signals** (dopamine, cortisol, glucose, etc.) change over time.
+
+### A Concrete Example
+You're a 30-year-old male with ADHD. You drink a cup of coffee at 8am. KyneticBio shows you exactly how your dopamine, adenosine, and cortisol respond over the next 6 hours — and what happens differently if you take L-theanine with it.
 
 ---
 

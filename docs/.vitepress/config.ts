@@ -4,7 +4,7 @@ import katex from "markdown-it-katex";
 
 export default defineConfig({
   title: "KyneticBio",
-  description: "Physiological Simulation Engine Documentation",
+  description: "Prototype your biology before you commit. A flight simulator for supplements, medications, and lifestyle interventions.",
   base: "/core/",
   head: [
     [
@@ -31,7 +31,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Guide", link: "/guide/getting-started" },
-      { text: "Science", link: "/guide/science" },
+      { text: "The Science", link: "/guide/science" },
       { text: "Kynetic Studio", link: "https://physim.jeffjassky.com" },
       { text: "Discord", link: "https://discord.gg/FUqxCk8J" },
     ],
@@ -41,8 +41,8 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Core Concepts", link: "/guide/concepts" },
-          { text: "Scientific Reference", link: "/guide/science" },
-          { text: "Interactive Demo", link: "/demo" },
+          { text: "The Science", link: "/guide/science" },
+          { text: "Try It Yourself", link: "/demo" },
         ],
       },
       {

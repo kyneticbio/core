@@ -2,24 +2,33 @@
 import SimulatorDemo from './components/SimulatorDemo.vue'
 </script>
 
-# Interactive Demo
+# Try It Yourself
 
-This demo runs the **KyneticBio Core** engine directly in your browser. You can adjust the subject's biometrics, enable neurophysiological conditions, and apply interventions to see how they affect various physiological signals over an 8-hour period.
+Curious what happens when you take 200mg of caffeine on an empty stomach? Want to see how ADHD changes the dopamine response? This demo runs the real KyneticBio engine directly in your browser — no account needed.
+
+**Things to try:**
+- Add caffeine and watch dopamine spike while adenosine gets blocked
+- Enable ADHD and compare the dopamine baseline to a neurotypical profile
+- Stack caffeine + L-theanine and see how the signals differ from caffeine alone
+- Change the subject's weight and watch how drug concentrations shift
 
 <SimulatorDemo />
 
-## How it works
-1. **Engine**: The simulation uses the actual `integrateStep` function from the core library.
-2. **Subject**: Biometrics like age and weight scale the volumes of distribution and metabolic rates.
-3. **Conditions**: Enabling a condition like ADHD modifies receptor densities and baseline signal levels.
-4. **Interventions**: The engine calculates the pharmacokinetics (absorption/clearance) and pharmacodynamics (receptor interaction) for each active agent.
+## How It Works
+
+This isn't a toy — it's the same engine that powers Kynetic Studio:
+
+1. **Real pharmacokinetics** — drug absorption, distribution, and clearance modeled with the same equations used in clinical pharmacology.
+2. **Your physiology matters** — age, weight, and sex scale metabolic rates and volumes of distribution. A 60kg person and a 100kg person get meaningfully different curves.
+3. **Conditions change the game** — enabling ADHD doesn't just lower a number. It modifies receptor densities and transporter activity, which changes how every intervention hits.
+4. **Signals interact** — cortisol affects dopamine. Insulin affects glucose. Nothing happens in isolation.
 
 ---
 
-### Want more features?
-Try **[Kynetic Studio](https://physim.jeffjassky.com)**, the full-featured commercial interface which includes:
-- **Multi-chart views** for comparing dozens of signals.
-- **AI Chat Integration** for analyzing your physiological state.
-- **Drag-and-drop timeline** for complex scenario building.
-- **Data persistence** and multi-scenario comparison.
+### Want the full experience?
 
+This demo shows a slice of what's possible. **[Kynetic Studio](https://physim.jeffjassky.com)** gives you:
+- **Multi-chart views** for comparing dozens of signals simultaneously
+- **AI Chat** for asking questions about your simulation results
+- **Drag-and-drop timeline** for building complex daily protocols
+- **Scenario comparison** to test different stacks side-by-side

@@ -1,6 +1,12 @@
-# KineticBio Scientific Reference:
+# The Science Behind KyneticBio
 
-**KineticBio** is a high-fidelity biological simulation engine that models human physiology, neurochemistry, and metabolism using a systems-biology approach. Unlike statistical or rule-based models, KineticBio employs a **unified Ordinary Differential Equation (ODE) architecture** to simulate the continuous-time evolution of biological states ("Neurostates"). It accounts for the complex interplay between intrinsic rhythms, individual physiology, and extrinsic interventions (pharmacology, nutrition, and lifestyle).
+KyneticBio isn't making rough estimates or using lookup tables. Under the hood, it's solving the same differential equations that describe real biological systems — pharmacokinetics, receptor dynamics, hormonal feedback loops, and metabolic pathways — all running continuously in your browser.
+
+This page is for people who want to understand *how* the engine works and *why* you can trust its output. If you just want to use it, head back to the [Getting Started](./getting-started) guide.
+
+---
+
+KyneticBio is a high-fidelity biological simulation engine that models human physiology, neurochemistry, and metabolism using a systems-biology approach. Unlike statistical or rule-based models, it employs a **unified Ordinary Differential Equation (ODE) architecture** to simulate the continuous-time evolution of biological states. It accounts for the complex interplay between intrinsic rhythms, individual physiology, and extrinsic interventions (pharmacology, nutrition, and lifestyle).
 
 ---
 
