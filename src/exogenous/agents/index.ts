@@ -5,6 +5,7 @@ import * as supplements from "./supplements";
 import * as psychedelics from "./psychedelics";
 import * as lifestyle from "./lifestyle";
 import * as thermal from "./thermal";
+import * as peptides from "./peptides";
 
 export const Agents = {
   ...nutritional,
@@ -14,6 +15,7 @@ export const Agents = {
   ...psychedelics,
   ...lifestyle,
   ...thermal,
+  ...peptides,
 };
 
 export {
@@ -24,4 +26,5 @@ export {
   psychedelics,
   lifestyle,
   thermal,
+  peptides,
 };

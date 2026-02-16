@@ -7,14 +7,14 @@ hero:
   tagline: "Biological modeling in pure TypeScript"
   actions:
     - theme: brand
-      text: Get Started
+      text: Guide
       link: /guide/getting-started
     - theme: alt
-      text: Try Kynetic Studio
+      text: Kynetic Studio
       link: https://physim.jeffjassky.com
     - theme: alt
-      text: GitHub
-      link: https://github.com/kyneticbio/core
+      text: Discord
+      link: https://discord.gg/FUqxCk8J
 
 features:
   - title: 50+ Bio-Signals

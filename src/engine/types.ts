@@ -392,6 +392,22 @@ export interface PharmacologyDef {
     unit?: string;
     mechanism: PDMechanism;
     Ki?: number;
+    /**
+     * The concentration (in mg/L) at which the drug produces 50% of maximal
+     * receptor occupancy. This is a fixed pharmacological property of the
+     * drug–receptor pair and MUST NOT vary with dose.
+     *
+     * If EC50 is made proportional to dose (e.g. `EC50 = expectedPeak * k`
+     * where expectedPeak depends on the dose parameter), the Hill equation
+     * `C/(C+EC50)` becomes dose-independent and the drug will have identical
+     * effects at every dose.
+     *
+     * Calibration: compute the reference peak plasma concentration for a
+     * typical therapeutic dose, then set EC50 as a fraction of that constant.
+     * Example for semaglutide (ref dose 0.5 mg):
+     *   refPeak = (0.5 * 0.89) / 8.4 ≈ 0.053 mg/L
+     *   EC50 = refPeak * 0.3 ≈ 0.016  (fixed constant)
+     */
     EC50?: number;
     intrinsicEfficacy?: number;
     tau?: number;

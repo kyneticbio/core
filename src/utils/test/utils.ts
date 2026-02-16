@@ -157,11 +157,15 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
     gridMins.push((i * gridStep) as Minute);
   }
 
+  // Build intervention definitions (before items, so we can resolve defaultDurationMin)
+  const defs = buildInterventionLibrary(subject, physiology);
+  const defsMap = new Map(defs.map((d) => [d.key, d]));
+
   // Build intervention items
   const items: ItemForWorker[] = interventions.map((int, idx) => ({
     id: `test-${idx}`,
     startMin: int.startMin as Minute,
-    durationMin: int.durationMin ?? 60,
+    durationMin: int.durationMin ?? defsMap.get(int.key)?.defaultDurationMin ?? 60,
     meta: {
       key: int.key,
       label: int.key,
@@ -169,9 +173,6 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
       intensity: int.intensity ?? 1.0,
     },
   }));
-
-  // Build intervention definitions
-  const defs = buildInterventionLibrary(subject, physiology);
 
   // Merge transporter/receptor/enzyme activities
   const mergedTransporterActivities = {

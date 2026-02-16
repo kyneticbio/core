@@ -33,6 +33,7 @@ export default defineConfig({
       { text: "Guide", link: "/guide/getting-started" },
       { text: "Science", link: "/guide/science" },
       { text: "Kynetic Studio", link: "https://physim.jeffjassky.com" },
+      { text: "Discord", link: "https://discord.gg/FUqxCk8J" },
     ],
     sidebar: [
       {
@@ -60,12 +61,13 @@ export default defineConfig({
         text: "Contributing",
         items: [
           { text: "Development Setup", link: "/contributing/" },
-          { text: "Testing Standards", link: "/contributing/testing" }
+          { text: "Testing Standards", link: "/contributing/testing" },
         ],
       },
     ],
     socialLinks: [
       { icon: "github", link: "https://github.com/kyneticbio/core" },
+      { icon: "discord", link: "https://discord.gg/FUqxCk8J" },
     ],
     footer: {
       message: "Released under the MIT License.",
