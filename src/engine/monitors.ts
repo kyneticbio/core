@@ -754,12 +754,12 @@ export function evaluateMonitors(
  * Collect all monitors from signal definitions
  */
 export function collectSignalMonitors(
-  signalDefs: Record<string, { monitors?: Monitor[] }>
+  signalDefs: Partial<Record<string, { monitors?: Monitor[] }>>
 ): Monitor[] {
   const monitors: Monitor[] = [];
 
   for (const def of Object.values(signalDefs)) {
-    if (def.monitors) {
+    if (def?.monitors) {
       monitors.push(...def.monitors);
     }
   }

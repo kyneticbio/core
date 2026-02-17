@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, sigmoidPhase } from "../../utils";
 
 export const glutamate: SignalDefinition = {
@@ -10,7 +10,7 @@ export const glutamate: SignalDefinition = {
     "The most abundant 'on' switch in your brain. Glutamate is the gas pedal for neural activity, playing a central role in learning, memory, and fast communication between neurons. Balance is key, as too much can cause over-excitement.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(9), 1.0);
       return 2.5 + 4.16 * wakeDrive;
@@ -20,7 +20,7 @@ export const glutamate: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.003,
-        transform: (_: any, state: any) =>
+        transform: (_: any, state) =>
           (state.auxiliary.glutamatePool ?? 0.7) * 5,
       },
     ],
@@ -43,7 +43,8 @@ export const glutamate: SignalDefinition = {
       pattern: { type: "exceeds", value: 15, sustainedMins: 30 },
       outcome: "critical",
       message: "Excitotoxicity Risk (High Glutamate)",
-      description: "Extremely high glutamate can be toxic to neurons. Often associated with severe stress or neurological events.",
+      description:
+        "Extremely high glutamate can be toxic to neurons. Often associated with severe stress or neurological events.",
     },
   ],
 };

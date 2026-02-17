@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -17,7 +17,7 @@ export const vasopressin: SignalDefinition = {
     "The 'antidiuretic' hormone. It regulates your body's water balance and blood pressure.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const couple = gaussianPhase(
         p,
@@ -48,7 +48,8 @@ export const vasopressin: SignalDefinition = {
       pattern: { type: "exceeds", value: 8, sustainedMins: 60 },
       outcome: "warning",
       message: "Fluid retention signal (High Vasopressin)",
-      description: "High vasopressin promotes water retention and can increase blood pressure.",
+      description:
+        "High vasopressin promotes water retention and can increase blood pressure.",
     },
   ],
 };

@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -14,7 +14,7 @@ export const energy: SignalDefinition = {
     "How energetic you feel right now. This subjective sense of 'gas in the tank' is driven by blood sugar, stimulating neurotransmitters, thyroid activity, and inflammation levels.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(2), 1.0);
       const afternoonDip = gaussianPhase(p, hourToPhase(9), 1.5);
@@ -37,7 +37,7 @@ export const energy: SignalDefinition = {
       {
         type: "linear",
         rate: 0.01,
-        transform: (_: any, state: any, ctx: any) => (ctx.isAsleep ? 0.5 : 1.0),
+        transform: (_: any, state, ctx) => (ctx.isAsleep ? 0.5 : 1.0),
       },
     ],
     couplings: [
@@ -58,7 +58,8 @@ export const energy: SignalDefinition = {
       pattern: { type: "exceeds", value: 90, sustainedMins: 30 },
       outcome: "win",
       message: "Peak Vitality",
-      description: "You're in a high-energy, high-alert state. Ideal for focus or intense activity.",
+      description:
+        "You're in a high-energy, high-alert state. Ideal for focus or intense activity.",
     },
     {
       id: "vitality_crash",
@@ -66,7 +67,8 @@ export const energy: SignalDefinition = {
       pattern: { type: "falls_below", value: 25, sustainedMins: 60 },
       outcome: "warning",
       message: "Low Vitality (Crash)",
-      description: "You're feeling significantly drained. Check glucose, stress, or sleep debt.",
+      description:
+        "You're feeling significantly drained. Check glucose, stress, or sleep debt.",
     },
   ],
 };

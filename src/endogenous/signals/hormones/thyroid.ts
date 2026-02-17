@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -17,10 +17,10 @@ export const thyroid: SignalDefinition = {
     "The body's 'metabolic thermostat.' Thyroid hormones set the pace for how quickly your cells burn energy and produce heat.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Scale circadian rhythm around subject's baseline if bloodwork available
       // freeT4 in ng/dL maps to the thyroid signal's pmol/L output via ratio-scaling
-      const baselineT4 = ctx.subject?.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
+      const baselineT4 = ctx.subject.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
       const scale = baselineT4 / 1.2;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const active = windowPhase(
@@ -49,9 +49,9 @@ export const thyroid: SignalDefinition = {
       { source: "leptin", effect: "stimulate", strength: 0.0001 },
     ],
   },
-  initialValue: (ctx: any) => {
-    const baselineT4 = ctx.subject?.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
-    return (1.0) * (baselineT4 / 1.2);
+  initialValue: (ctx) => {
+    const baselineT4 = ctx.subject.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
+    return 1.0 * (baselineT4 / 1.2);
   },
   display: {
     referenceRange: { min: 10, max: 25 },
@@ -63,7 +63,8 @@ export const thyroid: SignalDefinition = {
       pattern: { type: "falls_below", value: 10, sustainedMins: 10080 }, // 7 days
       outcome: "warning",
       message: "Metabolic suppression (Low Thyroid)",
-      description: "Sustained low thyroid activity can slow your metabolism, lower body temperature, and cause fatigue.",
+      description:
+        "Sustained low thyroid activity can slow your metabolism, lower body temperature, and cause fatigue.",
     },
     {
       id: "thyroid_hyper",
@@ -71,7 +72,8 @@ export const thyroid: SignalDefinition = {
       pattern: { type: "exceeds", value: 30, sustainedMins: 1440 },
       outcome: "warning",
       message: "Hyperthyroid drive",
-      description: "Excessive thyroid signaling can cause rapid heart rate, anxiety, and weight loss.",
+      description:
+        "Excessive thyroid signaling can cause rapid heart rate, anxiety, and weight loss.",
     },
   ],
 };

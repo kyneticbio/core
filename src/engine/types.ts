@@ -1,5 +1,7 @@
 // Pure Simulation Engine Types
 
+import { HomeostasisStateSnapshot, Physiology, Subject } from "src/types";
+
 export type Signal = string;
 
 export interface SolverDebugOptions {
@@ -26,8 +28,8 @@ export interface DynamicsContext {
   circadianMinuteOfDay: number;
   dayOfYear: number;
   isAsleep: boolean;
-  subject: any; // Domain-specific fields (age, sex, etc.)
-  physiology: any; // Calculated fields (BMR, TBW, etc.)
+  subject: Subject; // Domain-specific fields (age, sex, etc.)
+  physiology: Physiology; // Calculated fields (BMR, TBW, etc.)
 }
 
 export interface ProductionTerm {
@@ -271,7 +273,11 @@ export interface SignalDefinition {
   dynamics: SignalDynamics;
   initialValue:
     | number
-    | ((ctx: { subject: any; physiology: any; isAsleep: boolean }) => number);
+    | ((ctx: {
+        subject: Subject;
+        physiology: Physiology;
+        isAsleep: boolean;
+      }) => number);
   min?: number;
   max?: number;
   idealTendency: IdealTendency;
@@ -294,7 +300,9 @@ export interface AuxiliaryDefinition {
     production: ProductionTerm[];
     clearance: ClearanceTerm[];
   };
-  initialValue: number | ((ctx: { subject: any; physiology: any }) => number);
+  initialValue:
+    | number
+    | ((ctx: { subject: Subject; physiology: Physiology }) => number);
   min?: number;
   max?: number;
 }
@@ -324,13 +332,17 @@ export interface WorkerComputeRequest {
   gridMins: Minute[];
   items: any[];
   defs: any[];
-  options?: any;
+  options?: {
+    physiology?: Physiology;
+    subject?: Subject;
+    [key: string]: any;
+  };
 }
 
 export interface WorkerComputeResponse {
   series: Record<Signal, Float32Array>;
   auxiliarySeries: Record<string, Float32Array>;
-  finalHomeostasisState: any;
+  finalHomeostasisState: HomeostasisStateSnapshot;
   homeostasisSeries: any;
   monitorResults: MonitorResult[];
   computeTimeMs?: number;
@@ -347,8 +359,17 @@ export type PharmacologicalTarget = string;
  * molar units require `molecule.molarMass` to be defined.
  */
 export type PDUnit =
-  | "mg/L" | "mg/dL" | "µg/dL" | "ng/mL" | "pg/mL" | "ng/dL"
-  | "nM" | "uM" | "µM" | "pmol/L" | "µmol/L";
+  | "mg/L"
+  | "mg/dL"
+  | "µg/dL"
+  | "ng/mL"
+  | "pg/mL"
+  | "ng/dL"
+  | "nM"
+  | "uM"
+  | "µM"
+  | "pmol/L"
+  | "µmol/L";
 
 export type PKModelType =
   | "1-compartment"

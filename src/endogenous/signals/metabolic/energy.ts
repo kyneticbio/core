@@ -1,4 +1,8 @@
-import type { SignalDefinition, AuxiliaryDefinition } from "../../../engine";
+import type {
+  SignalDefinition,
+  AuxiliaryDefinition,
+  DynamicsContext,
+} from "../../../engine";
 
 /**
  * CALORIC INTAKE
@@ -11,7 +15,7 @@ export const caloricIntake: SignalDefinition = {
   description: "Real-time absorption of calories from food.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 0,
+    setpoint: (ctx, state) => 0,
     tau: 5,
     production: [], // Driven by Food Interventions
     clearance: [{ type: "linear", rate: 0.2 }],
@@ -36,18 +40,18 @@ export const burnRate: SignalDefinition = {
   description: "Real-time caloric expenditure.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Base metabolic rate from subject profile
       const bmr = ctx.physiology?.bmr ?? 1660;
-      
+
       // Dynamic drift from body composition changes
       // Muscle adds ~13 kcal/kg/day
       // Fat adds ~4.5 kcal/kg/day
       const muscleDelta = state.auxiliary?.muscleMass ?? 0;
       const fatDelta = state.auxiliary?.fatMass ?? 0;
-      
-      const drift = (muscleDelta * 13 + fatDelta * 4.5);
-      
+
+      const drift = muscleDelta * 13 + fatDelta * 4.5;
+
       return (bmr + drift) / 1440;
     },
     tau: 15,
@@ -72,10 +76,11 @@ export const netEnergy: SignalDefinition = {
   key: "netEnergy",
   label: "Caloric Balance",
   unit: "kcal/min",
-  description: "Real-time difference between calories consumed and calories burned. Positive = surplus (storing energy), negative = deficit (burning reserves).",
+  description:
+    "Real-time difference between calories consumed and calories burned. Positive = surplus (storing energy), negative = deficit (burning reserves).",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Direct calculation of net energy balance
       const intake = state.signals.caloricIntake ?? 0;
       const burn = state.signals.burnRate ?? 1.15;
@@ -99,7 +104,8 @@ export const netEnergy: SignalDefinition = {
       pattern: { type: "high_exposure", windowMins: 1440, threshold: 500 }, // +500 kcal surplus over 24h
       outcome: "warning",
       message: "Significant Caloric Surplus",
-      description: "You've maintained a caloric surplus today, which promotes energy storage.",
+      description:
+        "You've maintained a caloric surplus today, which promotes energy storage.",
     },
     {
       id: "caloric_deficit",
@@ -107,7 +113,8 @@ export const netEnergy: SignalDefinition = {
       pattern: { type: "low_exposure", windowMins: 1440, threshold: -500 }, // -500 kcal deficit over 24h
       outcome: "win",
       message: "Caloric Deficit maintained",
-      description: "You've maintained a caloric deficit, which promotes weight loss.",
+      description:
+        "You've maintained a caloric deficit, which promotes weight loss.",
     },
   ],
 };
@@ -119,22 +126,22 @@ export const netEnergy: SignalDefinition = {
 export const fatOxidationRate: AuxiliaryDefinition = {
   key: "fatOxidationRate",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 0,
+    setpoint: (ctx, state) => 0,
     tau: 60,
     production: [
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const ampk = state.signals.ampk;
           const insulin = state.signals.insulin;
           const net = state.signals.netEnergy;
-          
+
           // Fasting baseline + Exercise boost
           const activeOxidation = ampk > 1.0 ? 0.01 * (ampk - 1.0) : 0;
           const deficitOxidation = net < 0 ? Math.abs(net) * 0.11 : 0;
           const insulinInhibition = Math.max(0, 1 - insulin / 15);
-          
+
           return (activeOxidation + deficitOxidation) * insulinInhibition;
         },
       },
@@ -152,13 +159,13 @@ export const fatOxidationRate: AuxiliaryDefinition = {
 export const fatMass: AuxiliaryDefinition = {
   key: "fatMass",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 0,
+    setpoint: (ctx, state) => 0,
     tau: 43200,
     production: [
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const net = state.signals.netEnergy;
           const insulin = state.signals.insulin;
           const fox = state.auxiliary?.fatOxidationRate ?? 0;
@@ -189,7 +196,7 @@ export const weight: SignalDefinition = {
   description: "Total simulated body weight.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const base = ctx.subject?.weight || 70;
       const fatDelta = state.auxiliary?.fatMass || 0;
       const muscleDelta = state.auxiliary?.muscleMass || 0;
@@ -200,7 +207,7 @@ export const weight: SignalDefinition = {
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx: any) => ctx.subject?.weight || 70,
+  initialValue: (ctx) => ctx.subject?.weight || 70,
   display: {
     referenceRange: { min: 50, max: 100 },
   },
@@ -216,10 +223,11 @@ export const energyAvailability: SignalDefinition = {
   key: "energyAvailability",
   label: "Energy Availability (EA)",
   unit: "kcal/kg",
-  description: "Sports medicine metric: calories available for vital body functions after subtracting exercise expenditure, per kg of lean mass. Below 30 risks RED-S (metabolic dysfunction). Optimal range: 30-45.",
+  description:
+    "Sports medicine metric: calories available for vital body functions after subtracting exercise expenditure, per kg of lean mass. Below 30 risks RED-S (metabolic dysfunction). Optimal range: 30-45.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const intake = state.signals.caloricIntake ?? 0;
       const burn = state.signals.burnRate ?? 1.15;
       const bmrMin = (ctx.physiology?.bmr ?? 1660) / 1440;
@@ -254,7 +262,8 @@ export const energyAvailability: SignalDefinition = {
       pattern: { type: "falls_below", value: 30, sustainedMins: 1440 },
       outcome: "warning",
       message: "Low Energy Availability (RED-S risk)",
-      description: "You're not consuming enough calories to support basic vital functions after exercise. This can lead to metabolic and hormonal dysfunction.",
+      description:
+        "You're not consuming enough calories to support basic vital functions after exercise. This can lead to metabolic and hormonal dysfunction.",
     },
     {
       id: "severe_energy_deficit",
@@ -262,7 +271,8 @@ export const energyAvailability: SignalDefinition = {
       pattern: { type: "falls_below", value: 15, sustainedMins: 720 },
       outcome: "critical",
       message: "Severe Energy Deficit",
-      description: "Critical lack of fuel for vital organs. Immediate nutrition required.",
+      description:
+        "Critical lack of fuel for vital organs. Immediate nutrition required.",
     },
   ],
 };
@@ -276,32 +286,32 @@ export const energyAvailability: SignalDefinition = {
 export const metabolicAdaptation: AuxiliaryDefinition = {
   key: "metabolicAdaptation",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 10080, // 7 days - metabolic adaptation is slow
     production: [
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const ea = state.signals.energyAvailability ?? 30;
           const leptin = state.signals.leptin ?? 15;
 
           // Low EA triggers metabolic suppression
           // EA < 20 starts suppression, EA < 10 is severe
-          const starvationFactor = ea < 20
-            ? -0.0005 * (20 - ea) // Slow drift down
-            : 0;
+          const starvationFactor =
+            ea < 20
+              ? -0.0005 * (20 - ea) // Slow drift down
+              : 0;
 
           // High flux (high EA + high burn) elevates metabolism
           const burn = state.signals.burnRate ?? 1.15;
-          const fluxFactor = ea > 35 && burn > 2.0
-            ? 0.0001 * (burn - 2.0) // Slight drift up with high flux
-            : 0;
+          const fluxFactor =
+            ea > 35 && burn > 2.0
+              ? 0.0001 * (burn - 2.0) // Slight drift up with high flux
+              : 0;
 
           // Leptin signals energy stores
-          const leptinFactor = leptin < 5
-            ? -0.0002 * (5 - leptin)
-            : 0;
+          const leptinFactor = leptin < 5 ? -0.0002 * (5 - leptin) : 0;
 
           return starvationFactor + fluxFactor + leptinFactor;
         },
@@ -324,7 +334,7 @@ export const thermogenesis: SignalDefinition = {
   description: "Heat production from brown fat activation and cold exposure.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Baseline thermogenesis from thyroid
       const thyroid = state.signals.thyroid ?? 1.5;
       return 0.05 * (thyroid / 1.5);
@@ -354,13 +364,13 @@ export const thermogenesis: SignalDefinition = {
 export const muscleGlycogen: AuxiliaryDefinition = {
   key: "muscleGlycogen",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 0.8,
+    setpoint: (ctx, state) => 0.8,
     tau: 480, // 8 hours to refill
     production: [
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const glucose = state.signals.glucose ?? 90;
           const insulin = state.signals.insulin ?? 8;
           const glycogen = state.auxiliary?.muscleGlycogen ?? 0.8;
@@ -376,7 +386,7 @@ export const muscleGlycogen: AuxiliaryDefinition = {
       {
         type: "linear",
         rate: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           // Exercise depletes muscle glycogen
           const burn = state.signals.burnRate ?? 1.15;
           const bmrMin = 1.15;
@@ -398,19 +408,20 @@ export const hydration: SignalDefinition = {
   key: "hydration",
   label: "Hydration",
   unit: "%",
-  description: "Fluid balance status affecting performance and cognitive function.",
+  description:
+    "Fluid balance status affecting performance and cognitive function.",
   idealTendency: "higher",
   dynamics: {
     // Setpoint of 0 means without water intake, hydration decays to zero (death)
     // Water interventions add to production to maintain healthy levels
-    setpoint: (ctx: any, state: any) => 0,
+    setpoint: (ctx, state) => 0,
     tau: 4000, // ~2.8 days - calibrated so critical (30%) reached in ~3 days
     production: [], // Driven by water intake interventions
     clearance: [
       {
         type: "linear",
         rate: 0.0001, // Small additional loss from activity/sweating
-        transform: (value: number, state: any, ctx: any) => {
+        transform: (value: number, state, ctx: any) => {
           // Exercise increases water loss
           const burn = state.signals?.burnRate ?? 1.15;
           const exerciseIntensity = Math.max(0, burn - 1.15);
@@ -433,7 +444,8 @@ export const hydration: SignalDefinition = {
       pattern: { type: "falls_below", value: 80 },
       outcome: "warning",
       message: "Mild dehydration detected",
-      description: "You may experience reduced cognitive performance and energy. Drink water.",
+      description:
+        "You may experience reduced cognitive performance and energy. Drink water.",
     },
     {
       id: "hydration_moderate_dehydration",
@@ -441,7 +453,8 @@ export const hydration: SignalDefinition = {
       pattern: { type: "falls_below", value: 60 },
       outcome: "warning",
       message: "Moderate dehydration - drink water soon",
-      description: "Dehydration is affecting your physical and mental performance.",
+      description:
+        "Dehydration is affecting your physical and mental performance.",
     },
     {
       id: "hydration_severe_dehydration",
@@ -454,10 +467,16 @@ export const hydration: SignalDefinition = {
     {
       id: "hydration_rapid_loss",
       signal: "hydration",
-      pattern: { type: "decreases_by", amount: 20, mode: "absolute", windowMins: 120 },
+      pattern: {
+        type: "decreases_by",
+        amount: 20,
+        mode: "absolute",
+        windowMins: 120,
+      },
       outcome: "warning",
       message: "Rapid fluid loss detected",
-      description: "You're losing fluids quickly, likely from exercise or heat. Increase water intake.",
+      description:
+        "You're losing fluids quickly, likely from exercise or heat. Increase water intake.",
     },
     {
       id: "hydration_overhydration",
@@ -465,15 +484,22 @@ export const hydration: SignalDefinition = {
       pattern: { type: "exceeds", value: 110 },
       outcome: "warning",
       message: "Over-hydration detected",
-      description: "Excessive fluid intake can lead to electrolyte imbalance (hyponatremia). Slow down your water consumption.",
+      description:
+        "Excessive fluid intake can lead to electrolyte imbalance (hyponatremia). Slow down your water consumption.",
     },
     {
       id: "hydration_too_fast",
       signal: "hydration",
-      pattern: { type: "increases_by", amount: 10, mode: "absolute", windowMins: 15 },
+      pattern: {
+        type: "increases_by",
+        amount: 10,
+        mode: "absolute",
+        windowMins: 15,
+      },
       outcome: "warning",
       message: "Drinking too much too fast",
-      description: "You are hydrating very rapidly. Ensure you are also maintaining electrolyte balance to avoid water intoxication.",
+      description:
+        "You are hydrating very rapidly. Ensure you are also maintaining electrolyte balance to avoid water intoxication.",
     },
   ],
 };
@@ -487,10 +513,11 @@ export const heatShockProteins: SignalDefinition = {
   key: "heatShockProteins",
   label: "Heat Shock Proteins",
   unit: "x",
-  description: "Cellular stress response proteins that promote repair and longevity.",
+  description:
+    "Cellular stress response proteins that promote repair and longevity.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 360, // 6 hours
     production: [],
     clearance: [{ type: "linear", rate: 0.005 }],
@@ -512,13 +539,13 @@ export const heatShockProteins: SignalDefinition = {
 export const mitochondrialDensity: AuxiliaryDefinition = {
   key: "mitochondrialDensity",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 1.0,
+    setpoint: (ctx, state) => 1.0,
     tau: 43200, // 30 days - slow adaptation
     production: [
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const ampk = state.signals.ampk ?? 1.0;
           // AMPK activation from moderate exercise drives mitochondrial biogenesis
           return ampk > 1.2 ? 0.00001 * (ampk - 1.2) : 0;

@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 /**
  * ERECTILE FUNCTION (Male)
@@ -13,7 +13,7 @@ export const erectileFunction: SignalDefinition = {
     "Male erectile quality driven by blood flow (nitric oxide), testosterone, and psychological state. Higher values indicate stronger, more reliable erections.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Base erectile function depends on age
       const age = ctx.subject?.age ?? 35;
       const ageEffect = Math.max(0.6, 1.0 - (age - 25) * 0.008); // Gradual decline after 25
@@ -34,7 +34,8 @@ export const erectileFunction: SignalDefinition = {
       const dopamine = state.signals.dopamine ?? 50;
       const arousalEffect = Math.min(1.3, 0.8 + dopamine / 200);
 
-      const base = 70 * ageEffect * noEffect * testEffect * stressEffect * arousalEffect;
+      const base =
+        70 * ageEffect * noEffect * testEffect * stressEffect * arousalEffect;
       return Math.max(0, Math.min(100, base));
     },
     tau: 10,
@@ -61,7 +62,8 @@ export const erectileFunction: SignalDefinition = {
       pattern: { type: "falls_below", value: 40, sustainedMins: 1440 },
       outcome: "warning",
       message: "Erectile Function impaired",
-      description: "Low nitric oxide, low testosterone, or high stress is affecting function.",
+      description:
+        "Low nitric oxide, low testosterone, or high stress is affecting function.",
     },
   ],
 };
@@ -79,7 +81,7 @@ export const libido: SignalDefinition = {
     "Sexual desire and drive. Influenced by testosterone, dopamine, energy levels, and stress.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Testosterone is primary driver
       const testosterone = state.signals.testosterone ?? 500;
       const testEffect = Math.min(1.3, testosterone / 450);
@@ -100,7 +102,13 @@ export const libido: SignalDefinition = {
       const prolactin = state.signals.prolactin ?? 10;
       const prolactinEffect = Math.max(0.3, 1.0 - (prolactin - 10) * 0.02);
 
-      const base = 60 * testEffect * dopamineEffect * energyEffect * stressEffect * prolactinEffect;
+      const base =
+        60 *
+        testEffect *
+        dopamineEffect *
+        energyEffect *
+        stressEffect *
+        prolactinEffect;
       return Math.max(0, Math.min(100, base));
     },
     tau: 30,

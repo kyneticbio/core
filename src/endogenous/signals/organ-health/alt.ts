@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const alt: SignalDefinition = {
   key: "alt",
@@ -8,13 +8,13 @@ export const alt: SignalDefinition = {
   description: "Alanine Aminotransferase. Liver stress marker.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: (ctx, state) => ctx.subject?.bloodwork?.metabolic?.alt_U_L ?? 25,
+    setpoint: (ctx, state) => ctx.subject.bloodwork?.metabolic?.alt_U_L ?? 25,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) => ctx.subject?.bloodwork?.metabolic?.alt_U_L ?? 25,
+  initialValue: (ctx) => ctx.subject.bloodwork?.metabolic?.alt_U_L ?? 25,
   display: {
     referenceRange: { min: 0, max: 40 },
   },

@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const choline: SignalDefinition = {
   key: "choline",
@@ -25,7 +25,8 @@ export const choline: SignalDefinition = {
       pattern: { type: "falls_below", value: 7, sustainedMins: 10080 },
       outcome: "warning",
       message: "Low Choline",
-      description: "Choline is vital for liver health and brain function (ACh precursor).",
+      description:
+        "Choline is vital for liver health and brain function (ACh precursor).",
     },
   ],
 };

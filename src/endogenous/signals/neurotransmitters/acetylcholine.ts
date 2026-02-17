@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, windowPhase } from "../../utils";
 
 export const acetylcholine: SignalDefinition = {
@@ -10,7 +10,7 @@ export const acetylcholine: SignalDefinition = {
     "A critical messenger for both your brain and your muscles. In the brain, it supports learning, memory, and sustained attention. It's often associated with 'speed of thought' and your ability to process new information quickly.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const remDrive = ctx.isAsleep ? 0.8 : 0.4;
       const wakeFocus = windowPhase(p, hourToPhase(10), hourToPhase(12), 0.5);
@@ -34,7 +34,8 @@ export const acetylcholine: SignalDefinition = {
       pattern: { type: "exceeds", value: 25, sustainedMins: 30 },
       outcome: "win",
       message: "Peak Cognitive Focus",
-      description: "High acetylcholine supports learning, memory, and sustained attention.",
+      description:
+        "High acetylcholine supports learning, memory, and sustained attention.",
     },
   ],
 };

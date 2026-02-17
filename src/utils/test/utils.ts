@@ -6,25 +6,32 @@ import type {
   Physiology,
   ItemForWorker,
   InterventionDef,
-  SimulationState, 
-  DynamicsContext, 
+  SimulationState,
+  DynamicsContext,
   ActiveIntervention,
-  MonitorResult
-} from '../../index';
-import { SIGNALS_ALL } from '../../index';
-import { rangeMinutes } from '../time';
-import { buildInterventionLibrary } from '../../index';
-import { buildConditionAdjustments, type ConditionKey, type ConditionStateSnapshot, derivePhysiology, type Subject as SubjectType } from '../../index';
+  MonitorResult,
+} from "../../index";
+import { SIGNALS_ALL } from "../../index";
+import { rangeMinutes } from "../time";
+import { buildInterventionLibrary } from "../../index";
+import {
+  buildConditionAdjustments,
+  type ConditionKey,
+  type ConditionStateSnapshot,
+  derivePhysiology,
+  type Subject as SubjectType,
+} from "../../index";
 import {
   integrateStep,
   getAllUnifiedDefinitions,
   AUXILIARY_DEFINITIONS,
   SIGNAL_DEFINITIONS,
   isReceptor,
-  getReceptorSignals
+  getReceptorSignals,
+  getAllReceptorKeys,
+  getAllTransporterKeys,
 } from "../../index";
-import { createInitialState as genericCreateInitialState } from "../../engine/state";
-import { runOptimizedV2 } from '../../index';
+import { runOptimizedV2 } from "../../index";
 
 // --- Types ---
 
@@ -34,7 +41,9 @@ export interface TestEngineConfig {
   /** Grid step in minutes (default: 5) */
   gridStep?: number;
   /** Condition configurations */
-  conditions?: Partial<Record<ConditionKey, { enabled: boolean; params: Record<string, number> }>>;
+  conditions?: Partial<
+    Record<ConditionKey, { enabled: boolean; params: Record<string, number> }>
+  >;
   /** Timeline interventions */
   interventions?: TestIntervention[];
   /** Subject demographics */
@@ -93,7 +102,7 @@ const DEFAULT_SUBJECT: SubjectType = {
   age: 30,
   weight: 70,
   height: 170,
-  sex: 'male',
+  sex: "male",
   cycleLength: 28,
   lutealPhaseLength: 14,
   cycleDay: 1,
@@ -105,7 +114,9 @@ const DEFAULT_SUBJECT: SubjectType = {
  * Import and run the engine computation logic synchronously.
  * This bypasses the Web Worker for testing purposes.
  */
-export async function runEngine(config: TestEngineConfig = {}): Promise<EngineResult> {
+export async function runEngine(
+  config: TestEngineConfig = {},
+): Promise<EngineResult> {
   const {
     duration = 1440,
     gridStep = 5,
@@ -143,7 +154,10 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
     if (conditionState[key as ConditionKey] && value) {
       conditionState[key as ConditionKey] = {
         enabled: value.enabled ?? false,
-        params: { ...conditionState[key as ConditionKey].params, ...(value.params ?? {}) },
+        params: {
+          ...conditionState[key as ConditionKey].params,
+          ...(value.params ?? {}),
+        },
       };
     }
   }
@@ -165,7 +179,8 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
   const items: ItemForWorker[] = interventions.map((int, idx) => ({
     id: `test-${idx}`,
     startMin: int.startMin as Minute,
-    durationMin: int.durationMin ?? defsMap.get(int.key)?.defaultDurationMin ?? 60,
+    durationMin:
+      int.durationMin ?? defsMap.get(int.key)?.defaultDurationMin ?? 60,
     meta: {
       key: int.key,
       label: int.key,
@@ -209,7 +224,10 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
   };
 
   // Run computation (import worker logic)
-  const { signals, auxiliarySeries, monitorResults } = await computeEngineSync(request, includeSignals);
+  const { signals, auxiliarySeries, monitorResults } = await computeEngineSync(
+    request,
+    includeSignals,
+  );
 
   return {
     signals,
@@ -226,39 +244,27 @@ export async function runEngine(config: TestEngineConfig = {}): Promise<EngineRe
  */
 async function computeEngineSync(
   request: WorkerComputeRequest,
-  includeSignals: readonly Signal[]
-): Promise<{ 
-  signals: Record<Signal, Float32Array>; 
+  includeSignals: readonly Signal[],
+): Promise<{
+  signals: Record<Signal, Float32Array>;
   auxiliarySeries: Record<string, Float32Array>;
   monitorResults: MonitorResult[];
 }> {
   const signalDefinitions = getAllUnifiedDefinitions();
   const auxDefinitions = AUXILIARY_DEFINITIONS;
 
-  // Create a wrapper for createInitialState that matches what the engine expects
-  // Engine calls: createInitialState(signalDefs, auxDefs, ctx, debug)
-  // Generic needs: createInitialState(signals, signalDefs, auxDefs, ctx, debug)
-  const createInitialState = (
-    signalDefs: any,
-    auxDefs: any,
-    ctx: { subject: any; physiology: any; isAsleep: boolean },
-    debug?: any
-  ) => {
-    return genericCreateInitialState(includeSignals, signalDefs, auxDefs, ctx, debug);
-  };
-
   const system = {
     signals: includeSignals,
     signalDefinitions,
     auxDefinitions,
     resolver: { isReceptor, getReceptorSignals },
-    createInitialState
+    receptorKeys: [...getAllReceptorKeys(), ...getAllTransporterKeys()],
   };
-  const response = runOptimizedV2(request, system as any);
-  return { 
-    signals: response.series, 
+  const response = runOptimizedV2(request, system);
+  return {
+    signals: response.series,
     auxiliarySeries: response.auxiliarySeries,
-    monitorResults: response.monitorResults
+    monitorResults: response.monitorResults,
   };
 }
 
@@ -267,7 +273,10 @@ async function computeEngineSync(
 /**
  * Calculate statistics for a signal
  */
-export function signalStats(signal: Float32Array, gridMins: Minute[]): SignalStats {
+export function signalStats(
+  signal: Float32Array,
+  gridMins: Minute[],
+): SignalStats {
   let min = Infinity;
   let max = -Infinity;
   let sum = 0;
@@ -301,7 +310,10 @@ export function signalStats(signal: Float32Array, gridMins: Minute[]): SignalSta
 /**
  * Find peak value and time
  */
-export function peak(signal: Float32Array, gridMins: Minute[]): { value: number; time: number } {
+export function peak(
+  signal: Float32Array,
+  gridMins: Minute[],
+): { value: number; time: number } {
   let max = -Infinity;
   let time = 0;
   for (let i = 0; i < signal.length; i++) {
@@ -316,7 +328,10 @@ export function peak(signal: Float32Array, gridMins: Minute[]): { value: number;
 /**
  * Find trough value and time
  */
-export function trough(signal: Float32Array, gridMins: Minute[]): { value: number; time: number } {
+export function trough(
+  signal: Float32Array,
+  gridMins: Minute[],
+): { value: number; time: number } {
   let min = Infinity;
   let time = 0;
   for (let i = 0; i < signal.length; i++) {
@@ -342,7 +357,12 @@ export function mean(signal: Float32Array): number {
 /**
  * Calculate area under curve (trapezoidal integration)
  */
-export function auc(signal: Float32Array, gridMins: Minute[], startMin?: number, endMin?: number): number {
+export function auc(
+  signal: Float32Array,
+  gridMins: Minute[],
+  startMin?: number,
+  endMin?: number,
+): number {
   const start = startMin ?? gridMins[0];
   const end = endMin ?? gridMins[gridMins.length - 1];
 
@@ -364,7 +384,7 @@ export function auc(signal: Float32Array, gridMins: Minute[], startMin?: number,
  */
 export function correlation(a: Float32Array, b: Float32Array): number {
   if (a.length !== b.length) {
-    throw new Error('Signals must have same length');
+    throw new Error("Signals must have same length");
   }
 
   const n = a.length;
@@ -394,7 +414,7 @@ export function settleTime(
   signal: Float32Array,
   gridMins: Minute[],
   target: number,
-  tolerance: number = 0.05
+  tolerance: number = 0.05,
 ): number | null {
   const threshold = target * tolerance;
 
@@ -417,7 +437,11 @@ export function settleTime(
 /**
  * Get signal value at a specific time
  */
-export function valueAt(signal: Float32Array, gridMins: Minute[], targetMin: number): number {
+export function valueAt(
+  signal: Float32Array,
+  gridMins: Minute[],
+  targetMin: number,
+): number {
   // Find closest grid point
   let closestIdx = 0;
   let closestDist = Infinity;

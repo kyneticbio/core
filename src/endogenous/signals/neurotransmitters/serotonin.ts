@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const serotonin: SignalDefinition = {
@@ -10,7 +10,7 @@ export const serotonin: SignalDefinition = {
     "The body's natural mood stabilizer. Serotonin helps regulate everything from sleep and appetite to social behavior and contentment. Higher levels are generally associated with a sense of well-being and emotional resilience.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const lateMorning = gaussianPhase(p, hourToPhase(11), 1.0);
       const afternoon = gaussianPhase(p, hourToPhase(15), 0.8);
@@ -21,7 +21,7 @@ export const serotonin: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.002,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const precursor = state.auxiliary.serotoninPrecursor ?? 0.7;
           return precursor * 4;
         },
@@ -49,7 +49,8 @@ export const serotonin: SignalDefinition = {
       pattern: { type: "exceeds", value: 12, sustainedMins: 30 },
       outcome: "win",
       message: "Emotional Resilience boost",
-      description: "Serotonin levels are high, promoting contentment and mental stability.",
+      description:
+        "Serotonin levels are high, promoting contentment and mental stability.",
     },
     {
       id: "serotonin_crash",

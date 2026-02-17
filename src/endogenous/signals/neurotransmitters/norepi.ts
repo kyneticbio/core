@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -15,7 +15,7 @@ export const norepi: SignalDefinition = {
     "Both a hormone and a neurotransmitter, this is your brain's 'focus' signal. It increases alertness and arousal, sharpening your attention and preparing your body for action-essential for concentration and productivity.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(8.5), 1.0);
       const stressResponse = gaussianPhase(p, hourToPhase(9), 0.5);
@@ -26,7 +26,7 @@ export const norepi: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.002,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const vesicles = state.auxiliary.norepinephrineVesicles ?? 0.8;
           return vesicles * 281;
         },

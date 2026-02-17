@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -14,7 +14,7 @@ export const orexin: SignalDefinition = {
   description: "The brain's master 'wakefulness' switch.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(7.8), 1.0);
       const feedingCue =
@@ -55,7 +55,8 @@ export const orexin: SignalDefinition = {
       pattern: { type: "falls_below", value: 150, sustainedMins: 30 },
       outcome: "warning",
       message: "Orexin crash detected",
-      description: "Sudden drop in wakefulness. You may feel an irresistible urge to sleep (narcolepsy-like trait).",
+      description:
+        "Sudden drop in wakefulness. You may feel an irresistible urge to sleep (narcolepsy-like trait).",
     },
   ],
 };

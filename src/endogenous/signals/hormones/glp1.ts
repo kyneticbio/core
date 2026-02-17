@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -15,7 +15,7 @@ export const glp1: SignalDefinition = {
     "A powerful gut signal that slows down digestion and tells your brain you're getting full.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const bk = gaussianPhase(p, hourToPhase(8.5), widthToConcentration(70));
       const ln = gaussianPhase(p, hourToPhase(13.0), widthToConcentration(80));
@@ -38,7 +38,8 @@ export const glp1: SignalDefinition = {
       pattern: { type: "exceeds", value: 35, sustainedMins: 30 },
       outcome: "win",
       message: "Strong Satiety Signal (GLP-1)",
-      description: "GLP-1 is elevated, which slows digestion and suppresses appetite. Good for weight management.",
+      description:
+        "GLP-1 is elevated, which slows digestion and suppresses appetite. Good for weight management.",
     },
   ],
 };

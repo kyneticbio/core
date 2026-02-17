@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 // === Scientific Constants ===
 export const GLUCOSE_CONSTANTS = {
@@ -15,7 +15,8 @@ export const glucose: SignalDefinition = {
     "The primary fuel for your brain and muscles. Maintaining blood sugar in a steady range is essential for consistent energy levels, mental clarity, and long-term metabolic health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.metabolic?.glucose_mg_dL ?? 90,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.metabolic?.glucose_mg_dL ?? 90,
     tau: 35.7,
     production: [{ source: "constant", coefficient: 0.1 }],
     clearance: [
@@ -26,7 +27,7 @@ export const glucose: SignalDefinition = {
       { source: "adrenaline", effect: "stimulate", strength: 0.0014 },
     ],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.metabolic?.glucose_mg_dL ?? 90,
+  initialValue: (ctx) => ctx.subject.bloodwork?.metabolic?.glucose_mg_dL ?? 90,
   min: 40,
   max: 400,
   display: {
@@ -39,7 +40,8 @@ export const glucose: SignalDefinition = {
       pattern: { type: "exceeds", value: 180, sustainedMins: 15 },
       outcome: "warning",
       message: "Glucose spiked above 180 mg/dL",
-      description: "Blood sugar is elevated. This can happen after high-carb meals or during stress.",
+      description:
+        "Blood sugar is elevated. This can happen after high-carb meals or during stress.",
     },
     {
       id: "glucose_hypoglycemia",
@@ -47,7 +49,8 @@ export const glucose: SignalDefinition = {
       pattern: { type: "falls_below", value: 70 },
       outcome: "warning",
       message: "Glucose dropped below 70 mg/dL",
-      description: "Low blood sugar can cause shakiness, confusion, and fatigue.",
+      description:
+        "Low blood sugar can cause shakiness, confusion, and fatigue.",
     },
     {
       id: "glucose_severe_hypoglycemia",
@@ -60,18 +63,29 @@ export const glucose: SignalDefinition = {
     {
       id: "glucose_high_variability",
       signal: "glucose",
-      pattern: { type: "high_variability", windowMins: 1440, cvThreshold: 0.36 },
+      pattern: {
+        type: "high_variability",
+        windowMins: 1440,
+        cvThreshold: 0.36,
+      },
       outcome: "warning",
       message: "High glucose variability detected",
-      description: "Large swings in blood sugar may indicate poor glycemic control.",
+      description:
+        "Large swings in blood sugar may indicate poor glycemic control.",
     },
     {
       id: "glucose_rapid_rise",
       signal: "glucose",
-      pattern: { type: "increases_by", amount: 60, mode: "absolute", windowMins: 30 },
+      pattern: {
+        type: "increases_by",
+        amount: 60,
+        mode: "absolute",
+        windowMins: 30,
+      },
       outcome: "warning",
       message: "Rapid Glucose rise",
-      description: "Blood sugar is rising very quickly, likely from high-glycemic carbohydrates.",
+      description:
+        "Blood sugar is rising very quickly, likely from high-glycemic carbohydrates.",
     },
     {
       id: "glucose_stability",
@@ -79,7 +93,8 @@ export const glucose: SignalDefinition = {
       pattern: { type: "low_variability", windowMins: 1440, cvThreshold: 0.1 },
       outcome: "win",
       message: "Excellent Glycemic Stability",
-      description: "Your blood sugar has remained remarkably steady today. Great for energy and metabolic health.",
+      description:
+        "Your blood sugar has remained remarkably steady today. Great for energy and metabolic health.",
     },
   ],
 };

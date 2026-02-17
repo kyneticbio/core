@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { getMenstrualHormones } from "../../utils";
 
 export const estrogen: SignalDefinition = {
@@ -10,12 +10,12 @@ export const estrogen: SignalDefinition = {
     "The primary female sex hormone, vital for brain health and mood.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       if (ctx.subject.sex === "male") {
-        return ctx.subject?.bloodwork?.hormones?.estradiol_pg_mL ?? 30.0;
+        return ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 30.0;
       }
       // Scale cycle rhythm around subject's baseline if bloodwork available
-      const baselineE2 = ctx.subject?.bloodwork?.hormones?.estradiol_pg_mL ?? 40;
+      const baselineE2 = ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 40;
       const scale = baselineE2 / 40;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =
@@ -23,7 +23,9 @@ export const estrogen: SignalDefinition = {
         Math.floor(ctx.circadianMinuteOfDay / 1440);
       const effectiveDay = cycleDay % cycleLength;
       return (
-        (20.0 + 250.0 * getMenstrualHormones(effectiveDay, cycleLength).estrogen) * scale
+        (20.0 +
+          250.0 * getMenstrualHormones(effectiveDay, cycleLength).estrogen) *
+        scale
       );
     },
     tau: 120,
@@ -31,7 +33,7 @@ export const estrogen: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.008 }],
     couplings: [],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.estradiol_pg_mL ?? 40,
+  initialValue: (ctx) => ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 40,
   display: {
     referenceRange: { min: 50, max: 400 },
   },
@@ -42,7 +44,8 @@ export const estrogen: SignalDefinition = {
       pattern: { type: "exceeds", value: 450, sustainedMins: 1440 },
       outcome: "warning",
       message: "High Estrogen (Estrogen Dominance)",
-      description: "Elevated estrogen can cause water retention, mood swings, and other issues if not balanced by progesterone.",
+      description:
+        "Elevated estrogen can cause water retention, mood swings, and other issues if not balanced by progesterone.",
     },
     {
       id: "estrogen_deficiency",
@@ -50,7 +53,8 @@ export const estrogen: SignalDefinition = {
       pattern: { type: "falls_below", value: 20, sustainedMins: 1440 },
       outcome: "warning",
       message: "Low Estrogen",
-      description: "Very low estrogen can affect mood, bone density, and cognitive function.",
+      description:
+        "Very low estrogen can affect mood, bone density, and cognitive function.",
     },
   ],
 };

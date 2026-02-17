@@ -1,4 +1,8 @@
-import type { SignalDefinition, AuxiliaryDefinition } from "../../../engine";
+import type {
+  SignalDefinition,
+  AuxiliaryDefinition,
+  DynamicsContext,
+} from "../../../engine";
 
 export const bdnf: SignalDefinition = {
   key: "bdnf",
@@ -16,8 +20,7 @@ export const bdnf: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.005,
-        transform: (_: any, state: any) =>
-          state.auxiliary.bdnfExpression ?? 0.6,
+        transform: (_: any, state) => state.auxiliary.bdnfExpression ?? 0.6,
       },
     ],
     clearance: [{ type: "linear", rate: 0.002 }],
@@ -33,10 +36,16 @@ export const bdnf: SignalDefinition = {
     {
       id: "bdnf_boost",
       signal: "bdnf",
-      pattern: { type: "increases_by", amount: 5, mode: "absolute", windowMins: 120 },
+      pattern: {
+        type: "increases_by",
+        amount: 5,
+        mode: "absolute",
+        windowMins: 120,
+      },
       outcome: "win",
       message: "BDNF Boost",
-      description: "Neuroplasticity signaling is active. Good for learning and memory.",
+      description:
+        "Neuroplasticity signaling is active. Good for learning and memory.",
     },
   ],
 };
@@ -64,9 +73,7 @@ export const mtor: SignalDefinition = {
   dynamics: {
     setpoint: (ctx, state) => 1.0,
     tau: 15,
-    production: [
-      { source: "insulin", coefficient: 0.0005 }
-    ],
+    production: [{ source: "insulin", coefficient: 0.0005 }],
     clearance: [{ type: "linear", rate: 0.05 }],
     couplings: [],
   },
@@ -115,7 +122,8 @@ export const ampk: SignalDefinition = {
       pattern: { type: "exceeds", value: 1.2, sustainedMins: 60 },
       outcome: "win",
       message: "Metabolic reset (AMPK active)",
-      description: "Energy sensing pathways active. Promotes autophagy and fat burning.",
+      description:
+        "Energy sensing pathways active. Promotes autophagy and fat burning.",
     },
   ],
 };
@@ -129,7 +137,7 @@ export const muscleProteinSynthesis: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const mTOR = state.signals.mtor;
           // MPS scales with mTOR activation, but only when mTOR is above baseline (1.0)
           // Also implicitly requires amino acid availability which is part of mTOR production
@@ -151,7 +159,7 @@ export const muscleMass: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const mps = state.auxiliary?.muscleProteinSynthesis ?? 0;
           // MPS represents building rate.
           // Calibrated so that sustained high mTOR (mps ~ 20) yields ~1kg muscle/month
@@ -165,7 +173,7 @@ export const muscleMass: AuxiliaryDefinition = {
   },
   initialValue: 0,
   min: -50, // Can lose up to 50kg muscle
-  max: 50,  // Can gain up to 50kg muscle
+  max: 50, // Can gain up to 50kg muscle
 };
 
 export const strengthReadiness: SignalDefinition = {
@@ -181,7 +189,7 @@ export const strengthReadiness: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.001,
-        transform: (_: any, state: any, ctx: any) => {
+        transform: (_: any, state, ctx) => {
           // Recovery is boosted by sleep and growth hormone
           const gh = state.signals.growthHormone ?? 5;
           const sleepBoost = ctx.isAsleep ? 2.0 : 1.0;
@@ -193,7 +201,7 @@ export const strengthReadiness: SignalDefinition = {
       {
         type: "linear",
         rate: 0.001,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           // Exercise directly depletes strength readiness
           // burnRate above BMR indicates physical activity
           const burn = state.signals?.burnRate ?? 1.15;
@@ -224,7 +232,8 @@ export const strengthReadiness: SignalDefinition = {
       pattern: { type: "falls_below", value: 0.6, sustainedMins: 60 },
       outcome: "warning",
       message: "High muscular fatigue",
-      description: "Your strength readiness is low. Consider rest or light recovery.",
+      description:
+        "Your strength readiness is low. Consider rest or light recovery.",
     },
     {
       id: "strength_peak",
@@ -250,7 +259,7 @@ export const neuroplasticityScore: SignalDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const bdnf = state.signals.bdnf;
           return (bdnf / 25) * 0.01;
         },
@@ -272,7 +281,8 @@ export const neuroplasticityScore: SignalDefinition = {
       pattern: { type: "exceeds", value: 1.3, sustainedMins: 30 },
       outcome: "win",
       message: "Peak Neuroplasticity",
-      description: "Your brain is in an optimal state for learning and creating new neural connections.",
+      description:
+        "Your brain is in an optimal state for learning and creating new neural connections.",
     },
   ],
 };

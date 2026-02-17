@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const adrenaline: SignalDefinition = {
@@ -10,7 +10,7 @@ export const adrenaline: SignalDefinition = {
     "The 'acute stress' signal. Adrenaline rapidly increases heart rate and blood pressure while mobilizing sugar for immediate energy. It's the chemical driver of the 'fight or flight' response.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       return 30.0 + 80.0 * gaussianPhase(p, hourToPhase(10), 2.0);
     },
@@ -36,7 +36,8 @@ export const adrenaline: SignalDefinition = {
       pattern: { type: "exceeds", value: 500, sustainedMins: 5 },
       outcome: "critical",
       message: "Extreme Adrenaline (Panic/Shock)",
-      description: "Adrenaline has reached levels associated with extreme fear, panic, or physical shock.",
+      description:
+        "Adrenaline has reached levels associated with extreme fear, panic, or physical shock.",
     },
     {
       id: "adrenaline_fight_or_flight",
@@ -44,7 +45,8 @@ export const adrenaline: SignalDefinition = {
       pattern: { type: "exceeds", value: 200, sustainedMins: 10 },
       outcome: "warning",
       message: "Fight-or-Flight activated",
-      description: "Significant acute stress response. Heart rate and focus are likely elevated.",
+      description:
+        "Significant acute stress response. Heart rate and focus are likely elevated.",
     },
   ],
 };

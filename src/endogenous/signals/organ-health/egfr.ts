@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const egfr: SignalDefinition = {
   key: "egfr",
@@ -8,13 +8,14 @@ export const egfr: SignalDefinition = {
   description: "Estimated Glomerular Filtration Rate. Kidney function marker.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx, state) => ctx.subject?.bloodwork?.metabolic?.eGFR_mL_min ?? 100,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.metabolic?.eGFR_mL_min ?? 100,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) => ctx.subject?.bloodwork?.metabolic?.eGFR_mL_min ?? 100,
+  initialValue: (ctx) => ctx.subject.bloodwork?.metabolic?.eGFR_mL_min ?? 100,
   display: {
     referenceRange: { min: 90, max: 120 },
   },

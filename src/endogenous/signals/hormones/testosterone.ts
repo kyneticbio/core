@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -15,14 +15,15 @@ export const testosterone: SignalDefinition = {
     "The primary male sex hormone, foundational for muscle mass, bone density, and drive.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const ageFactor = Math.max(
         0.5,
         1 - Math.max(0, ctx.subject.age - 30) * 0.01,
       );
       if (ctx.subject.sex === "male") {
         // Scale circadian rhythm around subject's baseline if bloodwork available
-        const baselineT = ctx.subject?.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500;
+        const baselineT =
+          ctx.subject.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500;
         const scale = baselineT / 500;
         const p = minuteToPhase(ctx.circadianMinuteOfDay);
         const circadian =
@@ -30,7 +31,8 @@ export const testosterone: SignalDefinition = {
           300.0 * gaussianPhase(p, hourToPhase(8), widthToConcentration(240));
         return circadian * ageFactor * scale;
       } else {
-        const baselineT = ctx.subject?.bloodwork?.hormones?.total_testosterone_ng_dL ?? 40;
+        const baselineT =
+          ctx.subject.bloodwork?.hormones?.total_testosterone_ng_dL ?? 40;
         return baselineT * ageFactor;
       }
     },
@@ -39,7 +41,8 @@ export const testosterone: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.015 }],
     couplings: [],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500,
+  initialValue: (ctx) =>
+    ctx.subject.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500,
   display: {
     referenceRange: { min: 300, max: 1000 },
   },
@@ -50,7 +53,8 @@ export const testosterone: SignalDefinition = {
       pattern: { type: "falls_below", value: 300, sustainedMins: 1440 },
       outcome: "warning",
       message: "Low Testosterone detected",
-      description: "Testosterone is below the healthy range. This can affect drive, muscle mass, and mood.",
+      description:
+        "Testosterone is below the healthy range. This can affect drive, muscle mass, and mood.",
     },
     {
       id: "peak_testosterone",
@@ -58,7 +62,8 @@ export const testosterone: SignalDefinition = {
       pattern: { type: "exceeds", value: 800, sustainedMins: 60 },
       outcome: "win",
       message: "Optimal Testosterone Drive",
-      description: "Testosterone is in the upper healthy range, supporting physical performance and recovery.",
+      description:
+        "Testosterone is in the upper healthy range, supporting physical performance and recovery.",
     },
   ],
 };

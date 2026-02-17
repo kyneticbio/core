@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const selenium: SignalDefinition = {
   key: "selenium",
@@ -25,7 +25,8 @@ export const selenium: SignalDefinition = {
       pattern: { type: "falls_below", value: 70, sustainedMins: 10080 },
       outcome: "warning",
       message: "Low Selenium",
-      description: "Selenium is vital for antioxidant defense and thyroid health.",
+      description:
+        "Selenium is vital for antioxidant defense and thyroid health.",
     },
   ],
 };

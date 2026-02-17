@@ -1,4 +1,8 @@
-import type { SignalDefinition, AuxiliaryDefinition } from "../../../engine";
+import type {
+  SignalDefinition,
+  AuxiliaryDefinition,
+  DynamicsContext,
+} from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -15,7 +19,7 @@ export const growthHormone: SignalDefinition = {
     "The primary 'repair and recovery' signal. Released mainly during deep sleep and after intense exercise.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const sleepOnset = gaussianPhase(
         p,
@@ -34,7 +38,7 @@ export const growthHormone: SignalDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => state.auxiliary.ghReserve ?? 0.8,
+        transform: (_: any, state) => state.auxiliary.ghReserve ?? 0.8,
       },
     ],
     clearance: [{ type: "linear", rate: 0.05 }],
@@ -55,7 +59,8 @@ export const growthHormone: SignalDefinition = {
       pattern: { type: "exceeds", value: 6, sustainedMins: 20 },
       outcome: "win",
       message: "Anabolic Sleep Pulse (GH)",
-      description: "Significant Growth Hormone release detected. This is vital for tissue repair and muscle growth.",
+      description:
+        "Significant Growth Hormone release detected. This is vital for tissue repair and muscle growth.",
     },
     {
       id: "gh_suppression",
@@ -63,7 +68,8 @@ export const growthHormone: SignalDefinition = {
       pattern: { type: "falls_below", value: 0.2, sustainedMins: 1440 },
       outcome: "warning",
       message: "Low Growth Hormone activity",
-      description: "Chronic lack of GH pulses can impair recovery and body composition. Check sleep and stress levels.",
+      description:
+        "Chronic lack of GH pulses can impair recovery and body composition. Check sleep and stress levels.",
     },
   ],
 };
@@ -77,8 +83,7 @@ export const ghReserve: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 0.001,
-        transform: (_: any, state: any) =>
-          0.8 - (state.auxiliary.ghReserve ?? 0.8),
+        transform: (_: any, state) => 0.8 - (state.auxiliary.ghReserve ?? 0.8),
       },
     ],
     clearance: [],

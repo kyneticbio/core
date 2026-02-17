@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const iron: SignalDefinition = {
   key: "iron",
@@ -8,13 +8,14 @@ export const iron: SignalDefinition = {
   description: "Oxygen transport component.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.iron_ug_dL ?? 100,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.iron_ug_dL ?? 100,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.iron_ug_dL ?? 100,
+  initialValue: (ctx) => ctx.subject.bloodwork?.nutritional?.iron_ug_dL ?? 100,
   display: {
     referenceRange: { min: 60, max: 170 },
   },

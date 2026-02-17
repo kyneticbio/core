@@ -25,6 +25,7 @@ import {
   isReceptor,
   getReceptorSignals,
 } from "./targets";
+import { Physiology, Subject } from "src/types";
 
 export * from "./types";
 export * from "./signals";
@@ -113,7 +114,7 @@ export const initializeZeroState = () => {
  * Specialized createInitialState for the Human Physiology system.
  */
 export const createInitialState = (
-  ctx: { subject: any; physiology: any; isAsleep: boolean },
+  ctx: { subject: Subject; physiology: Physiology; isAsleep: boolean },
   debug?: any,
 ) => {
   // Derive all active receptor/transporter keys for state initialization

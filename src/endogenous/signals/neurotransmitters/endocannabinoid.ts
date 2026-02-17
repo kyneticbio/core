@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const endocannabinoid: SignalDefinition = {
@@ -10,7 +10,7 @@ export const endocannabinoid: SignalDefinition = {
     "Part of your body's internal 'homeostasis' system. Endocannabinoids like anandamide (the 'bliss molecule') help balance other signals, regulating mood, pain perception, and appetite while promoting a sense of calm and balance.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const morningRise = gaussianPhase(p, hourToPhase(9), 2.0);
       return 4.0 + 6.0 * morningRise;
@@ -36,7 +36,8 @@ export const endocannabinoid: SignalDefinition = {
       pattern: { type: "exceeds", value: 12, sustainedMins: 30 },
       outcome: "win",
       message: "Endogenous Bliss (Anandamide boost)",
-      description: "Higher endocannabinoid levels promote calm, reduce pain perception, and improve mood.",
+      description:
+        "Higher endocannabinoid levels promote calm, reduce pain perception, and improve mood.",
     },
   ],
 };

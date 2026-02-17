@@ -20,8 +20,9 @@ export const dopamineVesicles: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: VESICLE_DYNAMICS.DA_SYNTHESIS_RATE * 5,
-        transform: (_: any, state: any) => {
-          const V = state.auxiliary.dopamineVesicles ?? VESICLE_DYNAMICS.BASELINE_POOL;
+        transform: (_: any, state) => {
+          const V =
+            state.auxiliary.dopamineVesicles ?? VESICLE_DYNAMICS.BASELINE_POOL;
           return VESICLE_DYNAMICS.BASELINE_POOL * (1 - V);
         },
       },
@@ -40,10 +41,15 @@ export const norepinephrineVesicles: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: VESICLE_DYNAMICS.NE_SYNTHESIS_RATE * 4,
-        transform: (_: any, state: any) => VESICLE_DYNAMICS.BASELINE_POOL - (state.auxiliary.norepinephrineVesicles ?? VESICLE_DYNAMICS.BASELINE_POOL),
+        transform: (_: any, state) =>
+          VESICLE_DYNAMICS.BASELINE_POOL -
+          (state.auxiliary.norepinephrineVesicles ??
+            VESICLE_DYNAMICS.BASELINE_POOL),
       },
     ],
-    clearance: [{ type: "linear", rate: VESICLE_DYNAMICS.NE_RELEASE_RATE / 2.5 }],
+    clearance: [
+      { type: "linear", rate: VESICLE_DYNAMICS.NE_RELEASE_RATE / 2.5 },
+    ],
   },
   initialValue: VESICLE_DYNAMICS.BASELINE_POOL,
 };
@@ -57,9 +63,11 @@ export const serotoninPrecursor: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const insulin = state.signals.insulin;
-          return insulin > 15 ? VESICLE_DYNAMICS.SEROTONIN_SYNTHESIS_RATE * (insulin - 15) : 0;
+          return insulin > 15
+            ? VESICLE_DYNAMICS.SEROTONIN_SYNTHESIS_RATE * (insulin - 15)
+            : 0;
         },
       },
     ],
@@ -77,7 +85,7 @@ export const gabaPool: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 0.004,
-        transform: (_: any, state: any) => 0.7 - (state.auxiliary.gabaPool ?? 0.7),
+        transform: (_: any, state) => 0.7 - (state.auxiliary.gabaPool ?? 0.7),
       },
     ],
     clearance: [{ type: "linear", rate: 0.001 }],
@@ -94,7 +102,8 @@ export const glutamatePool: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 0.005,
-        transform: (_: any, state: any) => 0.7 - (state.auxiliary.glutamatePool ?? 0.7),
+        transform: (_: any, state) =>
+          0.7 - (state.auxiliary.glutamatePool ?? 0.7),
       },
     ],
     clearance: [{ type: "linear", rate: 0.002 }],

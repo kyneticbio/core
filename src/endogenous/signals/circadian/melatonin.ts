@@ -1,4 +1,5 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
+import type { Subject } from "src/types";
 import { minuteToPhase, hourToPhase, windowPhase } from "../../utils";
 
 export const melatonin: SignalDefinition = {
@@ -9,7 +10,7 @@ export const melatonin: SignalDefinition = {
     "Often called the 'vampire hormone,' melatonin is your brain's primary signal for biological night. It doesn't knock you out like a sedative, but rather opens the 'sleep gate' and helps coordinate your body's internal clocks.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       return 80.0 * windowPhase(p, hourToPhase(21), hourToPhase(7.5), 0.5);
     },
@@ -28,10 +29,16 @@ export const melatonin: SignalDefinition = {
     {
       id: "melatonin_dim_light_onset",
       signal: "melatonin",
-      pattern: { type: "increases_by", amount: 10, mode: "absolute", windowMins: 60 },
+      pattern: {
+        type: "increases_by",
+        amount: 10,
+        mode: "absolute",
+        windowMins: 60,
+      },
       outcome: "win",
       message: "Dim Light Melatonin Onset (DLMO)",
-      description: "Your body is preparing for sleep. This is the ideal time to reduce light exposure.",
+      description:
+        "Your body is preparing for sleep. This is the ideal time to reduce light exposure.",
     },
     {
       id: "melatonin_suppression",
@@ -39,7 +46,8 @@ export const melatonin: SignalDefinition = {
       pattern: { type: "falls_below", value: 10, sustainedMins: 30 },
       outcome: "warning",
       message: "Melatonin suppressed at night",
-      description: "Bright light or stress may be suppressing your natural sleep signal.",
+      description:
+        "Bright light or stress may be suppressing your natural sleep signal.",
     },
   ],
 };

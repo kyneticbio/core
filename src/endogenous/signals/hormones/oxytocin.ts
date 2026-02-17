@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -17,7 +17,7 @@ export const oxytocin: SignalDefinition = {
     "The 'bonding hormone,' oxytocin promotes feelings of trust, safety, and social connection.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const social = gaussianPhase(
         p,

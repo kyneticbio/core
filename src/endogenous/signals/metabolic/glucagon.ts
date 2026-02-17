@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const glucagon: SignalDefinition = {
@@ -9,7 +9,7 @@ export const glucagon: SignalDefinition = {
   description: "The 'mobilization' hormone. Released when blood sugar is low.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const nocturnal =
         gaussianPhase(p, hourToPhase(23), 1.0) +
@@ -35,7 +35,8 @@ export const glucagon: SignalDefinition = {
       pattern: { type: "exceeds", value: 180, sustainedMins: 60 },
       outcome: "warning",
       message: "High Glucagon drive",
-      description: "Excessive glucagon can drive up blood sugar even while fasting.",
+      description:
+        "Excessive glucagon can drive up blood sugar even while fasting.",
     },
   ],
 };

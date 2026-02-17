@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const folate: SignalDefinition = {
   key: "folate",
@@ -8,13 +8,14 @@ export const folate: SignalDefinition = {
   description: "Essential for cell division.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.folate_ng_mL ?? 12,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.folate_ng_mL ?? 12,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.folate_ng_mL ?? 12,
+  initialValue: (ctx) => ctx.subject.bloodwork?.nutritional?.folate_ng_mL ?? 12,
   display: {
     referenceRange: { min: 4, max: 20 },
   },

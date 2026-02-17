@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -23,10 +23,14 @@ export const nitricOxide: SignalDefinition = {
     "A gaseous signaling molecule that relaxes blood vessels. Essential for healthy blood flow, exercise performance, and erectile function.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Baseline NO production, slightly higher during day (activity)
       const p = minuteToPhase(ctx.minuteOfDay);
-      const dayActivity = gaussianPhase(p, hourToPhase(14), widthToConcentration(480));
+      const dayActivity = gaussianPhase(
+        p,
+        hourToPhase(14),
+        widthToConcentration(480),
+      );
       return 20 + 10 * dayActivity;
     },
     tau: 5, // NO has very short half-life (seconds), but we model the steady-state
@@ -47,10 +51,16 @@ export const nitricOxide: SignalDefinition = {
     {
       id: "no_boost",
       signal: "nitricOxide",
-      pattern: { type: "increases_by", amount: 10, mode: "absolute", windowMins: 30 },
+      pattern: {
+        type: "increases_by",
+        amount: 10,
+        mode: "absolute",
+        windowMins: 30,
+      },
       outcome: "win",
       message: "Nitric Oxide boost",
-      description: "Vasodilation detected. Blood flow and oxygen delivery are improved.",
+      description:
+        "Vasodilation detected. Blood flow and oxygen delivery are improved.",
     },
   ],
 };
@@ -64,12 +74,12 @@ export const hrv: SignalDefinition = {
     "Heart Rate Variability. A powerful marker of your nervous system's balance and resilience.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const vagal = state.signals.vagal ?? 0.5;
       const norepi = (state.signals.norepi ?? 250) / 500;
       const adrenaline = (state.signals.adrenaline ?? 30) / 200;
       // Target HRV scales with vagal tone and is suppressed by catecholamine load
-      return Math.max(20, (vagal * 90) * Math.exp(-(norepi + adrenaline) * 0.4));
+      return Math.max(20, vagal * 90 * Math.exp(-(norepi + adrenaline) * 0.4));
     },
     tau: 5,
     production: [],
@@ -86,7 +96,12 @@ export const hrv: SignalDefinition = {
     {
       id: "hrv_recovery",
       signal: "hrv",
-      pattern: { type: "increases_by", amount: 15, mode: "absolute", windowMins: 60 },
+      pattern: {
+        type: "increases_by",
+        amount: 15,
+        mode: "absolute",
+        windowMins: 60,
+      },
       outcome: "win",
       message: "HRV Recovery",
       description: "Your nervous system is entering a restorative state.",
@@ -110,7 +125,7 @@ export const bloodPressure: SignalDefinition = {
   description: "A proxy for the pressure in your arteries.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeRise = sigmoidPhase(p, hourToPhase(2), 1.0);
       return 100.0 + 20.0 * wakeRise;
@@ -159,7 +174,7 @@ export const vagal: SignalDefinition = {
   description: "A marker of your 'rest and digest' system's activity.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const parasym = windowPhase(
         p,
@@ -191,10 +206,16 @@ export const vagal: SignalDefinition = {
     {
       id: "vagal_activation",
       signal: "vagal",
-      pattern: { type: "increases_by", amount: 0.2, mode: "absolute", windowMins: 30 },
+      pattern: {
+        type: "increases_by",
+        amount: 0.2,
+        mode: "absolute",
+        windowMins: 30,
+      },
       outcome: "win",
       message: "Parasympathetic Activation",
-      description: "Your 'rest and digest' system is active, promoting recovery.",
+      description:
+        "Your 'rest and digest' system is active, promoting recovery.",
     },
   ],
 };

@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const chromium: SignalDefinition = {
   key: "chromium",
@@ -25,7 +25,8 @@ export const chromium: SignalDefinition = {
       pattern: { type: "falls_below", value: 0.5, sustainedMins: 10080 },
       outcome: "warning",
       message: "Low Chromium",
-      description: "Chromium supports insulin sensitivity and glucose metabolism.",
+      description:
+        "Chromium supports insulin sensitivity and glucose metabolism.",
     },
   ],
 };

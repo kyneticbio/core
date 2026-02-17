@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, sigmoidPhase } from "../../utils";
 
 export const gaba: SignalDefinition = {
@@ -10,7 +10,7 @@ export const gaba: SignalDefinition = {
     "The brain's primary 'off' switch. GABA reduces the activity of neurons, acting as a natural brake to prevent overstimulation. It's essential for relaxation, reducing anxiety, and falling asleep.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const eveningRise = sigmoidPhase(p, hourToPhase(21), 1.0);
       return 240.0 + 180.0 * eveningRise;
@@ -20,8 +20,7 @@ export const gaba: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.0015,
-        transform: (_: any, state: any) =>
-          (state.auxiliary.gabaPool ?? 0.7) * 300,
+        transform: (_: any, state) => (state.auxiliary.gabaPool ?? 0.7) * 300,
       },
     ],
     clearance: [{ type: "enzyme-dependent", rate: 0.002, enzyme: "GAT1" }],
@@ -43,7 +42,8 @@ export const gaba: SignalDefinition = {
       pattern: { type: "exceeds", value: 600, sustainedMins: 30 },
       outcome: "win",
       message: "Deep Relaxation (GABA)",
-      description: "High GABA levels are promoting calm and reducing neural over-activity.",
+      description:
+        "High GABA levels are promoting calm and reducing neural over-activity.",
     },
     {
       id: "gaba_deficiency",
@@ -51,7 +51,8 @@ export const gaba: SignalDefinition = {
       pattern: { type: "falls_below", value: 150, sustainedMins: 60 },
       outcome: "warning",
       message: "Neural Over-excitement (Low GABA)",
-      description: "Low GABA can lead to anxiety, restlessness, and racing thoughts.",
+      description:
+        "Low GABA can lead to anxiety, restlessness, and racing thoughts.",
     },
   ],
 };

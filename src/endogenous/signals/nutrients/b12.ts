@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const b12: SignalDefinition = {
   key: "b12",
@@ -8,13 +8,14 @@ export const b12: SignalDefinition = {
   description: "Essential for nerve health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.b12_pg_mL ?? 500,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.b12_pg_mL ?? 500,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.b12_pg_mL ?? 500,
+  initialValue: (ctx) => ctx.subject.bloodwork?.nutritional?.b12_pg_mL ?? 500,
   display: {
     referenceRange: { min: 200, max: 900 },
   },

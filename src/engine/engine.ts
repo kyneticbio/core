@@ -1,3 +1,4 @@
+import { Physiology, Subject } from "src/types";
 import { collectSignalMonitors, evaluateMonitors } from "./monitors";
 
 import {
@@ -12,6 +13,8 @@ import {
   AuxiliaryDefinition,
   SolverDebugOptions,
 } from "./types";
+
+import { createInitialState } from "./state";
 
 // =============================================================================
 // PD UNIT CONVERSION
@@ -134,7 +137,7 @@ export function vectorToState(
   vector: Float64Array,
   layout: VectorLayout,
 ): SimulationState {
-  const state: any = {
+  const state: SimulationState = {
     signals: {},
     auxiliary: {},
     receptors: {},
@@ -158,7 +161,11 @@ export interface PreResolvedDefinition {
   production: Array<{
     coefficient: number;
     sourceIndex: number;
-    transform?: (v: number, state: any, ctx: any) => number;
+    transform?: (
+      v: number,
+      state: SimulationState,
+      ctx: DynamicsContext,
+    ) => number;
   }>;
   clearance: Array<{
     rate: number;
@@ -166,7 +173,11 @@ export interface PreResolvedDefinition {
     enzymeIndex: number;
     enzymeName: string | null; // Name of enzyme/transporter for clearance modifier lookup
     Km?: number;
-    transform?: (v: number, state: any, ctx: any) => number;
+    transform?: (
+      v: number,
+      state: SimulationState,
+      ctx: DynamicsContext,
+    ) => number;
   }>;
   couplings: Array<{
     sourceIndex: number;
@@ -317,23 +328,27 @@ function extractPKAgents(
 
     // Adjust clearance based on organ function from bloodwork
     if (pk.clearance?.renal) {
-      const subjectGFR = ctx.subject?.bloodwork?.metabolic?.eGFR_mL_min
-        ?? ctx.physiology?.estimatedGFR ?? 100;
+      const subjectGFR =
+        ctx.subject.bloodwork?.metabolic?.eGFR_mL_min ??
+        ctx.physiology?.estimatedGFR ??
+        100;
       const renalRatio = subjectGFR / 100;
       ke *= renalRatio;
     }
 
     if (pk.clearance?.hepatic) {
-      const altVal = ctx.subject?.bloodwork?.metabolic?.alt_U_L ?? 25;
+      const altVal = ctx.subject.bloodwork?.metabolic?.alt_U_L ?? 25;
       // Elevated ALT suggests impaired hepatic metabolism → slower clearance
       // Normal ALT ≤40: no adjustment. Above 40: progressively reduced, floor at 30%
-      const hepaticRatio = altVal <= 40 ? 1.0 : Math.max(0.3, 1 - (altVal - 40) / 120);
+      const hepaticRatio =
+        altVal <= 40 ? 1.0 : Math.max(0.3, 1 - (altVal - 40) / 120);
       ke *= hepaticRatio;
     }
 
     // Adjust Vd for low albumin (highly protein-bound drugs)
     // Low albumin → higher free fraction → larger effective Vd
-    const subjectAlbumin = ctx.subject?.bloodwork?.metabolic?.albumin_g_dL ?? 4.0;
+    const subjectAlbumin =
+      ctx.subject.bloodwork?.metabolic?.albumin_g_dL ?? 4.0;
     if (subjectAlbumin < 3.5) {
       const albuminRatio = 4.0 / Math.max(subjectAlbumin, 1.0);
       vd *= albuminRatio;
@@ -1122,15 +1137,10 @@ export function computeDerivatives(
 
 export interface SystemDefinitions {
   signals: readonly Signal[];
-  signalDefinitions: any;
-  auxDefinitions: any;
+  signalDefinitions: Partial<Record<string, SignalDefinition>>;
+  auxDefinitions: Record<string, AuxiliaryDefinition>;
   resolver: SystemResolver;
-  createInitialState: (
-    signalDefs: any,
-    auxDefs: any,
-    ctx: { subject: any; physiology: any; isAsleep: boolean },
-    debug?: any,
-  ) => SimulationState;
+  receptorKeys: string[];
 }
 
 export function runOptimizedV2(
@@ -1143,7 +1153,7 @@ export function runOptimizedV2(
     signalDefinitions,
     auxDefinitions,
     resolver,
-    createInitialState,
+    receptorKeys,
   } = system;
 
   const enableInterventions = options?.debug?.enableInterventions ?? true;
@@ -1279,16 +1289,16 @@ export function runOptimizedV2(
     return buffer[idx0] + (buffer[idx0 + 1] - buffer[idx0]) * (floatIdx - idx0);
   };
 
-  // Initialize state
   const initialObjState = createInitialState(
+    signals,
     signalDefinitions,
     auxDefinitions,
     {
-      subject: options?.subject ?? ({} as any),
-      physiology: options?.physiology ?? ({} as any),
+      subject: options?.subject ?? ({} as Subject),
+      physiology: options?.physiology ?? ({} as Physiology),
       isAsleep: false,
     },
-    options?.debug,
+    { ...options?.debug, receptorKeys },
   );
 
   const layout = createVectorLayout(
@@ -1623,7 +1633,7 @@ export function runOptimizedV2(
   return {
     series,
     auxiliarySeries: auxSeries,
-    finalHomeostasisState: vectorToState(currentStateVector, layout) as any,
+    finalHomeostasisState: vectorToState(currentStateVector, layout),
     homeostasisSeries: {} as any, // To be filled by the caller or specialized series
     monitorResults,
   };

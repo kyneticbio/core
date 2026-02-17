@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -16,7 +16,7 @@ export const vip: SignalDefinition = {
   description: "A master synchronizer for your internal clocks.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const day = gaussianPhase(p, hourToPhase(12), widthToConcentration(300));
       const eveningSuppress = windowPhase(

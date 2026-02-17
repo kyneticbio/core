@@ -26,7 +26,7 @@ export const hepaticGlycogen: AuxiliaryDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const G = state.signals.glucose;
           const I = state.signals.insulin;
           const glycogen = state.auxiliary.hepaticGlycogen;
@@ -38,7 +38,7 @@ export const hepaticGlycogen: AuxiliaryDefinition = {
       {
         type: "linear",
         rate: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const G = state.signals.glucose;
           return G < 70 ? (0.5 * (70 - G)) / 70 : 0;
         },

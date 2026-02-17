@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -17,7 +17,7 @@ export const prolactin: SignalDefinition = {
     "Plays a role in immune regulation, metabolic health, and the body's 'rest and digest' state.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const prep = sigmoidPhase(
         p,
@@ -48,7 +48,8 @@ export const prolactin: SignalDefinition = {
       pattern: { type: "exceeds", value: 30, sustainedMins: 1440 },
       outcome: "warning",
       message: "Elevated Prolactin",
-      description: "High prolactin can suppress reproductive hormones and libido.",
+      description:
+        "High prolactin can suppress reproductive hormones and libido.",
     },
   ],
 };

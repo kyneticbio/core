@@ -1,3 +1,4 @@
+import { Physiology, Subject } from "src/types";
 import type {
   SimulationState,
   SignalDefinition,
@@ -33,7 +34,7 @@ export function createInitialState(
   signals: readonly Signal[],
   signalDefs: Partial<Record<string, SignalDefinition>>,
   auxDefs: Record<string, AuxiliaryDefinition>,
-  ctx: { subject: any; physiology: any; isAsleep: boolean },
+  ctx: { subject: Subject; physiology: Physiology; isAsleep: boolean },
   debug?: SolverDebugOptions,
 ): SimulationState {
   const state = initializeZeroState(signals);

@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -15,7 +15,7 @@ export const gip: SignalDefinition = {
     "Glucose-dependent insulinotropic polypeptide. An incretin hormone released from the gut after eating, which enhances insulin secretion and plays a role in nutrient metabolism.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // GIP is released after meals, particularly those high in fat and carbs
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const bk = gaussianPhase(p, hourToPhase(8.5), widthToConcentration(80));
@@ -41,7 +41,8 @@ export const gip: SignalDefinition = {
       pattern: { type: "exceeds", value: 30, sustainedMins: 30 },
       outcome: "win",
       message: "Strong Incretin Signal (GIP)",
-      description: "GIP is elevated, which enhances insulin secretion and promotes satiety.",
+      description:
+        "GIP is elevated, which enhances insulin secretion and promotes satiety.",
     },
   ],
 };

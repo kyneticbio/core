@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const copper: SignalDefinition = {
   key: "copper",
@@ -25,7 +25,8 @@ export const copper: SignalDefinition = {
       pattern: { type: "falls_below", value: 70, sustainedMins: 10080 },
       outcome: "warning",
       message: "Low Copper",
-      description: "Copper is essential for energy production and connective tissue.",
+      description:
+        "Copper is essential for energy production and connective tissue.",
     },
   ],
 };

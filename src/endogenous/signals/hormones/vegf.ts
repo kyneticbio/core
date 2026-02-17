@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const vegf: SignalDefinition = {
   key: "vegf",
@@ -15,7 +15,7 @@ export const vegf: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.01,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           // Acute inflammation stimulates VEGF (wound healing response)
           const infl = state.signals.inflammation ?? 1.0;
           return infl > 1.5 ? (infl - 1.5) * 0.5 : 0;
@@ -24,9 +24,7 @@ export const vegf: SignalDefinition = {
       { source: "growthHormone", coefficient: 0.02 },
     ],
     clearance: [{ type: "linear", rate: 0.008 }],
-    couplings: [
-      { source: "cortisol", effect: "inhibit", strength: 0.05 },
-    ],
+    couplings: [{ source: "cortisol", effect: "inhibit", strength: 0.05 }],
   },
   initialValue: 100,
   min: 0,

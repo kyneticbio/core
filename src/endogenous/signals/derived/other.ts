@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -20,7 +20,7 @@ export const inflammation: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.01,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           const glucose = state.signals.glucose ?? 90;
           return glucose > 150 ? (glucose - 150) / 100 : 0;
         },
@@ -47,7 +47,8 @@ export const inflammation: SignalDefinition = {
       pattern: { type: "exceeds", value: 3.0, sustainedMins: 60 },
       outcome: "warning",
       message: "Inflammation spike",
-      description: "Significant immune activation detected. May be due to intense exercise, stress, or dietary triggers.",
+      description:
+        "Significant immune activation detected. May be due to intense exercise, stress, or dietary triggers.",
     },
   ],
 };
@@ -61,7 +62,7 @@ export const ketone: SignalDefinition = {
     "An alternative fuel source made from fat when blood sugar is low.",
   idealTendency: "none",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.minuteOfDay);
       const overnight =
         gaussianPhase(p, hourToPhase(19.5), widthToConcentration(400)) +
@@ -132,7 +133,8 @@ export const ethanol: SignalDefinition = {
       pattern: { type: "exceeds", value: 80, sustainedMins: 15 }, // 0.08 BAC
       outcome: "warning",
       message: "Legal Intoxication level",
-      description: "Blood alcohol concentration is at or above the legal driving limit (0.08%). Coordination and judgment are impaired.",
+      description:
+        "Blood alcohol concentration is at or above the legal driving limit (0.08%). Coordination and judgment are impaired.",
     },
     {
       id: "ethanol_danger",
@@ -172,7 +174,8 @@ export const acetaldehyde: SignalDefinition = {
       pattern: { type: "exceeds", value: 5, sustainedMins: 30 },
       outcome: "warning",
       message: "Acetaldehyde Toxicity (Hangover)",
-      description: "High levels of acetaldehyde cause flushing, nausea, and rapid heart rate. This is the primary driver of hangover symptoms.",
+      description:
+        "High levels of acetaldehyde cause flushing, nausea, and rapid heart rate. This is the primary driver of hangover symptoms.",
     },
   ],
 };
@@ -185,13 +188,15 @@ export const magnesium: SignalDefinition = {
   description: "A vital mineral involved in over 300 biochemical reactions.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
     tau: 10080,
     production: [],
     clearance: [{ type: "linear", rate: 0.0001 }],
     couplings: [{ source: "adrenaline", effect: "inhibit", strength: 0.05 }],
   },
-  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
+  initialValue: (ctx) =>
+    ctx.subject.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
   min: 0,
   max: 5.0,
   display: {
@@ -204,7 +209,8 @@ export const magnesium: SignalDefinition = {
       pattern: { type: "falls_below", value: 1.7, sustainedMins: 1440 },
       outcome: "warning",
       message: "Low Magnesium",
-      description: "Deficiency can cause muscle cramps, fatigue, and irritability.",
+      description:
+        "Deficiency can cause muscle cramps, fatigue, and irritability.",
     },
   ],
 };
@@ -237,7 +243,8 @@ export const sensoryLoad: SignalDefinition = {
       pattern: { type: "exceeds", value: 80, sustainedMins: 30 },
       outcome: "warning",
       message: "Sensory Overload",
-      description: "Total cognitive load is very high. Risk of burnout, irritability, and reduced focus.",
+      description:
+        "Total cognitive load is very high. Risk of burnout, irritability, and reduced focus.",
     },
   ],
 };
@@ -270,7 +277,8 @@ export const oxygen: SignalDefinition = {
       pattern: { type: "falls_below", value: 90, sustainedMins: 5 },
       outcome: "critical",
       message: "Hypoxia detected",
-      description: "Blood oxygen saturation is dangerously low. Seek fresh air or medical attention.",
+      description:
+        "Blood oxygen saturation is dangerously low. Seek fresh air or medical attention.",
     },
   ],
 };

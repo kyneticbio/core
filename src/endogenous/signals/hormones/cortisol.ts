@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -14,12 +14,13 @@ export const cortisol: SignalDefinition = {
     "The body's primary 'readiness' hormone. Cortisol peaks in the morning to help you wake up and mobilize energy. While it's essential for handling stress, chronic high levels can lead to fatigue and metabolic issues.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const CAR = gaussianPhase(p, hourToPhase(8.75), 1.5);
       const dayComponent = windowPhase(p, hourToPhase(8), hourToPhase(20), 0.5);
       // Scale circadian rhythm around subject's baseline if bloodwork available
-      const baselineCortisol = ctx.subject?.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
+      const baselineCortisol =
+        ctx.subject.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
       const scale = baselineCortisol / 12;
       return (2.0 + 18.0 * CAR + 4.0 * dayComponent) * scale;
     },
@@ -28,7 +29,7 @@ export const cortisol: SignalDefinition = {
       {
         source: "constant",
         coefficient: 0.5,
-        transform: (_: any, state: any) => state.auxiliary.crhPool ?? 0,
+        transform: (_: any, state) => state.auxiliary.crhPool ?? 0,
       },
     ],
     clearance: [],
@@ -38,8 +39,8 @@ export const cortisol: SignalDefinition = {
       { source: "gaba", effect: "inhibit", strength: 0.0045 },
     ],
   },
-  initialValue: (ctx: any) => {
-    const baseline = ctx.subject?.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
+  initialValue: (ctx) => {
+    const baseline = ctx.subject.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
     return ctx.isAsleep ? baseline * (5 / 12) : baseline;
   },
   min: 0,
@@ -54,7 +55,8 @@ export const cortisol: SignalDefinition = {
       pattern: { type: "high_exposure", windowMins: 1440, threshold: 20000 },
       outcome: "warning",
       message: "Chronically elevated cortisol detected",
-      description: "Sustained high cortisol may indicate chronic stress and can affect sleep, mood, and metabolism.",
+      description:
+        "Sustained high cortisol may indicate chronic stress and can affect sleep, mood, and metabolism.",
     },
     {
       id: "cortisol_acute_spike",
@@ -70,7 +72,8 @@ export const cortisol: SignalDefinition = {
       pattern: { type: "low_variability", windowMins: 1440, cvThreshold: 0.15 },
       outcome: "warning",
       message: "Flat cortisol rhythm detected",
-      description: "Healthy cortisol should vary throughout the day. A flat pattern may indicate HPA axis dysfunction.",
+      description:
+        "Healthy cortisol should vary throughout the day. A flat pattern may indicate HPA axis dysfunction.",
     },
   ],
 };

@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const endorphin: SignalDefinition = {
   key: "endorphin",
@@ -22,7 +22,8 @@ export const endorphin: SignalDefinition = {
       pattern: { type: "exceeds", value: 3.0, sustainedMins: 5 },
       outcome: "win",
       message: "Endorphin Rush",
-      description: "Natural pain relief and mood elevation is active (e.g., Runner's High).",
+      description:
+        "Natural pain relief and mood elevation is active (e.g., Runner's High).",
     },
   ],
 };

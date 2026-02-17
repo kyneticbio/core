@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import {
   minuteToPhase,
   hourToPhase,
@@ -28,7 +28,7 @@ export const angiogenesis: SignalDefinition = {
       {
         source: "constant",
         coefficient: 1.0,
-        transform: (_: any, state: any) => {
+        transform: (_: any, state) => {
           // VEGF is the primary driver of angiogenesis
           const vegf = state.signals.vegf ?? 100;
           return vegf > 100 ? (vegf - 100) / 2000 : 0;
@@ -84,7 +84,7 @@ export const gastricEmptying: SignalDefinition = {
     "How quickly food moves through your stomach. GLP-1 drugs slow this down, which helps you feel full longer but can cause nausea.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Higher around mealtimes, lower overnight
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const bk = gaussianPhase(p, hourToPhase(8.5), widthToConcentration(90));
@@ -146,7 +146,7 @@ export const appetite: SignalDefinition = {
     "Your current hunger drive. Integrates signals from gut hormones (GLP-1, ghrelin), fat stores (leptin), blood sugar, and stress (cortisol).",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       // Appetite peaks before typical mealtimes
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const preBk = gaussianPhase(

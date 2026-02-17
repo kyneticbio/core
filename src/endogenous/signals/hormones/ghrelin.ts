@@ -1,4 +1,4 @@
-import type { SignalDefinition } from "../../../engine";
+import type { SignalDefinition, DynamicsContext } from "../../../engine";
 import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const ghrelin: SignalDefinition = {
@@ -10,7 +10,7 @@ export const ghrelin: SignalDefinition = {
     "The 'hunger' hormone. Ghrelin rises before meals to tell your brain it's time to eat and falls after you've had enough.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => {
+    setpoint: (ctx, state) => {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const preMeal =
         gaussianPhase(p, hourToPhase(8.5), 1.0) +
@@ -24,8 +24,7 @@ export const ghrelin: SignalDefinition = {
       {
         type: "linear",
         rate: 0.02,
-        transform: (_: any, state: any) =>
-          state.signals.glucose > 120 ? 2.0 : 1.0,
+        transform: (_: any, state) => (state.signals.glucose > 120 ? 2.0 : 1.0),
       },
     ],
     couplings: [
@@ -45,7 +44,8 @@ export const ghrelin: SignalDefinition = {
       pattern: { type: "exceeds", value: 1400, sustainedMins: 15 },
       outcome: "warning",
       message: "High Hunger Drive",
-      description: "Ghrelin is elevated, signaling strong physiological hunger.",
+      description:
+        "Ghrelin is elevated, signaling strong physiological hunger.",
     },
   ],
 };
