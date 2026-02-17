@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "KyneticBio"
   text: "Prototype your biology before you commit."
-  tagline: "A flight simulator for supplements, medications, and lifestyle interventions. See how caffeine, peptides, exercise, and sleep interact with your dopamine, cortisol, and metabolism - hour by hour."
+  tagline: "A flight simulator for supplements, medications, and lifestyle interventions. "
   actions:
     - theme: brand
       text: Try Kynetic Studio
@@ -15,6 +15,11 @@ hero:
     - theme: alt
       text: Join the Discord
       link: https://discord.gg/FUqxCk8J
+
+heroBullets:
+  - Stack and compare supplements, meds & lifestyle interventions
+  - Age, weight, and condition-scaled pharmacokinetics
+  - 50+ physiological signals modeled in real-time
 
 features:
   - title: Compare Before You Commit

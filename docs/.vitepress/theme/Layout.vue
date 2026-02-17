@@ -1,12 +1,19 @@
 <script setup>
+import { useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import SimulatorDemo from '../../components/SimulatorDemo.vue'
 
 const { Layout } = DefaultTheme
+const { frontmatter } = useData()
 </script>
 
 <template>
   <Layout>
+    <template #home-hero-info-after>
+      <ul v-if="frontmatter.heroBullets" class="hero-bullets">
+        <li v-for="bullet in frontmatter.heroBullets" :key="bullet">{{ bullet }}</li>
+      </ul>
+    </template>
     <template #home-hero-image>
       <div class="hero-demo-container">
         <SimulatorDemo />
