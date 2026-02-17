@@ -20,7 +20,7 @@ Curious what happens when you take 200mg of caffeine on an empty stomach? Want t
 This isn't a toy - it's the same engine that powers Kynetic Studio:
 
 1. **Real pharmacokinetics** - drug absorption, distribution, and clearance modeled with the same equations used in clinical pharmacology.
-2. **Your physiology matters** - age, weight, and sex scale metabolic rates and volumes of distribution. A 60kg person and a 100kg person get meaningfully different curves.
+2. **Your physiology matters** - age, weight, sex, and optional bloodwork labs scale metabolic rates, volumes of distribution, and drug clearance. A subject with impaired kidney function (low eGFR) will clear renally-eliminated drugs slower than someone with normal function.
 3. **Conditions change the game** - enabling ADHD doesn't just lower a number. It modifies receptor densities and transporter activity, which changes how every intervention hits.
 4. **Signals interact** - cortisol affects dopamine. Insulin affects glucose. Nothing happens in isolation.
 

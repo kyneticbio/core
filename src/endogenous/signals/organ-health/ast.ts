@@ -8,13 +8,13 @@ export const ast: SignalDefinition = {
   description: "Aspartate Aminotransferase. Liver/muscle health marker.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: (ctx, state) => 22,
+    setpoint: (ctx, state) => ctx.subject?.bloodwork?.metabolic?.ast_U_L ?? 22,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 22,
+  initialValue: (ctx) => ctx.subject?.bloodwork?.metabolic?.ast_U_L ?? 22,
   display: {
     referenceRange: { min: 0, max: 40 },
   },

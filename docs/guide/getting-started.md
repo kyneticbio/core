@@ -37,8 +37,13 @@ npm install @kyneticbio/core
 ```typescript
 import { createInitialState, integrateStep, DEFAULT_SUBJECT, derivePhysiology } from '@kyneticbio/core';
 
-// Prepare the subject
-const subject = DEFAULT_SUBJECT;
+// Prepare the subject (optionally with bloodwork for personalized baselines)
+const subject = {
+  ...DEFAULT_SUBJECT,
+  bloodwork: {
+    metabolic: { glucose_mg_dL: 105, eGFR_mL_min: 90 },
+  }
+};
 const physiology = derivePhysiology(subject);
 
 // Create initial physiological state
@@ -48,6 +53,8 @@ let state = createInitialState({ subject, physiology, isAsleep: false });
 const ctx = { minuteOfDay: 0, dayOfYear: 1, isAsleep: false, subject, physiology };
 const nextState = integrateStep(state, 0, 1.0, ctx);
 ```
+
+The `bloodwork` property is optional. When omitted, all signals use population-average baselines. See the [Subject reference](/reference/subject#bloodwork) for the full list of supported lab values.
 
 ### Core Concepts
 

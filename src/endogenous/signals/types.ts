@@ -6,6 +6,7 @@ import * as circadian from "./circadian";
 import * as derived from "./derived";
 import * as organHealth from "./organ-health";
 import * as nutrients from "./nutrients";
+import * as hematology from "./hematology";
 
 /**
  * Filter keys that are actual Signal Definitions (SignalDefinition)
@@ -22,6 +23,7 @@ export type CircadianSignal = SignalKeys<typeof circadian>;
 export type DerivedSignal = SignalKeys<typeof derived>;
 export type OrganHealthSignal = SignalKeys<typeof organHealth>;
 export type NutrientSignal = SignalKeys<typeof nutrients>;
+export type HematologySignal = SignalKeys<typeof hematology>;
 
 export type Signal =
   | NeuroSignal
@@ -30,7 +32,8 @@ export type Signal =
   | CircadianSignal
   | DerivedSignal
   | OrganHealthSignal
-  | NutrientSignal;
+  | NutrientSignal
+  | HematologySignal;
 
 function isSignal(def: any): boolean {
   return def && typeof def.key === "string" && !isAuxiliary(def);
@@ -52,6 +55,7 @@ const ALL_MODULES = [
   derived,
   organHealth,
   nutrients,
+  hematology,
 ];
 
 /**

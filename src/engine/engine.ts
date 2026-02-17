@@ -285,7 +285,7 @@ function extractPKAgents(
 
     const massMg = pk.massMg;
     const F = pk.bioavailability ?? 1.0;
-    const ke = pk.eliminationRate ?? 0.693 / (pk.halfLifeMin ?? 60);
+    let ke = pk.eliminationRate ?? 0.693 / (pk.halfLifeMin ?? 60);
     const ka = pk.absorptionRate ?? ke * 4;
 
     // Calculate Vd with defensive defaults
@@ -313,6 +313,30 @@ function extractPKAgents(
               : vol.female_L_kg);
           break;
       }
+    }
+
+    // Adjust clearance based on organ function from bloodwork
+    if (pk.clearance?.renal) {
+      const subjectGFR = ctx.subject?.bloodwork?.metabolic?.eGFR_mL_min
+        ?? ctx.physiology?.estimatedGFR ?? 100;
+      const renalRatio = subjectGFR / 100;
+      ke *= renalRatio;
+    }
+
+    if (pk.clearance?.hepatic) {
+      const altVal = ctx.subject?.bloodwork?.metabolic?.alt_U_L ?? 25;
+      // Elevated ALT suggests impaired hepatic metabolism → slower clearance
+      // Normal ALT ≤40: no adjustment. Above 40: progressively reduced, floor at 30%
+      const hepaticRatio = altVal <= 40 ? 1.0 : Math.max(0.3, 1 - (altVal - 40) / 120);
+      ke *= hepaticRatio;
+    }
+
+    // Adjust Vd for low albumin (highly protein-bound drugs)
+    // Low albumin → higher free fraction → larger effective Vd
+    const subjectAlbumin = ctx.subject?.bloodwork?.metabolic?.albumin_g_dL ?? 4.0;
+    if (subjectAlbumin < 3.5) {
+      const albuminRatio = 4.0 / Math.max(subjectAlbumin, 1.0);
+      vd *= albuminRatio;
     }
 
     agents.push({

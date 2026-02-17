@@ -1,6 +1,44 @@
 // --- Subject Types ---
 export type BiologicalSex = "male" | "female";
 
+// --- Bloodwork Panel Types ---
+
+export interface MetabolicPanel {
+  albumin_g_dL?: number;
+  creatinine_mg_dL?: number;
+  eGFR_mL_min?: number;
+  alt_U_L?: number;
+  ast_U_L?: number;
+  bilirubin_mg_dL?: number;
+  potassium_mmol_L?: number;
+  glucose_mg_dL?: number;
+}
+
+export interface HematologyPanel {
+  hemoglobin_g_dL?: number;
+  hematocrit_pct?: number;
+  platelet_count_k_uL?: number;
+  wbc_count_k_uL?: number;
+}
+
+export interface InflammatoryPanel {
+  hsCRP_mg_L?: number;
+  ferritin_ng_mL?: number;
+}
+
+export interface HormonalPanel {
+  tsh_uIU_mL?: number;
+  cortisol_ug_dL?: number;
+  free_testosterone_pg_mL?: number;
+}
+
+export interface Bloodwork {
+  metabolic?: Partial<MetabolicPanel>;
+  hematology?: Partial<HematologyPanel>;
+  inflammation?: Partial<InflammatoryPanel>;
+  hormones?: Partial<HormonalPanel>;
+}
+
 export interface Subject {
   age: number;
   weight: number;
@@ -9,6 +47,7 @@ export interface Subject {
   cycleLength: number;
   lutealPhaseLength: number;
   cycleDay: number;
+  bloodwork?: Bloodwork;
 }
 
 export interface Physiology {

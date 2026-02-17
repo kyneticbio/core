@@ -1,0 +1,31 @@
+import type { SignalDefinition } from "../../../engine";
+
+export const albumin: SignalDefinition = {
+  key: "albumin",
+  label: "Albumin",
+  unit: "g/dL",
+  isPremium: true,
+  description: "Major plasma protein produced by the liver. Important for drug binding and fluid balance.",
+  idealTendency: "mid",
+  dynamics: {
+    setpoint: (ctx, state) => ctx.subject?.bloodwork?.metabolic?.albumin_g_dL ?? 4.0,
+    tau: 10080,
+    production: [],
+    clearance: [],
+    couplings: [],
+  },
+  initialValue: (ctx) => ctx.subject?.bloodwork?.metabolic?.albumin_g_dL ?? 4.0,
+  display: {
+    referenceRange: { min: 3.5, max: 5.0 },
+  },
+  monitors: [
+    {
+      id: "low_albumin",
+      signal: "albumin",
+      pattern: { type: "falls_below", value: 3.5, sustainedMins: 1440 },
+      outcome: "warning",
+      message: "Low Albumin",
+      description: "Low albumin may indicate liver dysfunction or malnutrition, and affects drug distribution.",
+    },
+  ],
+};

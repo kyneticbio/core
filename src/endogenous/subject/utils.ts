@@ -45,6 +45,9 @@ export function derivePhysiology(subject: Subject): Physiology {
   let gfr = ((140 - subject.age) * subject.weight) / 72.0;
   if (subject.sex === 'female') gfr *= 0.85;
 
+  // Prefer measured eGFR from bloodwork over Cockcroft-Gault estimate
+  const estimatedGFR = subject.bloodwork?.metabolic?.eGFR_mL_min ?? gfr;
+
   return {
     bmr,
     tbw,
@@ -54,6 +57,6 @@ export function derivePhysiology(subject: Subject): Physiology {
     drugClearance: tbw / REF_TBW,
     leanBodyMass: lbm,
     liverBloodFlow,
-    estimatedGFR: gfr,
+    estimatedGFR,
   };
 }

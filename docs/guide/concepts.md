@@ -18,7 +18,7 @@ The **Engine** is the "brain" of the simulation. It is a high-performance mathem
 
 ### 2. The Subject
 
-The **Subject** represents the person being simulated. It defines the physical constraints like age, weight, and sex which the engine uses to scale metabolic rates and volumes of distribution.
+The **Subject** represents the person being simulated. It defines the physical constraints like age, weight, and sex which the engine uses to scale metabolic rates and volumes of distribution. Optionally, you can attach real **bloodwork** lab results to personalize signal baselines and drug clearance rates.
 
 #### TypeScript Shape
 
@@ -30,6 +30,7 @@ interface Subject {
   sex: "male" | "female";
   cycleLength: number; // For female subjects
   cycleDay: number;    // Current day in cycle
+  bloodwork?: Bloodwork; // Optional lab results
 }
 ```
 
@@ -42,9 +43,15 @@ const subject: Subject = {
   height: 180,
   sex: "male",
   cycleLength: 28,
-  cycleDay: 1
+  cycleDay: 1,
+  bloodwork: {
+    metabolic: { glucose_mg_dL: 105, eGFR_mL_min: 85, alt_U_L: 30 },
+    hematology: { hemoglobin_g_dL: 15.2 },
+  }
 };
 ```
+
+When `bloodwork` is provided, the engine uses those values to initialize signals at the subject's real baselines and to adjust drug clearance rates based on organ function. When omitted, population averages are used (e.g., glucose defaults to 90 mg/dL, eGFR to 100 mL/min). See the [Subject reference](/reference/subject) for the full `Bloodwork` type.
 
 ### 3. Signals
 
@@ -57,7 +64,7 @@ interface SignalDefinition {
   key: string;
   label: string;
   unit: string;
-  initialValue: number;
+  initialValue: number | ((ctx) => number); // Static or derived from subject
   dynamics: {
     setpoint: (ctx: DynamicsContext) => number; // Target level
     tau: number;                                // Speed of change (min)
@@ -67,6 +74,8 @@ interface SignalDefinition {
   };
 }
 ```
+
+`initialValue` can be a static number or a function of the subject context. Signals that have bloodwork counterparts (e.g., glucose, ALT, eGFR) use a function to read from `ctx.subject.bloodwork` and fall back to a population default.
 
 #### Example
 

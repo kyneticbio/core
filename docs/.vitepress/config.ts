@@ -69,6 +69,9 @@ export default defineConfig({
       { icon: "github", link: "https://github.com/kyneticbio/core" },
       { icon: "discord", link: "https://discord.gg/FUqxCk8J" },
     ],
+    search: {
+      provider: "local",
+    },
     footer: {
       message: "Released under the MIT License.",
       copyright:

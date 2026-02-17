@@ -1,14 +1,10 @@
 # The Science Behind KyneticBio
 
-KyneticBio isn't making rough estimates or using lookup tables. Under the hood, it's solving the same differential equations that describe real biological systems - pharmacokinetics, receptor dynamics, hormonal feedback loops, and metabolic pathways - all running continuously in your browser.
-
-This page is for people who want to understand _how_ the engine works and _why_ you can trust its output. If you just want to use it, head back to the [Getting Started](./getting-started) guide.
+This page is for people who want to understand _how_ the modelling, engine, and mathematics works. If you just want to use it, head back to the [Getting Started](./getting-started) guide.
 
 ---
 
 KyneticBio is a high-fidelity biological simulation engine that models human physiology, neurochemistry, and metabolism using a systems-biology approach. Unlike statistical or rule-based models, it employs a **unified Ordinary Differential Equation (ODE) architecture** to simulate the continuous-time evolution of biological states. It accounts for the complex interplay between intrinsic rhythms, individual physiology, and extrinsic interventions (pharmacology, nutrition, and lifestyle).
-
----
 
 ## The Simulation Engine Architecture
 
@@ -23,8 +19,6 @@ where $\mathbf{P}$ represents external parameters and interventions.
 - **Homeostasis & Setpoints:** Signals generally follow mean-reverting dynamics towards a time-varying setpoint $\mu(t)$, governed by a time constant $\tau$:
   $$\frac{dS}{dt} = \frac{\mu(t) - S}{\tau} + \sum \text{Production} - \sum \text{Clearance}$$
 
----
-
 ## Biological Systems & Signals
 
 KineticBio organizes physiological signals into distinct but interconnected systems:
@@ -32,14 +26,13 @@ KineticBio organizes physiological signals into distinct but interconnected syst
 | System             | Description                                       | Key Signals                                                                                   |
 | :----------------- | :------------------------------------------------ | :-------------------------------------------------------------------------------------------- |
 | **Nervous**        | Synaptic health and neurotransmitter balance.     | Dopamine, Serotonin, GABA, Glutamate, Acetylcholine, Norepinephrine, BDNF, Histamine, Orexin. |
-| **Endocrine**      | Hormonal regulation of stress, sleep, and growth. | Cortisol, Adrenaline, Melatonin, Growth Hormone, Oxytocin, Prolactin, Thyroid.                |
+| **Endocrine**      | Hormonal regulation of stress, sleep, and growth. | Cortisol, Adrenaline, Melatonin, Growth Hormone, Oxytocin, Prolactin, Thyroid, TSH.           |
 | **Metabolic**      | Energy production, fuel storage, and utilization. | Glucose, Insulin, Glucagon, Ketones, GLP-1, Leptin, Ghrelin, mTOR, AMPK.                      |
 | **Reproductive**   | Sex hormones and menstrual cycle dynamics.        | Testosterone, Estrogen, Progesterone, LH, FSH, SHBG.                                          |
 | **Cardiovascular** | Autonomic balance and circulatory stress.         | Blood Pressure, HRV, Vagal Tone, Oxygen Saturation.                                           |
-| **Organ Health**   | Filtration, detoxification, and systemic stress.  | ALT, AST, eGFR (Kidney), Ethanol, Acetaldehyde, Inflammation.                                 |
+| **Organ Health**   | Filtration, detoxification, and systemic stress.  | ALT, AST, eGFR, Albumin, Creatinine, Bilirubin, Potassium, hs-CRP, Inflammation.             |
+| **Hematology**     | Blood cell counts and oxygen-carrying capacity.   | Hemoglobin, Hematocrit, Platelets, WBC.                                                       |
 | **Nutritional**    | Micronutrient cofactors and mineral status.       | Magnesium, Ferritin, Vitamin D3, Zinc, B12, Folate, Iron, Choline.                            |
-
----
 
 ## Contributors to Dynamics
 
@@ -84,8 +77,6 @@ The engine tracks hidden variables that limit or facilitate signal production:
 - **Hepatic Glycogen:** Buffer for blood glucose maintenance.
 - **Adenosine Pressure (Process S):** Accumulates during wakefulness, cleared during sleep.
 
----
-
 ## Pharmacokinetics (PK) Models
 
 KineticBio uses a library of standard and advanced PK models:
@@ -95,7 +86,15 @@ KineticBio uses a library of standard and advanced PK models:
 - **Michaelis-Menten Kinetics:** For saturable elimination where $\frac{dC}{dt} = -\frac{V_{max} \cdot C}{K_m + C}$ (e.g., Alcohol).
 - **Bateman Equation:** Analytical solutions for first-order absorption and elimination.
 
----
+### Subject-Specific PK Adjustments
+
+When a subject provides bloodwork data, the engine adjusts PK parameters to reflect their actual organ function rather than relying on population averages:
+
+- **Renal Clearance Scaling:** For drugs with a renal clearance component, the elimination rate constant ($k_e$) is scaled by the ratio of the subject's eGFR to the population normal (100 mL/min). A subject with eGFR = 50 will clear renally-eliminated drugs at roughly half the normal rate, effectively doubling their half-life.
+- **Hepatic Clearance Scaling:** For drugs with hepatic clearance, elevated ALT (above 40 U/L) progressively reduces $k_e$ to model impaired hepatic metabolism, with a floor at 30% of normal capacity.
+- **Albumin-Dependent Volume of Distribution:** Low serum albumin (below 3.5 g/dL) increases the effective volume of distribution for protein-bound drugs, since less albumin means a higher free drug fraction in plasma.
+
+These adjustments happen automatically inside `extractPKAgents()` when bloodwork is present on the subject. When bloodwork is absent, all PK parameters use standard population values.
 
 ## Interventions & Agents
 
@@ -137,3 +136,13 @@ The engine scales all constants to the individual user:
 - **Metabolic Rate (BMR):** Uses Mifflin-St Jeor to scale metabolic clearance.
 - **Fluid Volumes:** Uses Watson formula for Total Body Water (TBW) to determine drug concentrations ($C = \text{Dose} / V_d$).
 - **Menstrual Cycle:** Uses a 28-day mathematical model (Gaussian pulses) to simulate Estrogen, Progesterone, LH, and FSH phases.
+
+### Bloodwork Integration
+
+Subjects can optionally provide real lab results via the `bloodwork` property. When present, bloodwork values are used in two ways:
+
+1. **Signal Initialization & Setpoints:** Signals with bloodwork counterparts (glucose, ALT, AST, eGFR, ferritin, cortisol, and all hematology/organ-health markers) initialize at the subject's measured value and equilibrate around it as their homeostatic setpoint. This means a subject with fasting glucose of 110 mg/dL will see their simulation start and center at 110 rather than the population default of 90.
+
+2. **PK Parameter Adjustment:** Drug clearance rates are scaled based on organ function markers (eGFR for renal clearance, ALT for hepatic clearance) and protein binding is adjusted based on serum albumin. See [PK Adjustments](#subject-specific-pk-adjustments) above.
+
+All bloodwork fields are optional. When a value is not provided, the engine falls back to population averages. This design ensures backward compatibility: existing simulations without bloodwork produce identical results.

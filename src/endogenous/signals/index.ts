@@ -17,6 +17,7 @@ export * from "./circadian";
 export * from "./derived";
 export * from "./organ-health";
 export * from "./nutrients";
+export * from "./hematology";
 
 import * as neurotransmitters from "./neurotransmitters";
 import * as hormones from "./hormones";
@@ -25,6 +26,7 @@ import * as circadian from "./circadian";
 import * as derived from "./derived";
 import * as organHealth from "./organ-health";
 import * as nutrients from "./nutrients";
+import * as hematology from "./hematology";
 
 export {
   neurotransmitters,
@@ -34,6 +36,7 @@ export {
   derived,
   organHealth,
   nutrients,
+  hematology,
 };
 
 export const SIGNAL_DEFINITIONS_MAP = {
@@ -44,6 +47,7 @@ export const SIGNAL_DEFINITIONS_MAP = {
   ...derived,
   ...organHealth,
   ...nutrients,
+  ...hematology,
 };
 
 /**

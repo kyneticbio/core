@@ -18,7 +18,10 @@ export const cortisol: SignalDefinition = {
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const CAR = gaussianPhase(p, hourToPhase(8.75), 1.5);
       const dayComponent = windowPhase(p, hourToPhase(8), hourToPhase(20), 0.5);
-      return 2.0 + 18.0 * CAR + 4.0 * dayComponent;
+      // Scale circadian rhythm around subject's baseline if bloodwork available
+      const baselineCortisol = ctx.subject?.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
+      const scale = baselineCortisol / 12;
+      return (2.0 + 18.0 * CAR + 4.0 * dayComponent) * scale;
     },
     tau: 20,
     production: [
@@ -35,7 +38,10 @@ export const cortisol: SignalDefinition = {
       { source: "gaba", effect: "inhibit", strength: 0.0045 },
     ],
   },
-  initialValue: (ctx: any) => (ctx.isAsleep ? 5 : 12),
+  initialValue: (ctx: any) => {
+    const baseline = ctx.subject?.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
+    return ctx.isAsleep ? baseline * (5 / 12) : baseline;
+  },
   min: 0,
   max: 50,
   display: {
