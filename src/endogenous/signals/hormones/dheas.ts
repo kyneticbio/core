@@ -8,13 +8,13 @@ export const dheas: SignalDefinition = {
   description: "A precursor to sex hormones.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 200,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.hormones?.dheas_ug_dL ?? 200,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 200,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.dheas_ug_dL ?? 200,
   display: {
     referenceRange: { min: 100, max: 500 },
   },

@@ -19,7 +19,7 @@ export const insulin: SignalDefinition = {
     "The 'storage' hormone. Produced by the pancreas, insulin moves sugar from the blood into your cells to be used for immediate energy or saved for later. It's the master regulator of nutrient storage.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx: any, state: any) => 8.0,  // Fasting baseline of 8 µIU/mL
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.metabolic?.fasting_insulin_uIU_mL ?? 8.0,
     tau: 10,
     production: [
       {
@@ -31,7 +31,7 @@ export const insulin: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.05 }],
     couplings: [{ source: "glucagon", effect: "inhibit", strength: 0.01 }],
   },
-  initialValue: 8,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.metabolic?.fasting_insulin_uIU_mL ?? 8,
   min: 0,
   max: 200,
   display: {

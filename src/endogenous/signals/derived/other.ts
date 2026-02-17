@@ -185,13 +185,13 @@ export const magnesium: SignalDefinition = {
   description: "A vital mineral involved in over 300 biochemical reactions.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 2.0,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
     tau: 10080,
     production: [],
     clearance: [{ type: "linear", rate: 0.0001 }],
     couplings: [{ source: "adrenaline", effect: "inhibit", strength: 0.05 }],
   },
-  initialValue: 2.0,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
   min: 0,
   max: 5.0,
   display: {

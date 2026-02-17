@@ -187,8 +187,11 @@ describe('Subject Parameters', () => {
       });
 
       it('should calculate eGFR using Cockcroft-Gault', () => {
-        const male: Subject = { ...DEFAULT_SUBJECT, sex: 'male', age: 30, weight: 70 };
-        const female: Subject = { ...DEFAULT_SUBJECT, sex: 'female', age: 30, weight: 70 };
+        // Strip bloodwork eGFR so Cockcroft-Gault is used
+        const { eGFR_mL_min: _, ...metabolicNoGFR } = DEFAULT_SUBJECT.bloodwork?.metabolic ?? {};
+        const bwNoGFR = { ...DEFAULT_SUBJECT.bloodwork, metabolic: metabolicNoGFR };
+        const male: Subject = { ...DEFAULT_SUBJECT, sex: 'male', age: 30, weight: 70, bloodwork: bwNoGFR };
+        const female: Subject = { ...DEFAULT_SUBJECT, sex: 'female', age: 30, weight: 70, bloodwork: bwNoGFR };
 
         const malePhys = derivePhysiology(male);
         const femalePhys = derivePhysiology(female);
@@ -200,8 +203,11 @@ describe('Subject Parameters', () => {
       });
 
       it('should calculate lower eGFR with age', () => {
-        const young: Subject = { ...DEFAULT_SUBJECT, age: 25 };
-        const old: Subject = { ...DEFAULT_SUBJECT, age: 65 };
+        // Strip bloodwork eGFR so Cockcroft-Gault is used
+        const { eGFR_mL_min: _, ...metabolicNoGFR } = DEFAULT_SUBJECT.bloodwork?.metabolic ?? {};
+        const bwNoGFR = { ...DEFAULT_SUBJECT.bloodwork, metabolic: metabolicNoGFR };
+        const young: Subject = { ...DEFAULT_SUBJECT, age: 25, bloodwork: bwNoGFR };
+        const old: Subject = { ...DEFAULT_SUBJECT, age: 65, bloodwork: bwNoGFR };
 
         const youngPhys = derivePhysiology(young);
         const oldPhys = derivePhysiology(old);
@@ -558,9 +564,12 @@ describe('Subject Parameters', () => {
 
     describe('eGFR Age Effect', () => {
       it('should have lower eGFR in older subjects (via physiology)', () => {
-        const young = derivePhysiology({ ...DEFAULT_SUBJECT, age: 25 });
-        const middle = derivePhysiology({ ...DEFAULT_SUBJECT, age: 50 });
-        const old = derivePhysiology({ ...DEFAULT_SUBJECT, age: 75 });
+        // Strip bloodwork eGFR so Cockcroft-Gault is used
+        const { eGFR_mL_min: _, ...metabolicNoGFR } = DEFAULT_SUBJECT.bloodwork?.metabolic ?? {};
+        const bwNoGFR = { ...DEFAULT_SUBJECT.bloodwork, metabolic: metabolicNoGFR };
+        const young = derivePhysiology({ ...DEFAULT_SUBJECT, age: 25, bloodwork: bwNoGFR });
+        const middle = derivePhysiology({ ...DEFAULT_SUBJECT, age: 50, bloodwork: bwNoGFR });
+        const old = derivePhysiology({ ...DEFAULT_SUBJECT, age: 75, bloodwork: bwNoGFR });
 
         expect(young.estimatedGFR).toBeGreaterThan(middle.estimatedGFR);
         expect(middle.estimatedGFR).toBeGreaterThan(old.estimatedGFR);
@@ -661,7 +670,10 @@ describe('Subject Parameters', () => {
 
     describe('Extreme Age Cases', () => {
       it('should handle young adult (age 18)', () => {
-        const young: Subject = { ...DEFAULT_SUBJECT, age: 18 };
+        // Strip bloodwork eGFR so Cockcroft-Gault is used
+        const { eGFR_mL_min: _, ...metabolicNoGFR } = DEFAULT_SUBJECT.bloodwork?.metabolic ?? {};
+        const bwNoGFR = { ...DEFAULT_SUBJECT.bloodwork, metabolic: metabolicNoGFR };
+        const young: Subject = { ...DEFAULT_SUBJECT, age: 18, bloodwork: bwNoGFR };
         const phys = derivePhysiology(young);
 
         expect(phys.bmr).toBeGreaterThan(0);
@@ -669,7 +681,10 @@ describe('Subject Parameters', () => {
       });
 
       it('should handle elderly (age 80)', () => {
-        const elderly: Subject = { ...DEFAULT_SUBJECT, age: 80 };
+        // Strip bloodwork eGFR so Cockcroft-Gault is used
+        const { eGFR_mL_min: _, ...metabolicNoGFR } = DEFAULT_SUBJECT.bloodwork?.metabolic ?? {};
+        const bwNoGFR = { ...DEFAULT_SUBJECT.bloodwork, metabolic: metabolicNoGFR };
+        const elderly: Subject = { ...DEFAULT_SUBJECT, age: 80, bloodwork: bwNoGFR };
         const phys = derivePhysiology(elderly);
 
         expect(phys.bmr).toBeGreaterThan(0);

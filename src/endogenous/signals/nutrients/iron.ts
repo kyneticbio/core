@@ -8,13 +8,13 @@ export const iron: SignalDefinition = {
   description: "Oxygen transport component.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 100,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.iron_ug_dL ?? 100,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 100,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.iron_ug_dL ?? 100,
   display: {
     referenceRange: { min: 60, max: 170 },
   },

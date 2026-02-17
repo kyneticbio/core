@@ -8,13 +8,13 @@ export const folate: SignalDefinition = {
   description: "Essential for cell division.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 12,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.folate_ng_mL ?? 12,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 12,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.folate_ng_mL ?? 12,
   display: {
     referenceRange: { min: 4, max: 20 },
   },

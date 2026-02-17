@@ -8,13 +8,13 @@ export const vitaminD3: SignalDefinition = {
   description: "Essential hormone-like vitamin.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 35,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.vitaminD3_ng_mL ?? 35,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 35,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.vitaminD3_ng_mL ?? 35,
   display: {
     referenceRange: { min: 30, max: 80 },
   },

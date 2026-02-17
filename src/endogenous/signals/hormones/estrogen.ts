@@ -11,14 +11,19 @@ export const estrogen: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
-      if (ctx.subject.sex === "male") return 30.0;
+      if (ctx.subject.sex === "male") {
+        return ctx.subject?.bloodwork?.hormones?.estradiol_pg_mL ?? 30.0;
+      }
+      // Scale cycle rhythm around subject's baseline if bloodwork available
+      const baselineE2 = ctx.subject?.bloodwork?.hormones?.estradiol_pg_mL ?? 40;
+      const scale = baselineE2 / 40;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =
         (ctx.subject.cycleDay || 0) +
         Math.floor(ctx.circadianMinuteOfDay / 1440);
       const effectiveDay = cycleDay % cycleLength;
       return (
-        20.0 + 250.0 * getMenstrualHormones(effectiveDay, cycleLength).estrogen
+        (20.0 + 250.0 * getMenstrualHormones(effectiveDay, cycleLength).estrogen) * scale
       );
     },
     tau: 120,
@@ -26,7 +31,7 @@ export const estrogen: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.008 }],
     couplings: [],
   },
-  initialValue: 40,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.estradiol_pg_mL ?? 40,
   display: {
     referenceRange: { min: 50, max: 400 },
   },

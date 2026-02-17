@@ -9,13 +9,14 @@ export const igf1: SignalDefinition = {
     "Insulin-like Growth Factor 1 mediates most of growth hormone's effects on tissue growth and repair. Produced primarily by the liver in response to GH pulses.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => {
+    setpoint: (ctx: any, state: any) => {
       // IGF-1 is relatively stable throughout the day with slight overnight dip
       // Age-dependent: peaks in puberty, declines with age
+      const baseline = ctx.subject?.bloodwork?.hormones?.igf1_ng_mL ?? 150;
       const ageFactor = ctx.subject?.age
         ? Math.max(0.5, 1.0 - (ctx.subject.age - 25) * 0.005)
         : 1.0;
-      return 150 * ageFactor;
+      return baseline * ageFactor;
     },
     tau: 1440, // Very slow - liver production, long half-life (~15 hours)
     production: [{ source: "growthHormone", coefficient: 0.05 }],
@@ -25,7 +26,7 @@ export const igf1: SignalDefinition = {
       { source: "inflammation", effect: "inhibit", strength: 0.1 },
     ],
   },
-  initialValue: 150,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.igf1_ng_mL ?? 150,
   min: 0,
   max: 600,
   display: {

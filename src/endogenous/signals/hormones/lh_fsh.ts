@@ -10,18 +10,23 @@ export const lh: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
-      if (ctx.subject.sex === "male") return 5.0;
+      if (ctx.subject.sex === "male") {
+        return ctx.subject?.bloodwork?.hormones?.lh_IU_L ?? 5.0;
+      }
+      // Scale cycle rhythm around subject's baseline if bloodwork available
+      const baselineLH = ctx.subject?.bloodwork?.hormones?.lh_IU_L ?? 5.0;
+      const scale = baselineLH / 5.0;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay = (ctx.subject.cycleDay || 1) + (ctx.dayOfYear - 1);
       const effectiveDay = cycleDay % cycleLength;
-      return 2.0 + 30.0 * getMenstrualHormones(effectiveDay, cycleLength).lh;
+      return (2.0 + 30.0 * getMenstrualHormones(effectiveDay, cycleLength).lh) * scale;
     },
     tau: 60,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 5,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.lh_IU_L ?? 5,
   display: {
     referenceRange: { min: 2, max: 15 },
   },
@@ -46,18 +51,23 @@ export const fsh: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
-      if (ctx.subject.sex === "male") return 5.0;
+      if (ctx.subject.sex === "male") {
+        return ctx.subject?.bloodwork?.hormones?.fsh_IU_L ?? 5.0;
+      }
+      // Scale cycle rhythm around subject's baseline if bloodwork available
+      const baselineFSH = ctx.subject?.bloodwork?.hormones?.fsh_IU_L ?? 5.0;
+      const scale = baselineFSH / 5.0;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay = (ctx.subject.cycleDay || 1) + (ctx.dayOfYear - 1);
       const effectiveDay = cycleDay % cycleLength;
-      return 3.0 + 12.0 * getMenstrualHormones(effectiveDay, cycleLength).fsh;
+      return (3.0 + 12.0 * getMenstrualHormones(effectiveDay, cycleLength).fsh) * scale;
     },
     tau: 60,
     production: [],
     clearance: [{ type: "linear", rate: 0.02 }],
     couplings: [],
   },
-  initialValue: 5,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.fsh_IU_L ?? 5,
   display: {
     referenceRange: { min: 1, max: 10 },
   },

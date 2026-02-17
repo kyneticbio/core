@@ -8,13 +8,13 @@ export const shbg: SignalDefinition = {
   description: "Sex Hormone Binding Globulin.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 40,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.hormones?.shbg_nmol_L ?? 40,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 40,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.shbg_nmol_L ?? 40,
   display: {
     referenceRange: { min: 20, max: 100 },
   },

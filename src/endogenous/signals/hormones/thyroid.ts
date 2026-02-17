@@ -18,6 +18,10 @@ export const thyroid: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
+      // Scale circadian rhythm around subject's baseline if bloodwork available
+      // freeT4 in ng/dL maps to the thyroid signal's pmol/L output via ratio-scaling
+      const baselineT4 = ctx.subject?.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
+      const scale = baselineT4 / 1.2;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const active = windowPhase(
         p,
@@ -35,7 +39,7 @@ export const thyroid: SignalDefinition = {
         hourToPhase(2.0),
         widthToConcentration(300),
       );
-      return 1.0 + 2.0 * active + 1.5 * midday - 1.2 * nightDip;
+      return (1.0 + 2.0 * active + 1.5 * midday - 1.2 * nightDip) * scale;
     },
     tau: 43200,
     production: [],
@@ -45,7 +49,10 @@ export const thyroid: SignalDefinition = {
       { source: "leptin", effect: "stimulate", strength: 0.0001 },
     ],
   },
-  initialValue: 1.0,
+  initialValue: (ctx: any) => {
+    const baselineT4 = ctx.subject?.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
+    return (1.0) * (baselineT4 / 1.2);
+  },
   display: {
     referenceRange: { min: 10, max: 25 },
   },

@@ -8,13 +8,13 @@ export const zinc: SignalDefinition = {
   description: "Essential mineral for immunity.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 90,
+    setpoint: (ctx: any, state: any) => ctx.subject?.bloodwork?.nutritional?.zinc_ug_dL ?? 90,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 90,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.nutritional?.zinc_ug_dL ?? 90,
   display: {
     referenceRange: { min: 70, max: 120 },
   },

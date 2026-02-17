@@ -21,13 +21,17 @@ export const testosterone: SignalDefinition = {
         1 - Math.max(0, ctx.subject.age - 30) * 0.01,
       );
       if (ctx.subject.sex === "male") {
+        // Scale circadian rhythm around subject's baseline if bloodwork available
+        const baselineT = ctx.subject?.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500;
+        const scale = baselineT / 500;
         const p = minuteToPhase(ctx.circadianMinuteOfDay);
         const circadian =
           400.0 +
           300.0 * gaussianPhase(p, hourToPhase(8), widthToConcentration(240));
-        return circadian * ageFactor;
+        return circadian * ageFactor * scale;
       } else {
-        return 40.0 * ageFactor;
+        const baselineT = ctx.subject?.bloodwork?.hormones?.total_testosterone_ng_dL ?? 40;
+        return baselineT * ageFactor;
       }
     },
     tau: 60,
@@ -35,7 +39,7 @@ export const testosterone: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.015 }],
     couplings: [],
   },
-  initialValue: 500,
+  initialValue: (ctx: any) => ctx.subject?.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500,
   display: {
     referenceRange: { min: 300, max: 1000 },
   },

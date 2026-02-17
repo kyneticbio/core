@@ -12,6 +12,7 @@ export interface MetabolicPanel {
   bilirubin_mg_dL?: number;
   potassium_mmol_L?: number;
   glucose_mg_dL?: number;
+  fasting_insulin_uIU_mL?: number;
 }
 
 export interface HematologyPanel {
@@ -30,6 +31,24 @@ export interface HormonalPanel {
   tsh_uIU_mL?: number;
   cortisol_ug_dL?: number;
   free_testosterone_pg_mL?: number;
+  total_testosterone_ng_dL?: number;
+  estradiol_pg_mL?: number;
+  progesterone_ng_mL?: number;
+  lh_IU_L?: number;
+  fsh_IU_L?: number;
+  shbg_nmol_L?: number;
+  dheas_ug_dL?: number;
+  igf1_ng_mL?: number;
+  freeT4_ng_dL?: number;
+}
+
+export interface NutritionalPanel {
+  vitaminD3_ng_mL?: number;
+  b12_pg_mL?: number;
+  iron_ug_dL?: number;
+  folate_ng_mL?: number;
+  zinc_ug_dL?: number;
+  magnesium_mg_dL?: number;
 }
 
 export interface Bloodwork {
@@ -37,6 +56,7 @@ export interface Bloodwork {
   hematology?: Partial<HematologyPanel>;
   inflammation?: Partial<InflammatoryPanel>;
   hormones?: Partial<HormonalPanel>;
+  nutritional?: Partial<NutritionalPanel>;
 }
 
 export interface Subject {
