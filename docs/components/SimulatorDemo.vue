@@ -179,8 +179,7 @@ function onChartMouseLeave() {
     <Transition name="fade" mode="out-in">
       <div v-if="!activePersonaId" key="grid" class="persona-grid">
         <div class="grid-header">
-          <h2 class="grid-title">What brings you here?</h2>
-          <p class="grid-sub">Pick the persona that fits, and we'll show you <em>your</em> chemistry.</p>
+          <h2 class="grid-title">Select a demo.</h2>
         </div>
         <div class="grid-cards">
           <button
@@ -191,24 +190,41 @@ function onChartMouseLeave() {
             @click="selectPersona(p.id)"
           >
             <span class="persona-icon">{{ p.icon }}</span>
-            <h3 class="persona-headline">{{ p.headline }}</h3>
-            <p class="persona-subhead">{{ p.subhead }}</p>
-            <div class="persona-signals-preview">
-              <span v-for="s in p.signals.slice(0, 3)" :key="s.key" class="signal-pill-preview">
-                {{ s.label }}
-              </span>
+            <div class="persona-info">
+              <h3 class="persona-headline">{{ p.headline }}</h3>
+              <p class="persona-subhead">{{ p.subhead }}</p>
+              <div class="persona-signals-preview" v-if="false">
+                <span
+                  v-for="s in p.signals.slice(0, 3)"
+                  :key="s.key"
+                  class="signal-pill-preview"
+                >
+                  {{ s.label }}
+                </span>
+              </div>
             </div>
           </button>
         </div>
       </div>
 
       <!-- STATE 2: Active Persona View -->
-      <div v-else key="detail" class="persona-view" :style="{ '--accent': activePersona?.accent }">
+      <div
+        v-else
+        key="detail"
+        class="persona-view"
+        :style="{ '--accent': activePersona?.accent }"
+      >
         <!-- Header -->
         <div class="detail-header">
           <button class="back-btn" @click="goBack">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M10 12L6 8L10 4"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
             Back
           </button>
@@ -222,31 +238,50 @@ function onChartMouseLeave() {
         </div>
 
         <!-- Condition Bar -->
-        <div v-if="Object.keys(simState.conditions).length || activePersona?.subjectSliders?.length" class="condition-bar">
+        <div
+          v-if="Object.keys(simState.conditions).length || activePersona?.subjectSliders?.length"
+          class="condition-bar"
+        >
           <div class="bar-label">About You</div>
           <div class="condition-pills">
             <!-- Conditions -->
-            <div v-for="(cond, key) in simState.conditions" :key="key" class="condition-group">
+            <div
+              v-for="(cond, key) in simState.conditions"
+              :key="key"
+              class="condition-group"
+            >
               <button
                 :class="['condition-pill', { active: cond.enabled }]"
                 @click="toggleCondition(key)"
               >
                 {{ getConditionLabel(key) }}
-                <span class="pill-toggle">{{ cond.enabled ? 'ON' : 'OFF' }}</span>
+                <span
+                  class="pill-toggle"
+                  >{{ cond.enabled ? 'ON' : 'OFF' }}</span
+                >
               </button>
               <!-- Inline param sliders -->
               <div v-if="cond.enabled" class="condition-params">
-                <div v-for="p in getConditionParams(key)" :key="p.key" class="param-inline">
+                <div
+                  v-for="p in getConditionParams(key)"
+                  :key="p.key"
+                  class="param-inline"
+                >
                   <template v-if="p.type === 'slider'">
                     <span class="param-label">{{ p.label }}</span>
                     <input
                       type="range"
-                      :min="p.min" :max="p.max" :step="p.step"
+                      :min="p.min"
+                      :max="p.max"
+                      :step="p.step"
                       :value="cond.params[p.key] ?? p.default"
                       class="param-slider"
                       @input="updateConditionParam(key, p.key, Number($event.target.value))"
                     />
-                    <span class="param-value">{{ (cond.params[p.key] ?? p.default).toFixed?.(1) ?? cond.params[p.key] }}</span>
+                    <span
+                      class="param-value"
+                      >{{ (cond.params[p.key] ?? p.default).toFixed?.(1) ?? cond.params[p.key] }}</span
+                    >
                   </template>
                   <template v-else-if="p.type === 'select'">
                     <span class="param-label">{{ p.label }}</span>
@@ -255,7 +290,11 @@ function onChartMouseLeave() {
                       class="param-select"
                       @change="updateConditionParam(key, p.key, Number($event.target.value))"
                     >
-                      <option v-for="opt in p.options" :key="opt.value" :value="opt.value">
+                      <option
+                        v-for="opt in p.options"
+                        :key="opt.value"
+                        :value="opt.value"
+                      >
                         {{ opt.label }}
                       </option>
                     </select>
@@ -265,17 +304,25 @@ function onChartMouseLeave() {
             </div>
 
             <!-- Subject sliders -->
-            <div v-for="s in activePersona?.subjectSliders" :key="s.key" class="condition-group">
+            <div
+              v-for="s in activePersona?.subjectSliders"
+              :key="s.key"
+              class="condition-group"
+            >
               <div class="subject-slider-group">
                 <span class="param-label">{{ s.label }}</span>
                 <input
                   type="range"
-                  :min="s.min" :max="s.max" :step="s.step"
+                  :min="s.min"
+                  :max="s.max"
+                  :step="s.step"
                   :value="simState.subject[s.key] ?? s.default"
                   class="param-slider subject-slider"
                   @input="updateSubject(s.key, Number($event.target.value))"
                 />
-                <span class="param-value">{{ simState.subject[s.key] ?? s.default }} {{ s.unit }}</span>
+                <span class="param-value"
+                  >{{ simState.subject[s.key] ?? s.default }} {{ s.unit }}</span
+                >
               </div>
               <!-- Cycle phase indicator -->
               <div v-if="s.key === 'cycleDay'" class="cycle-phase">
@@ -289,12 +336,19 @@ function onChartMouseLeave() {
         <div class="intervention-bar">
           <div class="bar-label">Interventions</div>
           <div class="intervention-chips">
-            <div v-for="(iv, key) in simState.activeInterventions" :key="key" class="intervention-chip-group">
+            <div
+              v-for="(iv, key) in simState.activeInterventions"
+              :key="key"
+              class="intervention-chip-group"
+            >
               <button
                 :class="['intervention-chip', { active: iv.enabled, inactive: !iv.enabled }]"
                 @click="toggleIntervention(key)"
               >
-                <span class="chip-icon">{{ getInterventionDef(key)?.icon || '\u{1F48A}' }}</span>
+                <span
+                  class="chip-icon"
+                  >{{ getInterventionDef(key)?.icon || '\u{1F48A}' }}</span
+                >
                 <span :class="['chip-name', { strikethrough: !iv.enabled }]">
                   {{ getInterventionDef(key)?.label || key }}
                 </span>
@@ -304,28 +358,41 @@ function onChartMouseLeave() {
                   title="Adjust dose"
                 >
                   <svg width="10" height="10" viewBox="0 0 10 10">
-                    <path :d="expandedIntervention === key ? 'M2 6L5 3L8 6' : 'M2 4L5 7L8 4'" fill="currentColor"/>
+                    <path
+                      :d="expandedIntervention === key ? 'M2 6L5 3L8 6' : 'M2 4L5 7L8 4'"
+                      fill="currentColor"
+                    />
                   </svg>
                 </button>
                 <button
                   class="chip-remove"
                   @click.stop="removeIntervention(key)"
                   title="Remove"
-                >&times;</button>
+                >
+                  &times;
+                </button>
               </button>
               <!-- Expanded dose slider -->
               <div v-if="expandedIntervention === key" class="chip-dose-panel">
-                <div v-for="p in (getInterventionDef(key)?.params || [])" :key="p.key" class="dose-param">
+                <div
+                  v-for="p in (getInterventionDef(key)?.params || [])"
+                  :key="p.key"
+                  class="dose-param"
+                >
                   <template v-if="p.type === 'slider'">
                     <span class="param-label">{{ p.label }}</span>
                     <input
                       type="range"
-                      :min="p.min" :max="p.max" :step="p.step"
+                      :min="p.min"
+                      :max="p.max"
+                      :step="p.step"
                       :value="iv.params[p.key] ?? p.default"
                       class="param-slider"
                       @input="updateInterventionParam(key, p.key, Number($event.target.value))"
                     />
-                    <span class="param-value">{{ iv.params[p.key] ?? p.default }} {{ p.unit }}</span>
+                    <span class="param-value"
+                      >{{ iv.params[p.key] ?? p.default }} {{ p.unit }}</span
+                    >
                   </template>
                   <template v-else-if="p.type === 'select'">
                     <span class="param-label">{{ p.label }}</span>
@@ -334,7 +401,11 @@ function onChartMouseLeave() {
                       class="param-select"
                       @change="updateInterventionParam(key, p.key, $event.target.value)"
                     >
-                      <option v-for="opt in (p.options || [])" :key="opt.value ?? opt" :value="opt.value ?? opt">
+                      <option
+                        v-for="opt in (p.options || [])"
+                        :key="opt.value ?? opt"
+                        :value="opt.value ?? opt"
+                      >
                         {{ opt.label ?? opt }}
                       </option>
                     </select>
@@ -344,7 +415,10 @@ function onChartMouseLeave() {
             </div>
 
             <!-- Add intervention button -->
-            <button class="add-chip" @click="showInterventionPicker = !showInterventionPicker">
+            <button
+              class="add-chip"
+              @click="showInterventionPicker = !showInterventionPicker"
+            >
               + Add
             </button>
           </div>
@@ -357,7 +431,11 @@ function onChartMouseLeave() {
               class="picker-search"
             />
             <div class="picker-list">
-              <div v-for="(items, group) in groupedAvailableInterventions" :key="group" class="picker-group">
+              <div
+                v-for="(items, group) in groupedAvailableInterventions"
+                :key="group"
+                class="picker-group"
+              >
                 <div class="picker-group-label">{{ group }}</div>
                 <button
                   v-for="iv in items"
@@ -365,11 +443,17 @@ function onChartMouseLeave() {
                   class="picker-item"
                   @click="addIntervention(iv.key)"
                 >
-                  <span class="picker-item-icon">{{ iv.icon || '\u{1F48A}' }}</span>
+                  <span
+                    class="picker-item-icon"
+                    >{{ iv.icon || '\u{1F48A}' }}</span
+                  >
                   {{ iv.label }}
                 </button>
               </div>
-              <div v-if="!Object.keys(groupedAvailableInterventions).length" class="picker-empty">
+              <div
+                v-if="!Object.keys(groupedAvailableInterventions).length"
+                class="picker-empty"
+              >
                 No matching interventions
               </div>
             </div>
@@ -379,21 +463,50 @@ function onChartMouseLeave() {
         <!-- Legend -->
         <div class="legend">
           <span class="legend-item">
-            <svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="var(--vp-c-text-3)" stroke-width="2" stroke-dasharray="4 3" /></svg>
+            <svg width="24" height="8">
+              <line
+                x1="0"
+                y1="4"
+                x2="24"
+                y2="4"
+                stroke="var(--vp-c-text-3)"
+                stroke-width="2"
+                stroke-dasharray="4 3"
+              />
+            </svg>
             Baseline
           </span>
           <span class="legend-item">
-            <svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" :stroke="activePersona?.accent || 'var(--vp-c-brand-1)'" stroke-width="2.5" /></svg>
+            <svg width="24" height="8">
+              <line
+                x1="0"
+                y1="4"
+                x2="24"
+                y2="4"
+                :stroke="activePersona?.accent || 'var(--vp-c-brand-1)'"
+                stroke-width="2.5"
+              />
+            </svg>
             With Interventions
           </span>
         </div>
 
         <!-- Chart Grid -->
         <div class="chart-grid">
-          <div v-for="sig in simState.results" :key="sig.key" class="chart-card">
+          <div
+            v-for="sig in simState.results"
+            :key="sig.key"
+            class="chart-card"
+          >
             <div class="chart-header">
               <div class="chart-label">{{ sig.label }}</div>
-              <button class="chart-remove" @click="removeSignal(sig.key)" title="Remove signal">&times;</button>
+              <button
+                class="chart-remove"
+                @click="removeSignal(sig.key)"
+                title="Remove signal"
+              >
+                &times;
+              </button>
             </div>
             <svg
               :viewBox="`0 0 ${CHART_W} ${CHART_H}`"
@@ -406,8 +519,12 @@ function onChartMouseLeave() {
               <line
                 v-for="m in getHourMarkers(activePersona.sim.startMinuteOfDay, activePersona.sim.hours).slice(1, -1)"
                 :key="m.label"
-                :x1="m.x" y1="0" :x2="m.x" :y2="CHART_H"
-                stroke="var(--vp-c-divider)" stroke-width="0.5"
+                :x1="m.x"
+                y1="0"
+                :x2="m.x"
+                :y2="CHART_H"
+                stroke="var(--vp-c-divider)"
+                stroke-width="0.5"
               />
               <!-- Baseline (dashed) -->
               <path
@@ -427,7 +544,10 @@ function onChartMouseLeave() {
               <!-- Hover crosshair -->
               <line
                 v-if="hoveredX !== null"
-                :x1="hoveredX" y1="0" :x2="hoveredX" :y2="CHART_H"
+                :x1="hoveredX"
+                y1="0"
+                :x2="hoveredX"
+                :y2="CHART_H"
                 stroke="var(--vp-c-text-2)"
                 stroke-width="0.5"
                 stroke-dasharray="2 2"
@@ -440,12 +560,16 @@ function onChartMouseLeave() {
                 :key="m.label"
                 class="x-label"
                 :style="{ left: (m.x / CHART_W * 100) + '%' }"
-              >{{ m.label }}</span>
+                >{{ m.label }}</span
+              >
             </div>
           </div>
 
           <!-- Add signal card -->
-          <div class="chart-card add-signal-card" @click="showSignalPicker = !showSignalPicker">
+          <div
+            class="chart-card add-signal-card"
+            @click="showSignalPicker = !showSignalPicker"
+          >
             <div class="add-signal-content">
               <span class="add-signal-icon">+</span>
               <span>Add Signal</span>
@@ -461,7 +585,11 @@ function onChartMouseLeave() {
             class="picker-search"
           />
           <div class="picker-list">
-            <div v-for="(items, group) in groupedAvailableSignals" :key="group" class="picker-group">
+            <div
+              v-for="(items, group) in groupedAvailableSignals"
+              :key="group"
+              class="picker-group"
+            >
               <div class="picker-group-label">{{ group }}</div>
               <button
                 v-for="s in items"
@@ -470,10 +598,23 @@ function onChartMouseLeave() {
                 @click="addSignal(s.key)"
               >
                 <span class="picker-item-name">{{ s.label }}</span>
-                <span class="picker-item-desc">{{ s.description?.slice(0, 60) }}{{ s.description?.length > 60 ? '...' : '' }}</span>
+                <span class="picker-item-desc"
+                  >{{ s.description?.slice(0, 60)
+
+
+
+
+
+
+
+                  }}{{ s.description?.length > 60 ? '...' : '' }}</span
+                >
               </button>
             </div>
-            <div v-if="!Object.keys(groupedAvailableSignals).length" class="picker-empty">
+            <div
+              v-if="!Object.keys(groupedAvailableSignals).length"
+              class="picker-empty"
+            >
               No matching signals
             </div>
           </div>
@@ -528,9 +669,9 @@ function onChartMouseLeave() {
 
 .persona-card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: 0.85rem;
   padding: 1rem;
   border-radius: 10px;
   border: 1px solid var(--vp-c-divider);
@@ -547,8 +688,15 @@ function onChartMouseLeave() {
 }
 
 .persona-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.15rem;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.persona-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .persona-headline {

@@ -1,8 +1,8 @@
 # The Science Behind KyneticBio
 
-KyneticBio isn't making rough estimates or using lookup tables. Under the hood, it's solving the same differential equations that describe real biological systems — pharmacokinetics, receptor dynamics, hormonal feedback loops, and metabolic pathways — all running continuously in your browser.
+KyneticBio isn't making rough estimates or using lookup tables. Under the hood, it's solving the same differential equations that describe real biological systems - pharmacokinetics, receptor dynamics, hormonal feedback loops, and metabolic pathways - all running continuously in your browser.
 
-This page is for people who want to understand *how* the engine works and *why* you can trust its output. If you just want to use it, head back to the [Getting Started](./getting-started) guide.
+This page is for people who want to understand _how_ the engine works and _why_ you can trust its output. If you just want to use it, head back to the [Getting Started](./getting-started) guide.
 
 ---
 

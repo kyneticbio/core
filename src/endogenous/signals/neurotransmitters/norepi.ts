@@ -12,7 +12,7 @@ export const norepi: SignalDefinition = {
   isPremium: true,
   unit: "pg/mL",
   description:
-    "Both a hormone and a neurotransmitter, this is your brain's 'focus' signal. It increases alertness and arousal, sharpening your attention and preparing your body for action—essential for concentration and productivity.",
+    "Both a hormone and a neurotransmitter, this is your brain's 'focus' signal. It increases alertness and arousal, sharpening your attention and preparing your body for action-essential for concentration and productivity.",
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
@@ -55,7 +55,8 @@ export const norepi: SignalDefinition = {
       pattern: { type: "exceeds", value: 600, sustainedMins: 15 },
       outcome: "win",
       message: "Hyper-Alertness (Norepinephrine)",
-      description: "High norepinephrine levels are sharpening your focus and preparing you for action.",
+      description:
+        "High norepinephrine levels are sharpening your focus and preparing you for action.",
     },
     {
       id: "norepi_anxiety_risk",
@@ -63,7 +64,8 @@ export const norepi: SignalDefinition = {
       pattern: { type: "exceeds", value: 1000, sustainedMins: 15 },
       outcome: "warning",
       message: "Anxiety Risk (Extreme Norepi)",
-      description: "Excessive norepinephrine can cause jitteriness, racing heart, and anxiety.",
+      description:
+        "Excessive norepinephrine can cause jitteriness, racing heart, and anxiety.",
     },
   ],
 };

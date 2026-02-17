@@ -4,7 +4,7 @@ export const AUXILIARY = {
   adenosinePressure: {
     category: "auxiliary",
     system: "Sleep",
-    description: 'Your "sleep debt"—builds up the longer you stay awake.',
+    description: 'Your "sleep debt"-builds up the longer you stay awake.',
   } as AuxiliaryTargetDefinition,
   dopamineVesicles: {
     category: "auxiliary",

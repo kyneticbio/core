@@ -10,7 +10,7 @@ import type { PharmacologyDef } from "../../../engine";
 const SEMAGLUTIDE_MOLAR_MASS = 4113.58;
 const SEMAGLUTIDE_HALFLIFE_MIN = 10080; // ~7 days
 
-// Fixed EC50 values — calibrated to mid-range dose (1.0 mg).
+// Fixed EC50 values - calibrated to mid-range dose (1.0 mg).
 // EC50 should be high enough that low doses produce partial occupancy
 // and high doses approach saturation, giving a clear dose-response curve.
 // midPeak = (1.0 * 0.89) / 8.4 ≈ 0.106 mg/L
@@ -41,22 +41,22 @@ export const Semaglutide = (mg: number): PharmacologyDef => {
         intrinsicEfficacy: Math.min(40, mg * 20),
         unit: "pmol/L",
         tau: 3,
-        description: "GLP-1 receptor activation — primary mechanism",
+        description: "GLP-1 receptor activation - primary mechanism",
       },
       {
         target: "gastricEmptying",
         mechanism: "agonist",
         EC50: SEMAGLUTIDE_EC50,
-        intrinsicEfficacy: -(Math.min(30, mg * 15)),
+        intrinsicEfficacy: -Math.min(30, mg * 15),
         unit: "nM",
         tau: 3,
-        description: "Slows gastric emptying — appetite and GI effects",
+        description: "Slows gastric emptying - appetite and GI effects",
       },
       {
         target: "appetite",
         mechanism: "agonist",
         EC50: SEMAGLUTIDE_EC50,
-        intrinsicEfficacy: -(Math.min(35, mg * 18)),
+        intrinsicEfficacy: -Math.min(35, mg * 18),
         unit: "nM",
         tau: 3,
         description: "Central appetite suppression via hypothalamic GLP-1R",
@@ -101,7 +101,7 @@ export const Semaglutide = (mg: number): PharmacologyDef => {
 const TIRZEPATIDE_MOLAR_MASS = 4813.45;
 const TIRZEPATIDE_HALFLIFE_MIN = 7200; // ~5 days
 
-// Fixed EC50 — calibrated to mid-range dose (7.5 mg).
+// Fixed EC50 - calibrated to mid-range dose (7.5 mg).
 // midPeak = (7.5 * 0.8) / 9.8 ≈ 0.612 mg/L
 const TIRZEPATIDE_MID_PEAK = (7.5 * 0.8) / 9.8;
 const TIRZEPATIDE_EC50 = TIRZEPATIDE_MID_PEAK * 1.5; // ~0.918
@@ -138,13 +138,13 @@ export const Tirzepatide = (mg: number): PharmacologyDef => {
         intrinsicEfficacy: Math.min(35, mg * 3.5),
         unit: "pmol/L",
         tau: 3,
-        description: "GIP receptor activation — dual incretin action",
+        description: "GIP receptor activation - dual incretin action",
       },
       {
         target: "gastricEmptying",
         mechanism: "agonist",
         EC50: TIRZEPATIDE_EC50,
-        intrinsicEfficacy: -(Math.min(25, mg * 2.5)),
+        intrinsicEfficacy: -Math.min(25, mg * 2.5),
         unit: "nM",
         tau: 3,
         description: "Slows gastric emptying",
@@ -153,10 +153,10 @@ export const Tirzepatide = (mg: number): PharmacologyDef => {
         target: "appetite",
         mechanism: "agonist",
         EC50: TIRZEPATIDE_EC50,
-        intrinsicEfficacy: -(Math.min(40, mg * 4)),
+        intrinsicEfficacy: -Math.min(40, mg * 4),
         unit: "nM",
         tau: 3,
-        description: "Appetite suppression — stronger than mono-GLP-1 agonists",
+        description: "Appetite suppression - stronger than mono-GLP-1 agonists",
       },
       {
         target: "insulin",
@@ -165,7 +165,8 @@ export const Tirzepatide = (mg: number): PharmacologyDef => {
         intrinsicEfficacy: Math.min(8, mg * 0.8),
         unit: "nM",
         tau: 3,
-        description: "Enhanced glucose-dependent insulin secretion (dual incretin)",
+        description:
+          "Enhanced glucose-dependent insulin secretion (dual incretin)",
       },
       {
         target: "glucagon",
@@ -198,7 +199,7 @@ export const Tirzepatide = (mg: number): PharmacologyDef => {
 const RETATRUTIDE_MOLAR_MASS = 4605.2;
 const RETATRUTIDE_HALFLIFE_MIN = 10080; // ~7 days
 
-// Fixed EC50 — calibrated to mid-range dose (6 mg).
+// Fixed EC50 - calibrated to mid-range dose (6 mg).
 // midPeak = (6 * 0.75) / 9.1 ≈ 0.495 mg/L
 const RETATRUTIDE_MID_PEAK = (6 * 0.75) / 9.1;
 const RETATRUTIDE_EC50 = RETATRUTIDE_MID_PEAK * 1.5; // ~0.742
@@ -244,13 +245,13 @@ export const Retatrutide = (mg: number): PharmacologyDef => {
         intrinsicEfficacy: Math.min(20, mg * 2),
         unit: "pg/mL",
         tau: 3,
-        description: "Glucagon receptor agonism — increases energy expenditure",
+        description: "Glucagon receptor agonism - increases energy expenditure",
       },
       {
         target: "gastricEmptying",
         mechanism: "agonist",
         EC50: RETATRUTIDE_EC50,
-        intrinsicEfficacy: -(Math.min(25, mg * 2.5)),
+        intrinsicEfficacy: -Math.min(25, mg * 2.5),
         unit: "nM",
         tau: 3,
         description: "Slows gastric emptying",
@@ -259,7 +260,7 @@ export const Retatrutide = (mg: number): PharmacologyDef => {
         target: "appetite",
         mechanism: "agonist",
         EC50: RETATRUTIDE_EC50 * 0.8,
-        intrinsicEfficacy: -(Math.min(45, mg * 4.5)),
+        intrinsicEfficacy: -Math.min(45, mg * 4.5),
         unit: "nM",
         tau: 3,
         description: "Potent appetite suppression via triple agonism",
@@ -280,7 +281,8 @@ export const Retatrutide = (mg: number): PharmacologyDef => {
         intrinsicEfficacy: Math.min(0.3, mg * 0.03),
         unit: "nM",
         tau: 3,
-        description: "Increased energy expenditure via glucagon-mediated thermogenesis",
+        description:
+          "Increased energy expenditure via glucagon-mediated thermogenesis",
       },
       {
         target: "inflammation",

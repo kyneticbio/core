@@ -11,7 +11,7 @@ function peakDeltaInRange(
   startMin: number,
   minDelta: number,
   maxDelta: number,
-  type: "signals" | "auxiliary" = "signals"
+  type: "signals" | "auxiliary" = "signals",
 ) {
   return (result: any) => {
     const series = type === "signals" ? result.signals : result.auxiliarySeries;
@@ -20,10 +20,14 @@ function peakDeltaInRange(
     const stats = signalStats(data, result.gridMins);
     const atStart = valueAt(data, result.gridMins, startMin);
     const delta = stats.max - atStart;
-    expect(delta, `${signal} peak Δ=${delta.toFixed(3)} expected [${minDelta}, ${maxDelta}]`)
-      .toBeGreaterThanOrEqual(minDelta);
-    expect(delta, `${signal} peak Δ=${delta.toFixed(3)} expected [${minDelta}, ${maxDelta}]`)
-      .toBeLessThanOrEqual(maxDelta);
+    expect(
+      delta,
+      `${signal} peak Δ=${delta.toFixed(3)} expected [${minDelta}, ${maxDelta}]`,
+    ).toBeGreaterThanOrEqual(minDelta);
+    expect(
+      delta,
+      `${signal} peak Δ=${delta.toFixed(3)} expected [${minDelta}, ${maxDelta}]`,
+    ).toBeLessThanOrEqual(maxDelta);
   };
 }
 
@@ -34,7 +38,8 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(1440)
       .taking("semaglutide", { mg: 0.5 }, 480)
-      .expect("appetite").toFall();
+      .expect("appetite")
+      .toFall();
 
     scenario.addAssertion(peakDeltaInRange("glp1", 480, 1.0, 5.0));
 
@@ -45,7 +50,8 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(1440)
       .taking("semaglutide", { mg: 2.4 }, 480)
-      .expect("gastricEmptying").toFall();
+      .expect("gastricEmptying")
+      .toFall();
 
     scenario.addAssertion(peakDeltaInRange("glp1", 480, 5.0, 15.0));
 
@@ -56,7 +62,8 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(1440)
       .taking("tirzepatide", { mg: 5 }, 480)
-      .expect("appetite").toFall();
+      .expect("appetite")
+      .toFall();
 
     scenario.addAssertion(peakDeltaInRange("glp1", 480, 2.0, 8.0));
     scenario.addAssertion(peakDeltaInRange("gip", 480, 2.0, 10.0));
@@ -64,11 +71,12 @@ describe("Peptide Interventions", () => {
     await scenario.run();
   });
 
-  it("Retatrutide 4mg: triple agonist — GLP-1 (Δ 1-6), GIP (Δ 1-6), appetite falls", async () => {
+  it("Retatrutide 4mg: triple agonist - GLP-1 (Δ 1-6), GIP (Δ 1-6), appetite falls", async () => {
     const scenario = ScenarioBuilder.with()
       .duration(1440)
       .taking("retatrutide", { mg: 4 }, 480)
-      .expect("appetite").toFall();
+      .expect("appetite")
+      .toFall();
 
     scenario.addAssertion(peakDeltaInRange("glp1", 480, 1.0, 6.0));
     scenario.addAssertion(peakDeltaInRange("gip", 480, 1.0, 6.0));
@@ -82,7 +90,8 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(600)
       .taking("bpc157", { mcg: 250 }, 480)
-      .expect("vegf").toRise();
+      .expect("vegf")
+      .toRise();
 
     scenario.addAssertion(peakDeltaInRange("nitricOxide", 480, 0.5, 5.0));
     scenario.addAssertion(peakDeltaInRange("dopamine", 480, 0.1, 4.0));
@@ -94,7 +103,8 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(600)
       .taking("bpc157", { mcg: 500 }, 480)
-      .expect("igf1").toRise(0.0001);
+      .expect("igf1")
+      .toRise(0.0001);
 
     scenario.addAssertion(peakDeltaInRange("nitricOxide", 480, 1.5, 8.0));
     scenario.addAssertion(peakDeltaInRange("dopamine", 480, 0.3, 5.0));
@@ -106,8 +116,10 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(600)
       .taking("tb500", { mg: 2.5 }, 480)
-      .expect("angiogenesis").toRise()
-      .expect("vegf").toRise();
+      .expect("angiogenesis")
+      .toRise()
+      .expect("vegf")
+      .toRise();
 
     await scenario.run();
   });
@@ -116,7 +128,8 @@ describe("Peptide Interventions", () => {
     const scenario = ScenarioBuilder.with()
       .duration(600)
       .taking("tb500", { mg: 5 }, 480)
-      .expect("igf1").toRise(0.0001);
+      .expect("igf1")
+      .toRise(0.0001);
 
     scenario.addAssertion(peakDeltaInRange("vegf", 480, 0.1, 8.0));
 
@@ -153,9 +166,9 @@ describe("Peptide Interventions", () => {
 
       console.log(
         `[dose-response] ${sig}: ` +
-        `baseline mean=${baseStats.mean.toFixed(3)} peak=${baseStats.max.toFixed(3)} trough=${baseStats.min.toFixed(3)} | ` +
-        `1mg mean=${lowStats.mean.toFixed(3)} peak=${lowStats.max.toFixed(3)} trough=${lowStats.min.toFixed(3)} | ` +
-        `12mg mean=${highStats.mean.toFixed(3)} peak=${highStats.max.toFixed(3)} trough=${highStats.min.toFixed(3)}`
+          `baseline mean=${baseStats.mean.toFixed(3)} peak=${baseStats.max.toFixed(3)} trough=${baseStats.min.toFixed(3)} | ` +
+          `1mg mean=${lowStats.mean.toFixed(3)} peak=${lowStats.max.toFixed(3)} trough=${lowStats.min.toFixed(3)} | ` +
+          `12mg mean=${highStats.mean.toFixed(3)} peak=${highStats.max.toFixed(3)} trough=${highStats.min.toFixed(3)}`,
       );
     }
 
@@ -165,7 +178,10 @@ describe("Peptide Interventions", () => {
     expect(highGlp1.max).toBeGreaterThan(lowGlp1.max * 1.5);
 
     // Appetite mean should be lower at 12mg vs 1mg
-    const baseAppetite = signalStats(baseline.signals.appetite, baseline.gridMins);
+    const baseAppetite = signalStats(
+      baseline.signals.appetite,
+      baseline.gridMins,
+    );
     const lowAppetite = signalStats(low.signals.appetite, low.gridMins);
     const highAppetite = signalStats(high.signals.appetite, high.gridMins);
     expect(lowAppetite.mean).toBeLessThan(baseAppetite.mean);

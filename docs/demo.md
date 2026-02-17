@@ -4,9 +4,10 @@ import SimulatorDemo from './components/SimulatorDemo.vue'
 
 # Try It Yourself
 
-Curious what happens when you take 200mg of caffeine on an empty stomach? Want to see how ADHD changes the dopamine response? This demo runs the real KyneticBio engine directly in your browser — no account needed.
+Curious what happens when you take 200mg of caffeine on an empty stomach? Want to see how ADHD changes the dopamine response? This demo runs the real KyneticBio engine directly in your browser - no account needed.
 
 **Things to try:**
+
 - Add caffeine and watch dopamine spike while adenosine gets blocked
 - Enable ADHD and compare the dopamine baseline to a neurotypical profile
 - Stack caffeine + L-theanine and see how the signals differ from caffeine alone
@@ -16,18 +17,19 @@ Curious what happens when you take 200mg of caffeine on an empty stomach? Want t
 
 ## How It Works
 
-This isn't a toy — it's the same engine that powers Kynetic Studio:
+This isn't a toy - it's the same engine that powers Kynetic Studio:
 
-1. **Real pharmacokinetics** — drug absorption, distribution, and clearance modeled with the same equations used in clinical pharmacology.
-2. **Your physiology matters** — age, weight, and sex scale metabolic rates and volumes of distribution. A 60kg person and a 100kg person get meaningfully different curves.
-3. **Conditions change the game** — enabling ADHD doesn't just lower a number. It modifies receptor densities and transporter activity, which changes how every intervention hits.
-4. **Signals interact** — cortisol affects dopamine. Insulin affects glucose. Nothing happens in isolation.
+1. **Real pharmacokinetics** - drug absorption, distribution, and clearance modeled with the same equations used in clinical pharmacology.
+2. **Your physiology matters** - age, weight, and sex scale metabolic rates and volumes of distribution. A 60kg person and a 100kg person get meaningfully different curves.
+3. **Conditions change the game** - enabling ADHD doesn't just lower a number. It modifies receptor densities and transporter activity, which changes how every intervention hits.
+4. **Signals interact** - cortisol affects dopamine. Insulin affects glucose. Nothing happens in isolation.
 
 ---
 
 ### Want the full experience?
 
 This demo shows a slice of what's possible. **[Kynetic Studio](https://physim.jeffjassky.com)** gives you:
+
 - **Multi-chart views** for comparing dozens of signals simultaneously
 - **AI Chat** for asking questions about your simulation results
 - **Drag-and-drop timeline** for building complex daily protocols

@@ -115,7 +115,7 @@ describe("convertConcentration", () => {
     it("caffeine 200mg gives reasonable nM concentration", () => {
       // ~8 mg/L peak, MW=194.19
       const conc_nM = convertConcentration(8, 194.19, "nM");
-      // Should be ~41,200 nM — therapeutic range
+      // Should be ~41,200 nM - therapeutic range
       expect(conc_nM).toBeGreaterThan(30000);
       expect(conc_nM).toBeLessThan(60000);
     });

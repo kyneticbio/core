@@ -5,7 +5,7 @@ export const TRANSPORTERS = {
     category: "transporter",
     system: "Dopaminergic",
     description:
-      "The dopamine vacuum cleaner—sucks dopamine back into neurons after release.",
+      "The dopamine vacuum cleaner-sucks dopamine back into neurons after release.",
     primarySignal: "dopamine",
     adaptation: { k_up: 0.001, k_down: 0.002 },
   } as TransporterDefinition,

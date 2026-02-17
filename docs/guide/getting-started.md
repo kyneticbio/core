@@ -2,9 +2,10 @@
 
 ## What is KyneticBio?
 
-KyneticBio is a physiological simulation engine. Think of it as a flight simulator for your body — you can test how supplements, medications, and lifestyle changes affect your neurochemistry, hormones, and metabolism *before* you actually try them.
+KyneticBio is a physiological simulation engine. Think of it as a flight simulator for your body - you can test how supplements, medications, and lifestyle changes affect your neurochemistry, hormones, and metabolism _before_ you actually try them.
 
 **What you can do:**
+
 - See how caffeine affects your dopamine and adenosine hour-by-hour
 - Compare Vyvanse vs. Adderall for ADHD across a full day
 - Understand why you crash at 3pm and what might actually fix it
@@ -12,7 +13,7 @@ KyneticBio is a physiological simulation engine. Think of it as a flight simulat
 
 ## Try Kynetic Studio
 
-The fastest way to start is [Kynetic Studio](https://physim.jeffjassky.com) — the full-featured web interface with drag-and-drop timelines, multi-chart views, and AI chat.
+The fastest way to start is [Kynetic Studio](https://physim.jeffjassky.com) - the full-featured web interface with drag-and-drop timelines, multi-chart views, and AI chat.
 
 - [Demo video part 1 (5 min)](https://www.loom.com/share/56e0a83634974a1da8f4d94cd6b6ecea)
 - [Demo video part 2 (4 min)](https://www.loom.com/share/adafe688d69e4f8d99d7d4648736ba80)

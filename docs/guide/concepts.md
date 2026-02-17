@@ -1,23 +1,27 @@
 # Core Concepts
 
-KyneticBio models your body as a system of interacting signals — neurotransmitters, hormones, metabolic markers — that respond to the things you do: take a supplement, drink coffee, exercise, sleep. Instead of guessing what happens, you simulate it.
+KyneticBio models your body as a system of interacting signals - neurotransmitters, hormones, metabolic markers - that respond to the things you do: take a supplement, drink coffee, exercise, sleep. Instead of guessing what happens, you simulate it.
 
 The core idea is simple:
 
 > **You** (a Subject) have a unique physiology and **Conditions**. When you apply **Interventions** (drugs, supplements, lifestyle), the **Engine** calculates how your **Signals** (dopamine, cortisol, glucose, etc.) change over time.
 
 ### A Concrete Example
-You're a 30-year-old male with ADHD. You drink a cup of coffee at 8am. KyneticBio shows you exactly how your dopamine, adenosine, and cortisol respond over the next 6 hours — and what happens differently if you take L-theanine with it.
+
+You're a 30-year-old male with ADHD. You drink a cup of coffee at 8am. KyneticBio shows you exactly how your dopamine, adenosine, and cortisol respond over the next 6 hours - and what happens differently if you take L-theanine with it.
 
 ---
 
 ### 1. The Engine
+
 The **Engine** is the "brain" of the simulation. It is a high-performance mathematical solver that calculates how biological systems change over time using Ordinary Differential Equations (ODEs).
 
 ### 2. The Subject
+
 The **Subject** represents the person being simulated. It defines the physical constraints like age, weight, and sex which the engine uses to scale metabolic rates and volumes of distribution.
 
 #### TypeScript Shape
+
 ```typescript
 interface Subject {
   age: number;
@@ -30,6 +34,7 @@ interface Subject {
 ```
 
 #### Example
+
 ```typescript
 const subject: Subject = {
   age: 32,
@@ -42,9 +47,11 @@ const subject: Subject = {
 ```
 
 ### 3. Signals
+
 **Signals** are the outputs of the simulation. They represent measurable physiological values that change over time.
 
 #### TypeScript Shape
+
 ```typescript
 interface SignalDefinition {
   key: string;
@@ -62,6 +69,7 @@ interface SignalDefinition {
 ```
 
 #### Example
+
 ```typescript
 const dopamine: SignalDefinition = {
   key: "dopamine",
@@ -79,9 +87,11 @@ const dopamine: SignalDefinition = {
 ```
 
 ### 4. Conditions
+
 **Conditions** are baseline adjustments to the subject's physiology. They represent long-term traits or neurophysiological profiles by modifying receptor densities or signal baselines.
 
 #### TypeScript Shape
+
 ```typescript
 interface ConditionDef {
   key: string;
@@ -94,6 +104,7 @@ interface ConditionDef {
 ```
 
 #### Example
+
 ```typescript
 const adhd: ConditionDef = {
   key: "adhd",
@@ -109,9 +120,11 @@ const adhd: ConditionDef = {
 ```
 
 ### 5. Interventions
+
 **Interventions** are external events that affect the simulation. They use **Pharmacology** (PK/PD) to interact with the engine's targets.
 
 #### TypeScript Shape
+
 ```typescript
 interface InterventionDef {
   key: string;
@@ -131,6 +144,7 @@ interface PharmacologyDef {
 ```
 
 #### Example
+
 ```typescript
 const caffeinePill: InterventionDef = {
   key: "caffeinePill",

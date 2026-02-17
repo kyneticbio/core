@@ -312,7 +312,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           intrinsicEfficacy: 5.0,
           tau: 10,
           description:
-            "The 'cuddle chemical'—connects us to others and creates feelings of trust and safety.",
+            "The 'cuddle chemical'-connects us to others and creates feelings of trust and safety.",
         },
         {
           target: "dopamine",
@@ -534,7 +534,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     pharmacology: (params: any) =>
       Agents.SunlightExposure(
         Number(params.lux) || 10000,
-        (params.time as "sunrise" | "midday" | "sunset") || "sunrise"
+        (params.time as "sunrise" | "midday" | "sunset") || "sunrise",
       ),
     group: "Routine",
     categories: ["environment"],
@@ -572,7 +572,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     pharmacology: (params: any) =>
       Agents.Breathwork(
         (params.type as "calm" | "balance" | "activation") || "balance",
-        Number(params.intensity) || 1.0
+        Number(params.intensity) || 1.0,
       ),
     group: "Wellness",
     categories: ["wellness"],
@@ -599,7 +599,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     pharmacology: (params: any) =>
       Agents.SocialMedia(
         (params.type as "entertainment" | "doomscrolling") || "entertainment",
-        30
+        30,
       ),
     group: "Lifestyle",
     categories: ["social"],
@@ -637,7 +637,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     pharmacology: (params: any) =>
       Agents.SexualActivity(
         (params.type as "partnered" | "solo") || "partnered",
-        params.orgasm === "yes"
+        params.orgasm === "yes",
       ),
     group: "Lifestyle",
     categories: ["social", "wellness"],
@@ -678,7 +678,7 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
     pharmacology: (params: any) =>
       Agents.Nicotine(
         Number(params.mg) || 2,
-        (params.delivery as any) || "smoked"
+        (params.delivery as any) || "smoked",
       ),
     group: "Lifestyle",
     categories: ["substances"],

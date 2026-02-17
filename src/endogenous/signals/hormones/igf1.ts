@@ -17,10 +17,8 @@ export const igf1: SignalDefinition = {
         : 1.0;
       return 150 * ageFactor;
     },
-    tau: 1440, // Very slow — liver production, long half-life (~15 hours)
-    production: [
-      { source: "growthHormone", coefficient: 0.05 },
-    ],
+    tau: 1440, // Very slow - liver production, long half-life (~15 hours)
+    production: [{ source: "growthHormone", coefficient: 0.05 }],
     clearance: [{ type: "linear", rate: 0.002 }],
     couplings: [
       { source: "insulin", effect: "stimulate", strength: 0.002 },

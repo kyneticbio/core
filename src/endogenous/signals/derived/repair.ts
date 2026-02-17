@@ -40,9 +40,7 @@ export const angiogenesis: SignalDefinition = {
       },
     ],
     clearance: [{ type: "linear", rate: 0.005 }],
-    couplings: [
-      { source: "cortisol", effect: "inhibit", strength: 0.05 },
-    ],
+    couplings: [{ source: "cortisol", effect: "inhibit", strength: 0.05 }],
   },
   initialValue: 1.0,
   min: 0,
@@ -102,7 +100,7 @@ export const gastricEmptying: SignalDefinition = {
         transform: (G: any) => Math.max(0, (G - 400) / 600),
       },
     ],
-    clearance: [], // Drive signal — no metabolic clearance
+    clearance: [], // Drive signal - no metabolic clearance
     couplings: [
       { source: "glp1", effect: "inhibit", strength: 0.3 },
       { source: "gip", effect: "inhibit", strength: 0.1 },
@@ -130,8 +128,7 @@ export const gastricEmptying: SignalDefinition = {
       pattern: { type: "exceeds", value: 50, sustainedMins: 60 },
       outcome: "win",
       message: "Healthy Gastric Motility",
-      description:
-        "Your digestive system is moving food at a healthy rate.",
+      description: "Your digestive system is moving food at a healthy rate.",
     },
   ],
 };
@@ -152,11 +149,27 @@ export const appetite: SignalDefinition = {
     setpoint: (ctx: any, state: any) => {
       // Appetite peaks before typical mealtimes
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
-      const preBk = gaussianPhase(p, hourToPhase(7.5), widthToConcentration(60));
-      const preLn = gaussianPhase(p, hourToPhase(12.0), widthToConcentration(60));
-      const preDn = gaussianPhase(p, hourToPhase(18.0), widthToConcentration(60));
+      const preBk = gaussianPhase(
+        p,
+        hourToPhase(7.5),
+        widthToConcentration(60),
+      );
+      const preLn = gaussianPhase(
+        p,
+        hourToPhase(12.0),
+        widthToConcentration(60),
+      );
+      const preDn = gaussianPhase(
+        p,
+        hourToPhase(18.0),
+        widthToConcentration(60),
+      );
       // Low overnight
-      const overnight = gaussianPhase(p, hourToPhase(2.0), widthToConcentration(300));
+      const overnight = gaussianPhase(
+        p,
+        hourToPhase(2.0),
+        widthToConcentration(300),
+      );
       return 30 + 35 * (preBk + 0.9 * preLn + 0.85 * preDn) - 20 * overnight;
     },
     tau: 45, // Appetite responds over ~45 minutes
@@ -172,7 +185,7 @@ export const appetite: SignalDefinition = {
         transform: (C: any) => Math.max(0, (C - 15) / 10),
       },
     ],
-    clearance: [], // Drive signal — no metabolic clearance
+    clearance: [], // Drive signal - no metabolic clearance
     couplings: [
       { source: "glp1", effect: "inhibit", strength: 0.4 },
       { source: "leptin", effect: "inhibit", strength: 0.15 },

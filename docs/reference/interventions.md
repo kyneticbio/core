@@ -5,7 +5,7 @@ import GroupedCatalog from '../components/GroupedCatalog.vue'
 
 # Intervention
 
-Interventions are external events—such as taking a medication, eating a meal, or exercising—that modify the subject's physiology over time.
+Interventions are external events-such as taking a medication, eating a meal, or exercising-that modify the subject's physiology over time.
 
 ## API Reference
 
