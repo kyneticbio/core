@@ -14,13 +14,13 @@ const SCENARIOS = [
   {
     id: 'caffeine-theanine',
     label: 'Caffeine + L-Theanine',
-    description: 'Theanine smooths the caffeine spike — less cortisol jitter, steadier focus.',
-    signals: ['dopamine', 'cortisol', 'gaba'],
+    description: 'Caffeine drives norepinephrine and dopamine while theanine keeps GABA elevated.',
+    signals: ['norepi', 'dopamine', 'gaba'],
     hours: 6,
     startMinuteOfDay: 480, // 8:00 AM
     conditions: {},
-    baseline(dur) {
-      return makeInterventions('caff', 'caffeine', 0, dur, Agents.Caffeine(200))
+    baseline(_dur) {
+      return []
     },
     intervention(dur) {
       return [

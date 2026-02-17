@@ -50,55 +50,26 @@ export function validateInterventionPharmacology(
     // 2. Validate Units
     const target = pd.target;
     const effectUnit = pd.unit;
-    let signalsToCheck: Signal[] = [];
 
-    if (isReceptor(target)) {
-      const downstream = getReceptorSignals(target);
-      signalsToCheck = downstream.map((d) => d.signal);
-    } else if ((SIGNAL_UNITS as any)[target]) {
-      signalsToCheck = [target as Signal];
+    // Allowed concentration units (must match PDUnit type and engine conversions)
+    const VALID_CONCENTRATION_UNITS = new Set([
+      "mg/L", "mg/dL", "µg/dL", "ng/mL", "pg/mL", "ng/dL",
+      "nM", "uM", "µM", "pmol/L", "µmol/L"
+    ]);
+
+    if (effectUnit) {
+      if (!VALID_CONCENTRATION_UNITS.has(effectUnit)) {
+         errors.push({
+          interventionKey: key,
+          targetIndex: index,
+          target: target,
+          message: `Invalid PD unit '${effectUnit}'. Must be a supported concentration unit (e.g. 'nM', 'mg/L').`,
+        });
+      }
     }
-
-    signalsToCheck.forEach((signal) => {
-      const expectedUnit = (SIGNAL_UNITS as any)[signal]?.unit;
-
-      if (!expectedUnit) {
-        errors.push({
-          interventionKey: key,
-          targetIndex: index,
-          target: target,
-          message: `Target '${target}' maps to signal '${signal}' which has no definition in SIGNAL_UNITS.`,
-        });
-        return;
-      }
-
-      if (!effectUnit) {
-        errors.push({
-          interventionKey: key,
-          targetIndex: index,
-          target: target,
-          message: `Missing unit. Expected: '${expectedUnit}'.`,
-        });
-        return;
-      }
-
-      const isModulator = pd.mechanism === "PAM" || pd.mechanism === "NAM";
-      if (
-        isModulator &&
-        (effectUnit === "fold-change" || effectUnit === "index" || effectUnit === "x")
-      ) {
-        return;
-      }
-
-      if (effectUnit !== expectedUnit) {
-        errors.push({
-          interventionKey: key,
-          targetIndex: index,
-          target: target,
-          message: `Unit mismatch. Has '${effectUnit}', target '${signal}' requires '${expectedUnit}'.`,
-        });
-      }
-    });
+    // We no longer check if pd.unit matches the target signal's unit,
+    // because pd.unit is now the INPUT concentration unit (for EC50),
+    // whereas the target signal's unit is the OUTPUT effect unit (implicit in efficacy).
   });
 
   return errors;

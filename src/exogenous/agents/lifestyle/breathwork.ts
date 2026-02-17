@@ -26,21 +26,18 @@ export const Breathwork = (
       target: "vagal",
       mechanism: "agonist",
       intrinsicEfficacy: vagal,
-      unit: "x",
       tau: 2,
     },
     {
       target: "norepi",
       mechanism: type === "activation" ? "agonist" : "antagonist",
       intrinsicEfficacy: Math.abs(norepi),
-      unit: "pg/mL",
       tau: 2,
     },
     {
       target: "cortisol",
       mechanism: type === "activation" ? "agonist" : "antagonist",
       intrinsicEfficacy: Math.abs(cortisol),
-      unit: "µg/dL",
       tau: 15,
     },
   ];
@@ -50,7 +47,6 @@ export const Breathwork = (
       target: "dopamine",
       mechanism: "agonist",
       intrinsicEfficacy: 15 * intensity,
-      unit: "nM",
       tau: 5,
     });
   }

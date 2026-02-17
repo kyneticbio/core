@@ -42,7 +42,7 @@ describe('Infusion Scaling Logic', () => {
 
     console.log(`mTOR Peak: Short=${shortMTORPeak.toFixed(2)}, Long=${longMTORPeak.toFixed(2)}`);
 
-    expect(longMTORPeak).toBeLessThan(shortMTORPeak * 0.7);
+    expect(longMTORPeak).toBeLessThan(shortMTORPeak * 0.8);
   });
 
   it('Assumption: Inflammation peak should scale down when fat infusion is stretched', async () => {

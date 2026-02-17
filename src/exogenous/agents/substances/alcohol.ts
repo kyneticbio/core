@@ -52,7 +52,7 @@ export const Alcohol = (units: number): PharmacologyDef => {
         mechanism: "PAM",
         EC50: 500,
         intrinsicEfficacy: 0.5 * units,
-        unit: "x",
+        unit: "nM",
       },
       {
         target: "ethanol",
@@ -74,7 +74,7 @@ export const Alcohol = (units: number): PharmacologyDef => {
         mechanism: "NAM",
         EC50: 500,
         intrinsicEfficacy: 0.2 * units,
-        unit: "x",
+        unit: "nM",
       },
       {
         target: "vasopressin",
@@ -95,7 +95,7 @@ export const Alcohol = (units: number): PharmacologyDef => {
         mechanism: "agonist",
         EC50: 500,
         intrinsicEfficacy: 0.1 * units,
-        unit: "x",
+        unit: "nM",
       },
     ],
   };

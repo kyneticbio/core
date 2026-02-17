@@ -17,7 +17,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "melatonin",
           mechanism: "agonist",
           intrinsicEfficacy: 80.0,
-          unit: "pg/mL",
           tau: 10,
           description:
             "The 'vampire hormone' peaks in total darkness, signaling your body that it's officially night time.",
@@ -26,7 +25,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "gaba",
           mechanism: "agonist",
           intrinsicEfficacy: 240.0,
-          unit: "nM",
           tau: 10,
           description:
             "Sleep drives deep calming signals throughout the brain to prevent you from waking up easily.",
@@ -35,7 +33,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "histamine",
           mechanism: "antagonist",
           intrinsicEfficacy: 15.0, // 30 * 0.5
-          unit: "nM",
           tau: 15,
           description:
             "Turns off the brain's main 'alertness' switch so you can drift into deep sleep stages.",
@@ -44,7 +41,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "orexin",
           mechanism: "antagonist",
           intrinsicEfficacy: 35.0,
-          unit: "pg/mL",
           tau: 15,
           description:
             "Suppresses the peptide that keeps you awake and focused on the outside world.",
@@ -53,7 +49,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "adenosinePressure",
           mechanism: "antagonist",
           intrinsicEfficacy: 0.08,
-          unit: "x",
           tau: 60,
           description:
             "Clears out the 'sleep pressure' that's been building up every minute you were awake.",
@@ -62,7 +57,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "growthHormone",
           mechanism: "agonist",
           intrinsicEfficacy: 8.0,
-          unit: "ng/mL",
           tau: 2,
           description:
             "Physical repair mode: deep sleep is when your body rebuilds tissues and grows new cells.",
@@ -71,7 +65,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "prolactin",
           mechanism: "agonist",
           intrinsicEfficacy: 5.0,
-          unit: "ng/mL",
           tau: 30,
           description:
             "Assists in immune regulation and metabolic health while you rest.",
@@ -80,7 +73,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "testosterone",
           mechanism: "agonist",
           intrinsicEfficacy: 3.0,
-          unit: "ng/dL",
           tau: 60,
           description:
             "Sleep is the primary time your body restores hormone levels like testosterone.",
@@ -89,7 +81,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "norepi",
           mechanism: "antagonist",
           intrinsicEfficacy: 156.0, // 25 * 6.25
-          unit: "pg/mL",
           tau: 20,
           description:
             "Shuts down focus and stress signals so your brain can process memories undisturbed.",
@@ -98,7 +89,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "cortisol",
           mechanism: "antagonist",
           intrinsicEfficacy: 8.0,
-          unit: "µg/dL",
           tau: 30,
           description:
             "Lowers stress hormones to their daily minimum, allowing for deep systemic recovery.",
@@ -107,7 +97,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "serotonin",
           mechanism: "antagonist",
           intrinsicEfficacy: 1.5, // 15 * 0.1
-          unit: "nM",
           tau: 30,
           description:
             "Reduces active mood modulation to allow for restorative dream and non-dream states.",
@@ -144,7 +133,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "gaba",
           mechanism: "agonist",
           intrinsicEfficacy: 150.0,
-          unit: "nM",
           tau: 5,
           description:
             "Even a short nap provides a quick calming signal to lower neural noise.",
@@ -153,7 +141,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "melatonin",
           mechanism: "agonist",
           intrinsicEfficacy: 20.0,
-          unit: "pg/mL",
           tau: 8,
           description:
             "Briefly triggers the brain's internal 'night mode' for a quick refresh.",
@@ -162,7 +149,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "histamine",
           mechanism: "antagonist",
           intrinsicEfficacy: 7.5, // 15 * 0.5
-          unit: "nM",
           tau: 10,
           description:
             "Lowers the brain's alertness signal just enough to allow a brief disconnect.",
@@ -171,7 +157,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "orexin",
           mechanism: "antagonist",
           intrinsicEfficacy: 15.0,
-          unit: "pg/mL",
           tau: 10,
           description:
             "Briefly pauses wakefulness signaling, letting the brain reset.",
@@ -180,7 +165,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "adenosinePressure",
           mechanism: "antagonist",
           intrinsicEfficacy: 0.04,
-          unit: "x",
           tau: 20,
           description:
             "Takes the edge off the sleep debt that's been building since you woke up.",
@@ -189,7 +173,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "norepi",
           mechanism: "antagonist",
           intrinsicEfficacy: 62.5, // 10 * 6.25
-          unit: "pg/mL",
           tau: 10,
           description:
             "Allows stress and focus chemicals to drop briefly, reducing mental fatigue.",
@@ -327,7 +310,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "oxytocin",
           mechanism: "agonist",
           intrinsicEfficacy: 5.0,
-          unit: "pg/mL",
           tau: 10,
           description:
             "The 'cuddle chemical'—connects us to others and creates feelings of trust and safety.",
@@ -336,7 +318,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "dopamine",
           mechanism: "agonist",
           intrinsicEfficacy: 4.0,
-          unit: "nM",
           tau: 15,
           description:
             "Positive social feedback triggers reward circuits, making us seek more interaction.",
@@ -345,7 +326,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "serotonin",
           mechanism: "agonist",
           intrinsicEfficacy: 1.0, // 10 * 0.1
-          unit: "nM",
           tau: 15,
           description:
             "Feeling respected and valued by others boosts mood and overall emotional well-being.",
@@ -354,7 +334,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "cortisol",
           mechanism: "antagonist",
           intrinsicEfficacy: 10.0,
-          unit: "µg/dL",
           description:
             "Good company is a natural stress buffer, physically lowering your cortisol levels.",
         },
@@ -362,7 +341,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "vagal",
           mechanism: "agonist",
           intrinsicEfficacy: 0.4,
-          unit: "x",
           description:
             "Face-to-face connection activates the 'social engagement' part of the vagus nerve.",
         },
@@ -370,7 +348,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "endocannabinoid",
           mechanism: "agonist",
           intrinsicEfficacy: 3.0,
-          unit: "nM",
           description:
             "Laughter and shared activities trigger 'bliss molecules' that make socializing pleasurable.",
         }, // 15 * 0.2
@@ -395,7 +372,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "vagal",
           mechanism: "agonist",
           intrinsicEfficacy: 0.6,
-          unit: "x",
           tau: 5,
           description:
             "Conscious breathing directly activates the vagus nerve, the body's main 'calm down' highway.",
@@ -404,7 +380,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "gaba",
           mechanism: "agonist",
           intrinsicEfficacy: 90.0,
-          unit: "nM",
           tau: 8,
           description:
             "Focused awareness increases calming brain chemicals, reducing mental chatter.",
@@ -413,7 +388,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "cortisol",
           mechanism: "antagonist",
           intrinsicEfficacy: 5.0,
-          unit: "µg/dL",
           description:
             "Regular practice blunts the body's stress response and lowers baseline cortisol.",
         },
@@ -421,7 +395,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "serotonin",
           mechanism: "agonist",
           intrinsicEfficacy: 1.2,
-          unit: "nM",
           description:
             "Promotes a steady, content mood by gently supporting serotonin availability.",
         }, // 12 * 0.1
@@ -429,7 +402,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "norepi",
           mechanism: "antagonist",
           intrinsicEfficacy: 94.0,
-          unit: "pg/mL",
           description:
             "Lowers 'fight or flight' chemicals, letting your system shift into rest-and-digest mode.",
         }, // 15 * 6.25
@@ -437,7 +409,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "inflammation",
           mechanism: "antagonist",
           intrinsicEfficacy: 0.2,
-          unit: "x",
           description:
             "Over time, mindfulness practice can actually lower markers of systemic inflammation.",
         },
@@ -445,7 +416,6 @@ export const LIFESTYLE_INTERVENTIONS: InterventionDef[] = [
           target: "melatonin",
           mechanism: "agonist",
           intrinsicEfficacy: 5.0,
-          unit: "pg/mL",
           description:
             "Evening practice can gently nudge melatonin production, prepping you for sleep.",
         },

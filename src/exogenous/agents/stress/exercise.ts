@@ -16,67 +16,60 @@ export const SympatheticStress = (intensity: number): PharmacologyDef => ({
       target: "norepi",
       mechanism: "agonist",
       intrinsicEfficacy: EXERCISE_NOREPI.AMPLITUDE * intensity * 6.6,
-      unit: "pg/mL",
       tau: 5,
     },
     {
       target: "adrenaline",
       mechanism: "agonist",
       intrinsicEfficacy: EXERCISE_ADRENALINE.AMPLITUDE * intensity,
-      unit: "pg/mL",
       tau: 2,
     },
-          {
-            target: "cortisol",
-            mechanism: "agonist",
-            intrinsicEfficacy: EXERCISE_CORTISOL.AMPLITUDE * intensity,
-            unit: "µg/dL",
-            tau: 15,
-          },
-          {
-            target: "burnRate",
-            mechanism: "agonist",
-            intrinsicEfficacy: 8 * intensity, // Base calorie burn for all exercise
-            unit: "kcal/min",
-            tau: 5,
-          },
-        ],
-      });
-    
-    export const MetabolicLoad = (intensity: number): PharmacologyDef => ({
-      molecule: { name: "Metabolic Load", molarMass: 0 },
-      pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
-      pd: [
-        {
-          target: "ampk",
-          mechanism: "agonist",
-          intrinsicEfficacy: 20 * intensity,
-          unit: "x",
-          tau: 10,
-        },
-        {
-          target: "glucose",
-          mechanism: "antagonist",
-          intrinsicEfficacy: Math.abs(EXERCISE_GLUCOSE.UPTAKE_AMPLITUDE) * intensity,
-          unit: "mg/dL",
-          tau: 5,
-        },
-        {
-          target: "bdnf",
-          mechanism: "agonist",
-          intrinsicEfficacy: EXERCISE_BDNF.AMPLITUDE * intensity,
-          unit: "ng/mL",
-          tau: 30,
-        },
-        {
-          target: "burnRate",
-          mechanism: "agonist",
-          intrinsicEfficacy: 4 * intensity, // Additional burn for high metabolic demand
-          unit: "kcal/min",
-          tau: 5,
-        },
-      ],
-    });
+    {
+      target: "cortisol",
+      mechanism: "agonist",
+      intrinsicEfficacy: EXERCISE_CORTISOL.AMPLITUDE * intensity,
+      tau: 15,
+    },
+    {
+      target: "burnRate",
+      mechanism: "agonist",
+      intrinsicEfficacy: 8 * intensity, // Base calorie burn for all exercise
+      tau: 5,
+    },
+  ],
+});
+
+export const MetabolicLoad = (intensity: number): PharmacologyDef => ({
+  molecule: { name: "Metabolic Load", molarMass: 0 },
+  pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
+  pd: [
+    {
+      target: "ampk",
+      mechanism: "agonist",
+      intrinsicEfficacy: 20 * intensity,
+      tau: 10,
+    },
+    {
+      target: "glucose",
+      mechanism: "antagonist",
+      intrinsicEfficacy: Math.abs(EXERCISE_GLUCOSE.UPTAKE_AMPLITUDE) * intensity,
+      tau: 5,
+    },
+    {
+      target: "bdnf",
+      mechanism: "agonist",
+      intrinsicEfficacy: EXERCISE_BDNF.AMPLITUDE * intensity,
+      tau: 30,
+    },
+    {
+      target: "burnRate",
+      mechanism: "agonist",
+      intrinsicEfficacy: 4 * intensity, // Additional burn for high metabolic demand
+      tau: 5,
+    },
+  ],
+});
+
 export const MechanicalLoad = (intensity: number): PharmacologyDef => ({
   molecule: { name: "Mechanical Load", molarMass: 0 },
   pk: { model: "activity-dependent", delivery: "continuous", massMg: 0 },
@@ -85,35 +78,30 @@ export const MechanicalLoad = (intensity: number): PharmacologyDef => ({
       target: "mtor",
       mechanism: "agonist",
       intrinsicEfficacy: 15 * intensity,
-      unit: "x",
       tau: 120,
     },
     {
       target: "testosterone",
       mechanism: "agonist",
       intrinsicEfficacy: 5 * intensity,
-      unit: "ng/dL",
       tau: 60,
     },
     {
       target: "growthHormone",
       mechanism: "agonist",
       intrinsicEfficacy: EXERCISE_GH.AMPLITUDE * intensity,
-      unit: "ng/mL",
       tau: 30,
     },
     {
       target: "inflammation",
       mechanism: "agonist",
       intrinsicEfficacy: 0.5 * intensity,
-      unit: "x",
       tau: 240,
     },
     {
       target: "strengthReadiness",
       mechanism: "antagonist",
       intrinsicEfficacy: 0.8 * intensity, // Immediate fatigue
-      unit: "x",
       tau: 5,
     },
   ],
@@ -167,14 +155,12 @@ export const Cardio = (
         target: "norepi",
         mechanism: "agonist",
         intrinsicEfficacy: EXERCISE_NOREPI.AMPLITUDE * intensity * 4,
-        unit: "pg/mL",
         tau: 5,
       },
       {
         target: "adrenaline",
         mechanism: "agonist",
         intrinsicEfficacy: EXERCISE_ADRENALINE.AMPLITUDE * intensity * 0.8,
-        unit: "pg/mL",
         tau: 3,
       },
       // Caloric burn - scales with intensity
@@ -182,7 +168,6 @@ export const Cardio = (
         target: "burnRate",
         mechanism: "agonist",
         intrinsicEfficacy: 6 + (zone * 2), // ~8 kcal/min zone 1, ~16 kcal/min zone 5
-        unit: "kcal/min",
         tau: 3,
       },
       // AMPK activation - key for fat oxidation and mitochondrial biogenesis
@@ -190,7 +175,6 @@ export const Cardio = (
         target: "ampk",
         mechanism: "agonist",
         intrinsicEfficacy: (15 * intensity * fatOxMultiplier),
-        unit: "x",
         tau: 15,
         description: "Metabolic sensor activation - drives fat oxidation and mitochondrial adaptation.",
       },
@@ -199,7 +183,6 @@ export const Cardio = (
         target: "glucose",
         mechanism: "antagonist",
         intrinsicEfficacy: Math.abs(EXERCISE_GLUCOSE.UPTAKE_AMPLITUDE) * intensity * (1 + glycolyticShift),
-        unit: "mg/dL",
         tau: 5,
       },
       // BDNF - cardio is excellent for brain health
@@ -207,7 +190,6 @@ export const Cardio = (
         target: "bdnf",
         mechanism: "agonist",
         intrinsicEfficacy: EXERCISE_BDNF.AMPLITUDE * intensity * 1.2,
-        unit: "ng/mL",
         tau: 30,
         description: "Cardio-induced neuroplasticity factor.",
       },
@@ -216,7 +198,6 @@ export const Cardio = (
         target: "cortisol",
         mechanism: "agonist",
         intrinsicEfficacy: EXERCISE_CORTISOL.AMPLITUDE * intensity * (zone >= 4 ? 1.5 : 0.8),
-        unit: "µg/dL",
         tau: 20,
       },
       // Mitochondrial density signal - Zone 2 is optimal
@@ -224,7 +205,6 @@ export const Cardio = (
         target: "mitochondrialDensity",
         mechanism: "agonist",
         intrinsicEfficacy: 0.00005 * intensity * mitoMultiplier * (durationMin / 30),
-        unit: "x",
         tau: 60,
         description: "Long-term adaptation improving cellular energy production.",
       },

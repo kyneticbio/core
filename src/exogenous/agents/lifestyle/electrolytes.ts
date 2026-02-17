@@ -5,7 +5,7 @@ export const Electrolytes = (
   potassium_mg: number,
   magnesium_mg: number
 ): PharmacologyDef => ({
-  molecule: { name: "Electrolytes", molarMass: 0 },
+  molecule: { name: "Electrolytes", molarMass: 22.99 }, // Primarily Sodium
   pk: {
     model: "1-compartment",
     delivery: "bolus",
@@ -20,7 +20,7 @@ export const Electrolytes = (
       target: "bloodPressure",
       mechanism: "agonist",
       intrinsicEfficacy: sodium_mg * 0.005,
-      unit: "mmHg",
+      unit: "mg/L",
       tau: 60,
     },
   ],

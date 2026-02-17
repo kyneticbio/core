@@ -18,11 +18,7 @@ describe('Agent: Electrolytes', () => {
       expect(effect?.mechanism).toBe('agonist');
     });
 
-    it('should have correct unit for bloodPressure', () => {
-      const def = Electrolytes(500, 300, 200);
-      const effect = def.pd.find(p => p.target === 'bloodPressure');
-      expect(effect?.unit).toBe('mmHg');
-    });
+
   });
 
   describe('PK Parameters', () => {

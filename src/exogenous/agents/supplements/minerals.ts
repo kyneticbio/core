@@ -60,7 +60,7 @@ export const Chromium = (mcg: number): PharmacologyDef => ({
       target: "chromium",
       mechanism: "agonist",
       intrinsicEfficacy: Math.min(0.3, mcg * 0.0005),
-      unit: "x",
+      unit: "nM",
       tau: 480,
     },
   ],

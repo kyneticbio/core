@@ -340,6 +340,16 @@ export interface WorkerComputeResponse {
 export type PDMechanism = "agonist" | "antagonist" | "PAM" | "NAM" | "linear";
 export type PharmacologicalTarget = string;
 
+/**
+ * Supported units for PD EC50/Ki values.
+ * The engine converts drug concentration from mg/L to the specified unit
+ * before applying the Hill equation. Mass-based units use direct conversion;
+ * molar units require `molecule.molarMass` to be defined.
+ */
+export type PDUnit =
+  | "mg/L" | "mg/dL" | "µg/dL" | "ng/mL" | "pg/mL" | "ng/dL"
+  | "nM" | "uM" | "µM" | "pmol/L" | "µmol/L";
+
 export type PKModelType =
   | "1-compartment"
   | "2-compartment"
@@ -356,10 +366,9 @@ export interface PKVolumeConfig {
   female_L_kg?: number;
 }
 
-export interface PKDef {
+export interface BasePKDef {
   model: PKModelType;
   delivery: PKDeliveryType;
-  massMg: number;
   bioavailability?: number;
   halfLifeMin?: number;
   absorptionRate?: number;
@@ -381,42 +390,70 @@ export interface PKDef {
   };
 }
 
-export interface PharmacologyDef {
+export interface DrugPKDef extends BasePKDef {
+  model: "1-compartment" | "2-compartment" | "michaelis-menten";
+  massMg: number;
+}
+
+export interface ActivityPKDef extends BasePKDef {
+  model: "activity-dependent";
+  delivery: "continuous";
+  massMg: 0;
+}
+
+export interface BasePDEffect {
+  target: PharmacologicalTarget;
+  mechanism: PDMechanism;
+  intrinsicEfficacy?: number;
+  tau?: number;
+  alpha?: number;
+  description?: string;
+}
+
+export interface DrugPDEffect extends BasePDEffect {
+  /**
+   * The concentration unit for EC50/Ki. Required for drug-based PD.
+   */
+  unit: PDUnit;
+  /**
+   * The concentration at which the drug produces 50% of maximal receptor
+   * occupancy. Must be in the same unit as the `unit` field.
+   */
+  EC50?: number;
+  Ki?: number;
+}
+
+export interface ActivityPDEffect extends BasePDEffect {
+  /**
+   * Activity-dependent effects do not have a concentration unit.
+   * The input is the intensity (0-1).
+   */
+  unit?: never;
+  EC50?: never;
+  Ki?: never;
+}
+
+export interface DrugPharmacologyDef {
   molecule: {
     name: string;
     molarMass: number;
     pK_a?: number;
     logP?: number;
   };
-  pk: PKDef;
-  pd: Array<{
-    target: PharmacologicalTarget;
-    unit?: string;
-    mechanism: PDMechanism;
-    Ki?: number;
-    /**
-     * The concentration (in mg/L) at which the drug produces 50% of maximal
-     * receptor occupancy. This is a fixed pharmacological property of the
-     * drug–receptor pair and MUST NOT vary with dose.
-     *
-     * If EC50 is made proportional to dose (e.g. `EC50 = expectedPeak * k`
-     * where expectedPeak depends on the dose parameter), the Hill equation
-     * `C/(C+EC50)` becomes dose-independent and the drug will have identical
-     * effects at every dose.
-     *
-     * Calibration: compute the reference peak plasma concentration for a
-     * typical therapeutic dose, then set EC50 as a fraction of that constant.
-     * Example for semaglutide (ref dose 0.5 mg):
-     *   refPeak = (0.5 * 0.89) / 8.4 ≈ 0.053 mg/L
-     *   EC50 = refPeak * 0.3 ≈ 0.016  (fixed constant)
-     */
-    EC50?: number;
-    intrinsicEfficacy?: number;
-    tau?: number;
-    alpha?: number;
-    description?: string;
-  }>;
+  pk: DrugPKDef;
+  pd: DrugPDEffect[];
 }
+
+export interface ActivityPharmacologyDef {
+  molecule: {
+    name: string;
+    molarMass: 0;
+  };
+  pk: ActivityPKDef;
+  pd: ActivityPDEffect[];
+}
+
+export type PharmacologyDef = DrugPharmacologyDef | ActivityPharmacologyDef;
 
 export interface ResponseSpec {
   kind: "linear" | "hill" | "ihill" | "logistic";

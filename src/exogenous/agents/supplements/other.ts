@@ -30,7 +30,6 @@ export const DigestiveEnzymes = (units: number = 1): PharmacologyDef => ({
       target: "glp1",
       mechanism: "agonist",
       intrinsicEfficacy: units * 3,
-      unit: "pmol/L",
       tau: 30,
     },
   ],

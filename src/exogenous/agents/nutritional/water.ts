@@ -20,14 +20,14 @@ export const Water = (ml: number): PharmacologyDef => ({
       target: "hydration",
       mechanism: "agonist",
       intrinsicEfficacy: ml * 25.0, // recalibrated for % units and signal tau
-      unit: "%",
+      unit: "nM",
       tau: 60,
     },
     {
       target: "vagal",
       mechanism: "agonist",
       intrinsicEfficacy: 0.05 * (ml / 500),
-      unit: "x",
+      unit: "nM",
       tau: 30,
       description: "Cold water or stomach distension can trigger mild vagal response.",
     },

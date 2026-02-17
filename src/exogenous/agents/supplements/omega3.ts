@@ -24,7 +24,7 @@ export const Omega3 = (mg: number): PharmacologyDef => {
         target: "inflammation",
         mechanism: "antagonist",
         intrinsicEfficacy: antiInflammatory,
-        unit: "x",
+        unit: "nM",
         tau: 1440,
       },
       {

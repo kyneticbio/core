@@ -1,7 +1,4 @@
-import {
-  collectSignalMonitors,
-  evaluateMonitors,
-} from "./monitors";
+import { collectSignalMonitors, evaluateMonitors } from "./monitors";
 
 import {
   Minute,
@@ -15,6 +12,56 @@ import {
   AuxiliaryDefinition,
   SolverDebugOptions,
 } from "./types";
+
+// =============================================================================
+// PD UNIT CONVERSION
+// =============================================================================
+
+const MASS_CONVERSIONS: Record<string, number> = {
+  "mg/L": 1,
+  "mg/dL": 0.1,
+  "µg/dL": 100,
+  "ng/mL": 1e3,
+  "pg/mL": 1e6,
+  "ng/dL": 1e5,
+};
+
+const MOLAR_CONVERSIONS: Record<string, number> = {
+  nM: 1e6,
+  uM: 1e3,
+  µM: 1e3,
+  "pmol/L": 1e9,
+  "µmol/L": 1e3,
+};
+
+/**
+ * Convert drug concentration from mg/L to the PD entry's unit.
+ * Mass-based units use direct scaling; molar units require molarMass (g/mol).
+ * Throws for unrecognized units so silent zero-effect bugs are impossible.
+ */
+export function convertConcentration(
+  conc_mgL: number,
+  molarMass: number | undefined,
+  unit: string,
+): number {
+  const massFactor = MASS_CONVERSIONS[unit];
+  if (massFactor !== undefined) return conc_mgL * massFactor;
+
+  const molarFactor = MOLAR_CONVERSIONS[unit];
+  if (molarFactor !== undefined) {
+    if (!molarMass || molarMass <= 0)
+      throw new Error(
+        `PD unit "${unit}" requires molarMass but molecule has molarMass=${molarMass}`,
+      );
+    return (conc_mgL / molarMass) * molarFactor;
+  }
+
+  throw new Error(
+    `Unsupported PD unit "${unit}". ` +
+      `Supported: ${[...Object.keys(MASS_CONVERSIONS), ...Object.keys(MOLAR_CONVERSIONS)].join(", ")}. ` +
+      `EC50 must be in a concentration unit.`,
+  );
+}
 
 // =============================================================================
 // TYPES & RESOLVERS
@@ -117,7 +164,7 @@ export interface PreResolvedDefinition {
     rate: number;
     type: string;
     enzymeIndex: number;
-    enzymeName: string | null;  // Name of enzyme/transporter for clearance modifier lookup
+    enzymeName: string | null; // Name of enzyme/transporter for clearance modifier lookup
     Km?: number;
     transform?: (v: number, state: any, ctx: any) => number;
   }>;
@@ -316,25 +363,25 @@ function computeAnalyticalConcentration(
       // Quasi-analytical approximation for MM kinetics
       const { massMg, F, vd, duration, Vmax = 0.2, Km = 10 } = a;
       const kin = (massMg * F * a.intensity) / Math.max(1, duration);
-      
+
       const t_active = Math.min(dt, duration);
       const t_decay = Math.max(0, dt - duration);
-      
+
       // During infusion: assume approach to steady state C_ss where kin/vd = Vmax*C/(Km+C)
       // Conversion: kin/vd is mg/L/min. Vmax is mg/dL/min.
       // 1 mg/L = 0.1 mg/dL.
       const input_mgdL = (kin / vd) * 0.1;
       let C_peak_mgdL = 0;
-      
+
       if (input_mgdL >= Vmax) {
         // Zero-order accumulation
         C_peak_mgdL = (input_mgdL - Vmax) * t_active;
       } else {
         const C_ss = (Km * input_mgdL) / (Vmax - input_mgdL + 0.00001);
-        const effective_tau = Km / Vmax; 
+        const effective_tau = Km / Vmax;
         C_peak_mgdL = C_ss * (1 - Math.exp(-t_active / effective_tau));
       }
-      
+
       let C_final_mgdL = 0;
       if (t_decay <= 0) {
         C_final_mgdL = C_peak_mgdL;
@@ -351,9 +398,11 @@ function computeAnalyticalConcentration(
           C_final_mgdL = C_peak_mgdL * Math.exp(-t_decay / (Km / Vmax));
         }
       }
-      
+
       if (isNaN(C_final_mgdL) || C_final_mgdL < 0) {
-        console.error(`MM Bad Value: ${C_final_mgdL}, peak=${C_peak_mgdL}, dt=${dt}, dur=${duration}, mass=${massMg}`);
+        console.error(
+          `MM Bad Value: ${C_final_mgdL}, peak=${C_peak_mgdL}, dt=${dt}, dur=${duration}, mass=${massMg}`,
+        );
       }
 
       // Convert mg/dL back to mg/L for the central compartment
@@ -507,9 +556,15 @@ export function computeDerivativesVector(
         const floatIdx = t - pkMinT;
         const idx0 = Math.floor(floatIdx);
         if (idx0 < 0) pkConcentrations.set(`${iv.id}_central`, buffer[0] ?? 0);
-        else if (idx0 >= buffer.length - 1) pkConcentrations.set(`${iv.id}_central`, buffer[buffer.length - 1] ?? 0);
+        else if (idx0 >= buffer.length - 1)
+          pkConcentrations.set(
+            `${iv.id}_central`,
+            buffer[buffer.length - 1] ?? 0,
+          );
         else {
-          const val = buffer[idx0] + (buffer[idx0 + 1] - buffer[idx0]) * (floatIdx - idx0);
+          const val =
+            buffer[idx0] +
+            (buffer[idx0 + 1] - buffer[idx0]) * (floatIdx - idx0);
           pkConcentrations.set(`${iv.id}_central`, val);
         }
       } else {
@@ -559,7 +614,9 @@ export function computeDerivativesVector(
       else if (c.type === "enzyme-dependent") {
         const enzymeVal = c.enzymeIndex !== -1 ? state[c.enzymeIndex] : 1.0;
         // Apply clearance modifier from conditions (enzyme/transporter activity changes)
-        const modifier = c.enzymeName ? (clearanceModifiers[c.enzymeName] ?? 0) : 0;
+        const modifier = c.enzymeName
+          ? (clearanceModifiers[c.enzymeName] ?? 0)
+          : 0;
         const effectiveEnzyme = enzymeVal * (1 + modifier);
         rate *= debug.enableEnzymes !== false ? effectiveEnzyme : 1.0;
       }
@@ -613,23 +670,26 @@ export function computeDerivativesVector(
 
                   // Convert concentration units if needed
                   let effectiveConc = conc;
-                  const molarMass = iv.pharmacology?.molecule?.molarMass;
-                  if (molarMass && molarMass > 0) {
-                    if (eff.unit === "nM")
-                      effectiveConc = (conc / molarMass) * 1000000;
-                    else if (eff.unit === "uM" || eff.unit === "µM")
-                      effectiveConc = (conc / molarMass) * 1000;
-                    else if (eff.unit === "mg/dL")
-                      effectiveConc = conc * 0.1;
+                  if (!isActivityDependent && eff.unit) {
+                    effectiveConc = convertConcentration(
+                      conc,
+                      iv.pharmacology?.molecule?.molarMass,
+                      eff.unit,
+                    );
                   }
 
                   if (isActivityDependent) {
                     // Activity-dependent: concentration is 0-1 (intensity)
-                    response = (conc * (eff.intrinsicEfficacy ?? 10) * density) / rd.tau;
+                    response =
+                      (conc * (eff.intrinsicEfficacy ?? 10) * density) / rd.tau;
                   } else if (eff.mechanism === "linear") {
                     // Linear mechanism: response is directly proportional to concentration
                     // Note: EC50 here acts as a scaling factor: intake = (conc / EC50) * efficacy
-                    response = (effectiveConc / (eff.EC50 ?? 100)) * (eff.intrinsicEfficacy ?? 1.0) * density / rd.tau;
+                    response =
+                      ((effectiveConc / (eff.EC50 ?? 100)) *
+                        (eff.intrinsicEfficacy ?? 1.0) *
+                        density) /
+                      rd.tau;
                   } else {
                     // Drug-based: use Hill function with Ki or EC50
                     const EC50 = eff.EC50 ?? eff.Ki ?? 100;
@@ -643,7 +703,11 @@ export function computeDerivativesVector(
                       rd.tau;
                   }
 
-                  if (eff.mechanism === "agonist" || eff.mechanism === "PAM" || eff.mechanism === "linear") {
+                  if (
+                    eff.mechanism === "agonist" ||
+                    eff.mechanism === "PAM" ||
+                    eff.mechanism === "linear"
+                  ) {
                     dS += response * tgt.sign;
                   } else if (eff.mechanism === "antagonist") {
                     // Antagonist logic:
@@ -657,29 +721,12 @@ export function computeDerivativesVector(
                       dS -= response * tgt.sign;
                     }
                   }
-
-                  if (signalKey === 'dopamine' && Math.abs(response) > 0.01 && Math.floor(t) % 60 === 0) {
-                    console.log(`[Trace] DA elevation: ${response.toFixed(3)} nM/min from ${iv.key} at t=${t.toFixed(0)}`);
-                  }
                 }
               }
             }
           }
         }
       }
-    }
-
-    if (signalKey === 'melatonin' && val > 10 && Math.floor(t) % 60 === 0) {
-       // Check if dopamine inhibition is firing
-       for (const cp of rd.couplings) {
-         if (layout.keys[cp.sourceIndex] === 'dopamine') {
-           const srcVal = state[cp.sourceIndex];
-           const inhibition = cp.normalizedStrength * srcVal;
-           if (inhibition > 0.1) {
-             console.log(`[Trace] Melatonin inhibited by DA: -${inhibition.toFixed(3)} pg/mL/min. Current DA: ${srcVal.toFixed(1)} nM`);
-           }
-         }
-       }
     }
 
     derivs[rd.index] = dS;
@@ -705,7 +752,9 @@ export function computeDerivativesVector(
         else if (c.type === "enzyme-dependent") {
           const enzymeVal = c.enzymeIndex !== -1 ? state[c.enzymeIndex] : 1.0;
           // Apply clearance modifier from conditions (enzyme/transporter activity changes)
-          const modifier = c.enzymeName ? (clearanceModifiers[c.enzymeName] ?? 0) : 0;
+          const modifier = c.enzymeName
+            ? (clearanceModifiers[c.enzymeName] ?? 0)
+            : 0;
           const effectiveEnzyme = enzymeVal * (1 + modifier);
           rate *= debug.enableEnzymes !== false ? effectiveEnzyme : 1.0;
         }
@@ -721,15 +770,19 @@ export function computeDerivativesVector(
           const conc = pkConcentrations.get(`${iv.id}_central`) ?? 0;
           if (conc > 0) {
             const molarMass = iv.pharmacology?.molecule?.molarMass;
+            const isActivityDep =
+              iv.pharmacology?.pk?.model === "activity-dependent" ||
+              iv.pharmacology?.pk?.delivery === "continuous";
             for (const eff of iv.pharmacology.pd) {
               const auxKey = layout.keys[rd.index];
               if (eff.target === auxKey) {
                 let effectiveConc = conc;
-                if (molarMass && molarMass > 0) {
-                  if (eff.unit === "nM")
-                    effectiveConc = (conc / molarMass) * 1000000;
-                  else if (eff.unit === "uM" || eff.unit === "µM")
-                    effectiveConc = (conc / molarMass) * 1000;
+                if (!isActivityDep && eff.unit) {
+                  effectiveConc = convertConcentration(
+                    conc,
+                    molarMass,
+                    eff.unit,
+                  );
                 }
                 const EC50 = eff.EC50 ?? eff.Ki ?? 100;
                 const occupancy = effectiveConc / (effectiveConc + EC50);
@@ -765,10 +818,18 @@ export function computeDerivativesVector(
         for (const iv of interventions) {
           if (iv.pharmacology?.pd) {
             const conc = pkConcentrations.get(`${iv.id}_central`) ?? 0;
+            const molarMass = iv.pharmacology?.molecule?.molarMass;
+            const isActivityDep =
+              iv.pharmacology?.pk?.model === "activity-dependent" ||
+              iv.pharmacology?.pk?.delivery === "continuous";
             for (const eff of iv.pharmacology.pd) {
               if (eff.target === base) {
                 const EC50 = eff.EC50 ?? eff.Ki ?? 100;
-                totalOccupancy += conc / (conc + EC50);
+                const effectiveConc =
+                  !isActivityDep && eff.unit
+                    ? convertConcentration(conc, molarMass, eff.unit)
+                    : conc;
+                totalOccupancy += effectiveConc / (effectiveConc + EC50);
               }
             }
           }
@@ -872,7 +933,8 @@ export function integrateStepVector(
       (state[rs.index] = Math.max(rs.min, Math.min(rs.max, state[rs.index]))),
   );
   resAux.forEach(
-    (ra) => (state[ra.index] = Math.max(ra.min, Math.min(ra.max, state[ra.index]))),
+    (ra) =>
+      (state[ra.index] = Math.max(ra.min, Math.min(ra.max, state[ra.index]))),
   );
 }
 
@@ -932,7 +994,7 @@ export function integrateStep(
       signals,
       resolver,
       { debug, clearanceModifiers },
-      conditionAdjustments
+      conditionAdjustments,
     );
   }
 
@@ -1090,7 +1152,14 @@ export function runOptimizedV2(
           (item as any).resolvedPharmacology ||
           (def.pharmacology
             ? typeof def.pharmacology === "function"
-              ? [def.pharmacology({ ...item.meta.params, durationMin: item.durationMin || def.defaultDurationMin || 30, weight: (options as any)?.subject?.weight ?? 70 })].flat()
+              ? [
+                  def.pharmacology({
+                    ...item.meta.params,
+                    durationMin:
+                      item.durationMin || def.defaultDurationMin || 30,
+                    weight: (options as any)?.subject?.weight ?? 70,
+                  }),
+                ].flat()
               : [def.pharmacology]
             : []);
 
@@ -1100,16 +1169,19 @@ export function runOptimizedV2(
 
           const pk = pharm.pk;
           const agentId = pharms.length > 1 ? `${item.id}_${idx}` : item.id;
-          const massMg = pk.massMg ?? Number(
-            item.meta.params?.mg ??
-              item.meta.params?.dose ??
-              item.meta.params?.units ??
-              100,
-          );
+          const massMg =
+            pk.massMg ??
+            Number(
+              item.meta.params?.mg ??
+                item.meta.params?.dose ??
+                item.meta.params?.units ??
+                100,
+            );
           const F = pk.bioavailability ?? 1.0;
           const ke = pk.eliminationRate ?? 0.693 / (pk.halfLifeMin ?? 60);
           const ka = pk.absorptionRate ?? ke * 4;
-          const duration = item.durationMin || pk.durationMin || def.defaultDurationMin || 30;
+          const duration =
+            item.durationMin || pk.durationMin || def.defaultDurationMin || 30;
 
           let vd = 50;
           const vol = pk.volume;
@@ -1129,7 +1201,10 @@ export function runOptimizedV2(
                 vd = weight * (vol.base_L_kg ?? 0.7);
                 break;
               case "sex-adjusted":
-                const ratio = sex === "female" ? (vol.female_L_kg ?? 0.55) : (vol.male_L_kg ?? 0.68);
+                const ratio =
+                  sex === "female"
+                    ? (vol.female_L_kg ?? 0.55)
+                    : (vol.male_L_kg ?? 0.68);
                 vd = weight * ratio;
                 break;
             }
@@ -1220,7 +1295,14 @@ export function runOptimizedV2(
           (item as any).resolvedPharmacology ||
           (def.pharmacology
             ? typeof def.pharmacology === "function"
-              ? [def.pharmacology({ ...item.meta.params, durationMin: item.durationMin || def.defaultDurationMin || 30, weight: (options as any)?.subject?.weight ?? 70 })].flat()
+              ? [
+                  def.pharmacology({
+                    ...item.meta.params,
+                    durationMin:
+                      item.durationMin || def.defaultDurationMin || 30,
+                    weight: (options as any)?.subject?.weight ?? 70,
+                  }),
+                ].flat()
               : [def.pharmacology]
             : []);
         pharms.forEach((pharm, idx) => {
@@ -1329,7 +1411,13 @@ export function runOptimizedV2(
         resAux,
         signals,
         resolver,
-        { debug: options?.debug, pkAgents, clearanceModifiers, pkBuffers, pkMinT },
+        {
+          debug: options?.debug,
+          pkAgents,
+          clearanceModifiers,
+          pkBuffers,
+          pkMinT,
+        },
         conditionAdjustments,
       );
       for (let i = 0; i < layout.size; i++) currentStateVector[i] += k1_ws[i];
@@ -1398,7 +1486,13 @@ export function runOptimizedV2(
         };
 
         // RK4 with analytical PK lookup
-        const opts = { debug: options?.debug, pkAgents, clearanceModifiers, pkBuffers, pkMinT };
+        const opts = {
+          debug: options?.debug,
+          pkAgents,
+          clearanceModifiers,
+          pkBuffers,
+          pkMinT,
+        };
         computeDerivativesVector(
           currentStateVector,
           t,
@@ -1495,7 +1589,12 @@ export function runOptimizedV2(
 
   // Evaluate monitors
   const monitors = collectSignalMonitors(signalDefinitions);
-  const monitorResults = evaluateMonitors(monitors, series, gridStep, gridMins[0]);
+  const monitorResults = evaluateMonitors(
+    monitors,
+    series,
+    gridStep,
+    gridMins[0],
+  );
 
   return {
     series,
