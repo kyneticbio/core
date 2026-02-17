@@ -21,7 +21,7 @@ export const norepi: SignalDefinition = {
       const stressResponse = gaussianPhase(p, hourToPhase(9), 0.5);
       return 156.0 + 250.0 * wakeDrive + 94.0 * stressResponse;
     },
-    tau: 90,
+    tau: 5,
     production: [
       {
         source: "constant",
@@ -39,6 +39,7 @@ export const norepi: SignalDefinition = {
     couplings: [
       { source: "cortisol", effect: "stimulate", strength: 0.104 },
       { source: "orexin", effect: "stimulate", strength: 0.05 },
+      { source: "gaba", effect: "inhibit", strength: 0.5 },
     ],
   },
   initialValue: 250,

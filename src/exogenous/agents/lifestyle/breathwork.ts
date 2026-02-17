@@ -9,9 +9,9 @@ export const Breathwork = (
   let cortisol = 0;
 
   if (type === "calm") {
-    vagal = 2.0 * intensity;
-    norepi = -20 * intensity;
-    cortisol = -5 * intensity;
+    vagal = 3.0 * intensity;
+    norepi = -80 * intensity;
+    cortisol = -10 * intensity;
   } else if (type === "balance") {
     vagal = 1.0 * intensity;
     norepi = -5 * intensity;
@@ -32,6 +32,12 @@ export const Breathwork = (
       target: "norepi",
       mechanism: type === "activation" ? "agonist" : "antagonist",
       intrinsicEfficacy: Math.abs(norepi),
+      tau: 2,
+    },
+    {
+      target: "adrenaline",
+      mechanism: type === "activation" ? "agonist" : "antagonist",
+      intrinsicEfficacy: type === "calm" ? 100 * intensity : 0,
       tau: 2,
     },
     {

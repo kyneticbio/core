@@ -65,21 +65,20 @@ export const hrv: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx: any, state: any) => {
-      const p = minuteToPhase(ctx.minuteOfDay);
-      const nocturnalRise = gaussianPhase(p, hourToPhase(23), 2.0);
-      return 45.0 + 35.0 * nocturnalRise;
+      const vagal = state.signals.vagal ?? 0.5;
+      const norepi = (state.signals.norepi ?? 250) / 500;
+      const adrenaline = (state.signals.adrenaline ?? 30) / 200;
+      // Target HRV scales with vagal tone and is suppressed by catecholamine load
+      return Math.max(20, (vagal * 90) * Math.exp(-(norepi + adrenaline) * 0.4));
     },
-    tau: 30,
-    production: [{ source: "vagal", coefficient: 40.0 }],
+    tau: 5,
+    production: [],
     clearance: [],
-    couplings: [
-      { source: "adrenaline", effect: "inhibit", strength: 0.1 },
-      { source: "norepi", effect: "inhibit", strength: 0.08 },
-    ],
+    couplings: [],
   },
   initialValue: 60,
   min: 10,
-  max: 150,
+  max: 200,
   display: {
     referenceRange: { min: 20, max: 100 },
   },
@@ -169,21 +168,22 @@ export const vagal: SignalDefinition = {
         minutesToPhaseWidth(60),
       );
       const drop = gaussianPhase(p, hourToPhase(1), widthToConcentration(60));
-      return 0.4 + 0.35 * parasym - 0.15 * drop;
+      return 0.5 + 0.3 * parasym - 0.1 * drop;
     },
-    tau: 30,
+    tau: 60,
     production: [],
-    clearance: [{ type: "linear", rate: 0.05 }],
+    clearance: [],
     couplings: [
-      { source: "oxytocin", effect: "stimulate", strength: 0.04 },
-      { source: "gaba", effect: "stimulate", strength: 0.006 },
-      { source: "adrenaline", effect: "inhibit", strength: 0.002 },
-      { source: "cortisol", effect: "inhibit", strength: 0.01 },
+      { source: "oxytocin", effect: "stimulate", strength: 0.01 },
+      { source: "gaba", effect: "stimulate", strength: 0.002 },
+      { source: "adrenaline", effect: "inhibit", strength: 0.0005 },
+      { source: "norepi", effect: "inhibit", strength: 0.00005 },
+      { source: "cortisol", effect: "inhibit", strength: 0.005 },
     ],
   },
   initialValue: 0.5,
   min: 0,
-  max: 1.5,
+  max: 2.0,
   display: {
     referenceRange: { min: 0.3, max: 0.7 },
   },

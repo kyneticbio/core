@@ -6,7 +6,7 @@ export const LTheanine = (mg: number): PharmacologyDef => ({
     model: "1-compartment",
     delivery: "bolus",
     bioavailability: 0.95,
-    halfLifeMin: 75,
+    halfLifeMin: 150,
     massMg: mg,
     clearance: {
       renal: { baseCL_mL_min: 180 },
@@ -28,6 +28,22 @@ export const LTheanine = (mg: number): PharmacologyDef => ({
       Ki: 50.0,
       intrinsicEfficacy: mg * 0.0021,
       unit: "µM",
+    },
+    {
+      target: "norepi",
+      mechanism: "antagonist",
+      EC50: 100.0,
+      intrinsicEfficacy: mg * 0.5,
+      unit: "pg/mL",
+      tau: 60,
+    },
+    {
+      target: "adrenaline",
+      mechanism: "antagonist",
+      EC50: 100.0,
+      intrinsicEfficacy: mg * 0.2,
+      unit: "pg/mL",
+      tau: 60,
     },
   ],
 });
