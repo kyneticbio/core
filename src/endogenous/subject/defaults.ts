@@ -1,15 +1,5 @@
 import type { Subject, NutritionTargets, Bloodwork } from "./types";
 
-export const DEFAULT_SUBJECT: Subject = {
-  age: 30,
-  weight: 70,
-  height: 175,
-  sex: 'male',
-  cycleLength: 28,
-  lutealPhaseLength: 14,
-  cycleDay: 0,
-};
-
 export const DEFAULT_BLOODWORK: Bloodwork = {
   metabolic: {
     albumin_g_dL: 4.0,
@@ -36,6 +26,17 @@ export const DEFAULT_BLOODWORK: Bloodwork = {
     cortisol_ug_dL: 12,
     free_testosterone_pg_mL: 15,
   },
+};
+
+export const DEFAULT_SUBJECT: Subject = {
+  age: 30,
+  weight: 70,
+  height: 175,
+  sex: 'male',
+  cycleLength: 28,
+  lutealPhaseLength: 14,
+  cycleDay: 0,
+  bloodwork: DEFAULT_BLOODWORK,
 };
 
 export const DEFAULT_NUTRITION_TARGETS: NutritionTargets = {
