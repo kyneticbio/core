@@ -8,13 +8,15 @@ export const copper: SignalDefinition = {
   description: "Connective tissue health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 110,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.copper_ug_dL ?? 110,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 110,
+  initialValue: (ctx) =>
+    ctx.subject.bloodwork?.nutritional?.copper_ug_dL ?? 110,
   display: {
     referenceRange: { min: 70, max: 150 },
   },

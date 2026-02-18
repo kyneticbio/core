@@ -12,7 +12,21 @@ export const wbc: SignalDefinition = {
     setpoint: (ctx, state) =>
       ctx.subject.bloodwork?.hematology?.wbc_count_k_uL ?? 7.0,
     tau: 10080,
-    production: [],
+    production: [
+      {
+        source: "constant",
+        coefficient: 1.0,
+        transform: (_: any, state: any) => {
+          const vitD = state.signals.vitaminD3 || 35;
+          const zinc = state.signals.zinc || 90;
+          const vitDF = vitD >= 30 ? 1.0 : Math.max(0.7, vitD / 30);
+          const zincF = zinc >= 70 ? 1.0 : Math.max(0.7, zinc / 70);
+          const efficiency = vitDF * zincF;
+          const wbc = state.signals.wbc ?? 7.0;
+          return wbc * (efficiency - 1.0) * 0.00005;
+        },
+      },
+    ],
     clearance: [],
     couplings: [],
   },

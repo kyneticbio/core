@@ -3,6 +3,15 @@ import { derivePhysiology } from "./utils";
 import { DEFAULT_SUBJECT } from "./defaults";
 import { SIGNAL_DEFINITIONS_MAP, SIGNALS_ALL } from "../signals";
 import type { Subject, Bloodwork } from "./types";
+import {
+  integrateStep,
+  createInitialState,
+} from "../../index";
+import type {
+  ActiveIntervention,
+  DynamicsContext,
+  SimulationState,
+} from "../../engine";
 
 function makeSubject(bloodwork?: Bloodwork): Subject {
   return { ...DEFAULT_SUBJECT, bloodwork };
@@ -301,6 +310,24 @@ describe("Bloodwork Integration", () => {
       const val = resolveInitialValue("thyroid", subjectHigh);
       expect(val).toBeCloseTo(1.5, 1);
     });
+
+    it('should initialize from free_testosterone_pg_mL bloodwork', () => {
+      const subject = makeSubject({ hormones: { free_testosterone_pg_mL: 20 } });
+      expect(resolveInitialValue('freeTestosterone', subject)).toBe(20);
+    });
+
+    it('should fall back to sex-dependent default for free testosterone', () => {
+      const maleSubject: Subject = { ...makeSubject(), sex: 'male' };
+      const femaleSubject: Subject = { ...makeSubject(), sex: 'female' };
+
+      expect(resolveInitialValue('freeTestosterone', maleSubject)).toBe(15);
+      expect(resolveInitialValue('freeTestosterone', femaleSubject)).toBe(2);
+    });
+
+    it('should set free testosterone setpoint from bloodwork', () => {
+      const subject = makeSubject({ hormones: { free_testosterone_pg_mL: 22 } });
+      expect(resolveSetpoint('freeTestosterone', subject)).toBe(22);
+    });
   });
 
   describe("Setpoint responds to bloodwork", () => {
@@ -330,6 +357,133 @@ describe("Bloodwork Integration", () => {
       // Default subject: age 30, weight 70, male
       // CG = (140-30)*70/72 = 106.9
       expect(phys.estimatedGFR).toBeCloseTo(106.9, 0);
+    });
+  });
+
+  describe("PK clearance adjustments from bloodwork", () => {
+    // Test drug with both renal and hepatic clearance flags
+    const makeIntervention = (): ActiveIntervention => ({
+      id: "pk-test",
+      key: "pk-test",
+      startTime: 0,
+      duration: 300,
+      intensity: 1.0,
+      params: { mg: 100 },
+      pharmacology: {
+        pk: {
+          model: "1-compartment",
+          delivery: "bolus",
+          bioavailability: 1.0,
+          halfLifeMin: 120,
+          massMg: 100,
+          volume: { kind: "weight", base_L_kg: 0.7 },
+          clearance: { renal: true, hepatic: true },
+        },
+        pd: [],
+      },
+    });
+
+    function simulatePK(subject: Subject, steps: number = 120): number {
+      const physiology = derivePhysiology(subject);
+      let state: SimulationState = createInitialState({
+        subject,
+        physiology,
+        isAsleep: false,
+      });
+      const interventions = [makeIntervention()];
+      const ctx: DynamicsContext = {
+        minuteOfDay: 0,
+        circadianMinuteOfDay: 0,
+        dayOfYear: 1,
+        isAsleep: false,
+        subject,
+        physiology,
+      };
+
+      for (let t = 0; t < steps; t++) {
+        state = integrateStep(
+          state,
+          t,
+          1.0,
+          { ...ctx, minuteOfDay: t % 1440 },
+          undefined,
+          undefined,
+          interventions,
+        );
+      }
+      return state.pk["pk-test_central"] ?? 0;
+    }
+
+    it("renal: eGFR=50 should slow clearance vs normal", () => {
+      const normalSubject = makeSubject();
+      const impairedSubject: Subject = {
+        ...makeSubject(),
+        bloodwork: { metabolic: { eGFR_mL_min: 50 } },
+      };
+
+      const normalConc = simulatePK(normalSubject);
+      const impairedConc = simulatePK(impairedSubject);
+
+      // Impaired renal → slower clearance → higher remaining concentration
+      expect(impairedConc).toBeGreaterThan(normalConc);
+    });
+
+    it("hepatic: ALT=100 should slow clearance vs normal", () => {
+      const normalSubject = makeSubject();
+      const impairedSubject: Subject = {
+        ...makeSubject(),
+        bloodwork: { metabolic: { alt_U_L: 100 } },
+      };
+
+      const normalConc = simulatePK(normalSubject);
+      const impairedConc = simulatePK(impairedSubject);
+
+      // Elevated ALT → impaired hepatic clearance → higher remaining concentration
+      expect(impairedConc).toBeGreaterThan(normalConc);
+    });
+
+    it("albumin: albumin=2.5 should increase Vd (lower concentration)", () => {
+      const normalSubject: Subject = {
+        ...makeSubject(),
+        bloodwork: { metabolic: { albumin_g_dL: 4.0 } },
+      };
+      const lowAlbuminSubject: Subject = {
+        ...makeSubject(),
+        bloodwork: { metabolic: { albumin_g_dL: 2.5 } },
+      };
+
+      // Measure at a very early time (before clearance dominates) to isolate Vd effect
+      const normalConc = simulatePK(normalSubject, 5);
+      const lowAlbuminConc = simulatePK(lowAlbuminSubject, 5);
+
+      // Low albumin → larger Vd → lower peak concentration
+      expect(lowAlbuminConc).toBeLessThan(normalConc);
+      // albumin 2.5 → ratio 4.0/2.5 = 1.6x Vd → ~1.6x lower concentration
+      expect(normalConc / lowAlbuminConc).toBeGreaterThan(1.4);
+      expect(normalConc / lowAlbuminConc).toBeLessThan(1.8);
+    });
+
+    it("no adjustment when bloodwork has normal values", () => {
+      // DEFAULT_SUBJECT already has eGFR=100, ALT=25, albumin=4.0
+      const defaultSubject = { ...DEFAULT_SUBJECT };
+      const explicitNormalSubject: Subject = {
+        ...DEFAULT_SUBJECT,
+        bloodwork: {
+          ...DEFAULT_SUBJECT.bloodwork,
+          metabolic: {
+            ...DEFAULT_SUBJECT.bloodwork!.metabolic,
+            eGFR_mL_min: 100,
+            alt_U_L: 25,
+            albumin_g_dL: 4.0,
+          },
+        },
+      };
+
+      const defaultConc = simulatePK(defaultSubject);
+      const explicitConc = simulatePK(explicitNormalSubject);
+
+      // Both have the same normal values → identical PK
+      expect(explicitConc).toBeCloseTo(defaultConc, 2);
     });
   });
 });

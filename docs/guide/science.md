@@ -28,7 +28,7 @@ KineticBio organizes physiological signals into distinct but interconnected syst
 | **Nervous**        | Synaptic health and neurotransmitter balance.     | Dopamine, Serotonin, GABA, Glutamate, Acetylcholine, Norepinephrine, BDNF, Histamine, Orexin. |
 | **Endocrine**      | Hormonal regulation of stress, sleep, and growth. | Cortisol, Adrenaline, Melatonin, Growth Hormone, Oxytocin, Prolactin, Thyroid, TSH.           |
 | **Metabolic**      | Energy production, fuel storage, and utilization. | Glucose, Insulin, Glucagon, Ketones, GLP-1, Leptin, Ghrelin, mTOR, AMPK.                      |
-| **Reproductive**   | Sex hormones and menstrual cycle dynamics.        | Testosterone, Estrogen, Progesterone, LH, FSH, SHBG.                                          |
+| **Reproductive**   | Sex hormones and menstrual cycle dynamics.        | Testosterone, Free Testosterone, Estrogen, Progesterone, LH, FSH, SHBG, DHEA-S, IGF-1.        |
 | **Cardiovascular** | Autonomic balance and circulatory stress.         | Blood Pressure, HRV, Vagal Tone, Oxygen Saturation.                                           |
 | **Organ Health**   | Filtration, detoxification, and systemic stress.  | ALT, AST, eGFR, Albumin, Creatinine, Bilirubin, Potassium, hs-CRP, Inflammation.             |
 | **Hematology**     | Blood cell counts and oxygen-carrying capacity.   | Hemoglobin, Hematocrit, Platelets, WBC.                                                       |
@@ -141,7 +141,7 @@ The engine scales all constants to the individual user:
 
 Subjects can optionally provide real lab results via the `bloodwork` property. When present, bloodwork values are used in two ways:
 
-1. **Signal Initialization & Setpoints:** Signals with bloodwork counterparts (glucose, ALT, AST, eGFR, ferritin, cortisol, and all hematology/organ-health markers) initialize at the subject's measured value and equilibrate around it as their homeostatic setpoint. This means a subject with fasting glucose of 110 mg/dL will see their simulation start and center at 110 rather than the population default of 90.
+1. **Signal Initialization & Setpoints:** Signals with bloodwork counterparts initialize at the subject's measured value and equilibrate around it as their homeostatic setpoint. This covers metabolic markers (glucose, insulin, ALT, AST, eGFR, albumin, creatinine, bilirubin, potassium), hematology (hemoglobin, hematocrit, platelets, WBC), inflammation (hs-CRP, ferritin), hormones (cortisol, TSH, total & free testosterone, estradiol, progesterone, LH, FSH, SHBG, DHEA-S, IGF-1, free T4), and nutritional markers (vitamin D3, B12, iron, folate, zinc, magnesium). A subject with fasting glucose of 110 mg/dL will see their simulation start and center at 110 rather than the population default of 90.
 
 2. **PK Parameter Adjustment:** Drug clearance rates are scaled based on organ function markers (eGFR for renal clearance, ALT for hepatic clearance) and protein binding is adjusted based on serum albumin. See [PK Adjustments](#subject-specific-pk-adjustments) above.
 

@@ -242,7 +242,10 @@ export const energyAvailability: SignalDefinition = {
 
       // EA = (Intake - Exercise) / Lean Mass
       const ea = (intakeDaily - exerciseDaily) / leanMass;
-      return Math.max(0, ea);
+      // B12 modulates available energy — deficiency reduces it
+      const b12 = state.signals?.b12 || 500;
+      const b12Factor = b12 >= 300 ? 1.0 : Math.max(0.7, b12 / 300);
+      return Math.max(0, ea) * b12Factor;
     },
     tau: 30,
     production: [],

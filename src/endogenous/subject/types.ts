@@ -49,6 +49,10 @@ export interface NutritionalPanel {
   folate_ng_mL?: number;
   zinc_ug_dL?: number;
   magnesium_mg_dL?: number;
+  selenium_ug_L?: number;
+  chromium_x?: number;
+  copper_ug_dL?: number;
+  choline_umol_L?: number;
 }
 
 export interface Bloodwork {

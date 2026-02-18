@@ -383,28 +383,35 @@ export function carbAppearance(t: number, p: any): number {
 export function getMenstrualHormones(
   day: number,
   length: number = 28,
+  lutealPhaseLength: number = 14,
 ): MenstrualHormones {
   const phase = day / length;
 
   const d = phase * 28;
 
-  const estFollicular = gaussian(d, 12.5, 3);
+  // Compute ovulation day from luteal phase length, normalized to 28-day template
+  const ovulationDay = length - lutealPhaseLength;
+  const ovulationD = (ovulationDay / length) * 28;
 
-  const estLuteal = 0.5 * gaussian(d, 21, 5);
+  // Shift peak centers based on actual ovulation timing
+  const estFollicular = gaussian(d, ovulationD - 1, 3);
+
+  const lutealMidD = ovulationD + (28 - ovulationD) / 2;
+  const estLuteal = 0.5 * gaussian(d, lutealMidD, 5);
 
   const estrogen = 0.1 + 0.8 * estFollicular + 0.4 * estLuteal;
 
-  const progLuteal = gaussian(d, 22, 6);
+  const progLuteal = gaussian(d, lutealMidD + 1, 6);
 
   const progesterone = 0.05 + 0.9 * progLuteal;
 
-  const lhSpike = gaussian(d, 13.5, 1.2);
+  const lhSpike = gaussian(d, ovulationD, 1.2);
 
   const lh = 0.1 + 0.9 * lhSpike;
 
   const fshStart = 0.3 * gaussian(d, 2, 4);
 
-  const fshOvulation = 0.5 * gaussian(d, 13.5, 1.5);
+  const fshOvulation = 0.5 * gaussian(d, ovulationD, 1.5);
 
   const fsh = 0.1 + fshStart + fshOvulation;
 

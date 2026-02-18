@@ -8,13 +8,15 @@ export const chromium: SignalDefinition = {
   description: "Blood sugar management.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.chromium_x ?? 1.0,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 1.0,
+  initialValue: (ctx) =>
+    ctx.subject.bloodwork?.nutritional?.chromium_x ?? 1.0,
   display: {
     referenceRange: { min: 0.5, max: 1.5 },
   },

@@ -29,7 +29,10 @@ export const testosterone: SignalDefinition = {
         const circadian =
           400.0 +
           300.0 * gaussianPhase(p, hourToPhase(8), widthToConcentration(240));
-        return circadian * ageFactor * scale;
+        const zincVal = state?.signals?.zinc;
+        const zinc = zincVal > 0 ? zincVal : 90;
+        const zincFactor = zinc >= 70 ? 1.0 : Math.max(0.6, zinc / 70);
+        return circadian * ageFactor * scale * zincFactor;
       } else {
         const baselineT =
           ctx.subject.bloodwork?.hormones?.total_testosterone_ng_dL ?? 40;

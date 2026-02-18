@@ -55,6 +55,7 @@ interface Bloodwork {
   hematology?: Partial<HematologyPanel>;
   inflammation?: Partial<InflammatoryPanel>;
   hormones?: Partial<HormonalPanel>;
+  nutritional?: Partial<NutritionalPanel>;
 }
 ```
 
@@ -72,6 +73,7 @@ Every field at every level is optional. You can provide as little or as much dat
 | `bilirubin_mg_dL` | mg/dL | 0.7 | 0.1 - 1.2 |
 | `potassium_mmol_L` | mmol/L | 4.2 | 3.5 - 5.0 |
 | `glucose_mg_dL` | mg/dL | 90 | 70 - 100 (fasting) |
+| `fasting_insulin_uIU_mL` | uIU/mL | 8.0 | 2.6 - 24.9 |
 
 ### HematologyPanel
 
@@ -95,7 +97,27 @@ Every field at every level is optional. You can provide as little or as much dat
 |-------|------|--------------------|--------------|
 | `tsh_uIU_mL` | uIU/mL | 2.0 | 0.4 - 4.0 |
 | `cortisol_ug_dL` | ug/dL | 12 | 6 - 18 |
-| `free_testosterone_pg_mL` | pg/mL | 15 | Varies by sex |
+| `total_testosterone_ng_dL` | ng/dL | 500 | 300 - 1000 (male) |
+| `free_testosterone_pg_mL` | pg/mL | 15 (male) / 2 (female) | 5 - 25 (male), 0.5 - 5 (female) |
+| `estradiol_pg_mL` | pg/mL | 40 | 15 - 350 (varies by sex/cycle) |
+| `progesterone_ng_mL` | ng/mL | 0.5 | 0.1 - 25 (varies by cycle phase) |
+| `lh_IU_L` | IU/L | 5.0 | 1.7 - 8.6 |
+| `fsh_IU_L` | IU/L | 5.0 | 1.5 - 12.4 |
+| `shbg_nmol_L` | nmol/L | 40 | 20 - 100 |
+| `dheas_ug_dL` | µg/dL | 200 | 100 - 500 |
+| `igf1_ng_mL` | ng/mL | 150 | 100 - 300 |
+| `freeT4_ng_dL` | ng/dL | 1.2 | 0.8 - 1.8 |
+
+### NutritionalPanel
+
+| Field | Unit | Population Default | Normal Range |
+|-------|------|--------------------|--------------|
+| `vitaminD3_ng_mL` | ng/mL | 35 | 30 - 100 |
+| `b12_pg_mL` | pg/mL | 500 | 200 - 900 |
+| `iron_ug_dL` | µg/dL | 100 | 60 - 170 |
+| `folate_ng_mL` | ng/mL | 12 | 3 - 20 |
+| `zinc_ug_dL` | µg/dL | 90 | 60 - 120 |
+| `magnesium_mg_dL` | mg/dL | 2.0 | 1.7 - 2.2 |
 
 ### Example: Subject with Impaired Renal Function
 

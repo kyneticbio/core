@@ -8,13 +8,15 @@ export const choline: SignalDefinition = {
   description: "Acetylcholine precursor.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 10,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.choline_umol_L ?? 10,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 10,
+  initialValue: (ctx) =>
+    ctx.subject.bloodwork?.nutritional?.choline_umol_L ?? 10,
   display: {
     referenceRange: { min: 7, max: 20 },
   },

@@ -20,7 +20,13 @@ export const lh: SignalDefinition = {
       const cycleDay = (ctx.subject.cycleDay || 1) + (ctx.dayOfYear - 1);
       const effectiveDay = cycleDay % cycleLength;
       return (
-        (2.0 + 30.0 * getMenstrualHormones(effectiveDay, cycleLength).lh) *
+        (2.0 +
+          30.0 *
+            getMenstrualHormones(
+              effectiveDay,
+              cycleLength,
+              ctx.subject.lutealPhaseLength ?? 14,
+            ).lh) *
         scale
       );
     },
@@ -70,7 +76,13 @@ export const fsh: SignalDefinition = {
       const cycleDay = (ctx.subject.cycleDay || 1) + (ctx.dayOfYear - 1);
       const effectiveDay = cycleDay % cycleLength;
       return (
-        (3.0 + 12.0 * getMenstrualHormones(effectiveDay, cycleLength).fsh) *
+        (3.0 +
+          12.0 *
+            getMenstrualHormones(
+              effectiveDay,
+              cycleLength,
+              ctx.subject.lutealPhaseLength ?? 14,
+            ).fsh) *
         scale
       );
     },

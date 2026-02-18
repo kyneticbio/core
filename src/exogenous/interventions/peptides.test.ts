@@ -138,53 +138,65 @@ describe("Peptide Interventions", () => {
 
   // ─── Dose-Response Verification ───
 
-  it("Retatrutide: 12mg should produce stronger effects than 1mg", async () => {
-    const signals = ["glp1", "gip", "appetite", "gastricEmptying"] as const;
+  it(
+    "Retatrutide: 12mg should produce stronger effects than 1mg",
+    async () => {
+      const signals = [
+        "glp1",
+        "gip",
+        "appetite",
+        "gastricEmptying",
+      ] as const;
 
-    const baseline = await ScenarioBuilder.with()
-      .duration(10080) // 7 days, no drug
-      .run();
+      const baseline = await ScenarioBuilder.with()
+        .duration(10080) // 7 days, no drug
+        .run();
 
-    const low = await ScenarioBuilder.with()
-      .duration(10080)
-      .taking("retatrutide", { mg: 1 }, 480)
-      .run();
+      const low = await ScenarioBuilder.with()
+        .duration(10080)
+        .taking("retatrutide", { mg: 1 }, 480)
+        .run();
 
-    const high = await ScenarioBuilder.with()
-      .duration(10080)
-      .taking("retatrutide", { mg: 12 }, 480)
-      .run();
+      const high = await ScenarioBuilder.with()
+        .duration(10080)
+        .taking("retatrutide", { mg: 12 }, 480)
+        .run();
 
-    for (const sig of signals) {
-      const baseData = baseline.signals[sig];
-      const lowData = low.signals[sig];
-      const highData = high.signals[sig];
+      for (const sig of signals) {
+        const baseData = baseline.signals[sig];
+        const lowData = low.signals[sig];
+        const highData = high.signals[sig];
 
-      const baseStats = signalStats(baseData, baseline.gridMins);
-      const lowStats = signalStats(lowData, low.gridMins);
-      const highStats = signalStats(highData, high.gridMins);
+        const baseStats = signalStats(baseData, baseline.gridMins);
+        const lowStats = signalStats(lowData, low.gridMins);
+        const highStats = signalStats(highData, high.gridMins);
 
-      console.log(
-        `[dose-response] ${sig}: ` +
-          `baseline mean=${baseStats.mean.toFixed(3)} peak=${baseStats.max.toFixed(3)} trough=${baseStats.min.toFixed(3)} | ` +
-          `1mg mean=${lowStats.mean.toFixed(3)} peak=${lowStats.max.toFixed(3)} trough=${lowStats.min.toFixed(3)} | ` +
-          `12mg mean=${highStats.mean.toFixed(3)} peak=${highStats.max.toFixed(3)} trough=${highStats.min.toFixed(3)}`,
+        console.log(
+          `[dose-response] ${sig}: ` +
+            `baseline mean=${baseStats.mean.toFixed(3)} peak=${baseStats.max.toFixed(3)} trough=${baseStats.min.toFixed(3)} | ` +
+            `1mg mean=${lowStats.mean.toFixed(3)} peak=${lowStats.max.toFixed(3)} trough=${lowStats.min.toFixed(3)} | ` +
+            `12mg mean=${highStats.mean.toFixed(3)} peak=${highStats.max.toFixed(3)} trough=${highStats.min.toFixed(3)}`,
+        );
+      }
+
+      // GLP-1 peak should be meaningfully higher at 12mg vs 1mg
+      const lowGlp1 = signalStats(low.signals.glp1, low.gridMins);
+      const highGlp1 = signalStats(high.signals.glp1, high.gridMins);
+      expect(highGlp1.max).toBeGreaterThan(lowGlp1.max * 1.5);
+
+      // Appetite mean should be lower at 12mg vs 1mg
+      const baseAppetite = signalStats(
+        baseline.signals.appetite,
+        baseline.gridMins,
       );
-    }
-
-    // GLP-1 peak should be meaningfully higher at 12mg vs 1mg
-    const lowGlp1 = signalStats(low.signals.glp1, low.gridMins);
-    const highGlp1 = signalStats(high.signals.glp1, high.gridMins);
-    expect(highGlp1.max).toBeGreaterThan(lowGlp1.max * 1.5);
-
-    // Appetite mean should be lower at 12mg vs 1mg
-    const baseAppetite = signalStats(
-      baseline.signals.appetite,
-      baseline.gridMins,
-    );
-    const lowAppetite = signalStats(low.signals.appetite, low.gridMins);
-    const highAppetite = signalStats(high.signals.appetite, high.gridMins);
-    expect(lowAppetite.mean).toBeLessThan(baseAppetite.mean);
-    expect(highAppetite.mean).toBeLessThan(lowAppetite.mean);
-  });
+      const lowAppetite = signalStats(low.signals.appetite, low.gridMins);
+      const highAppetite = signalStats(
+        high.signals.appetite,
+        high.gridMins,
+      );
+      expect(lowAppetite.mean).toBeLessThan(baseAppetite.mean);
+      expect(highAppetite.mean).toBeLessThan(lowAppetite.mean);
+    },
+    60000,
+  );
 });

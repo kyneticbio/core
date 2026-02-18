@@ -24,7 +24,12 @@ export const estrogen: SignalDefinition = {
       const effectiveDay = cycleDay % cycleLength;
       return (
         (20.0 +
-          250.0 * getMenstrualHormones(effectiveDay, cycleLength).estrogen) *
+          250.0 *
+            getMenstrualHormones(
+              effectiveDay,
+              cycleLength,
+              ctx.subject.lutealPhaseLength ?? 14,
+            ).estrogen) *
         scale
       );
     },

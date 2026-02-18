@@ -14,7 +14,7 @@ export const hematocrit: SignalDefinition = {
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "hemoglobin", effect: "stimulate", strength: 0.01 }],
   },
   initialValue: (ctx) =>
     ctx.subject.bloodwork?.hematology?.hematocrit_pct ?? 43,

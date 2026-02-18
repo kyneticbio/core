@@ -20,3 +20,4 @@ export * from "./igf1";
 export * from "./vegf";
 export * from "./pools";
 export * from "./tsh";
+export * from "./freeTestosterone";

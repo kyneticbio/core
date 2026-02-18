@@ -287,6 +287,7 @@ interface PKAgent {
 function extractPKAgents(
   interventions: ActiveIntervention[],
   ctx: DynamicsContext,
+  currentState?: SimulationState,
 ): PKAgent[] {
   const agents: PKAgent[] = [];
 
@@ -326,9 +327,10 @@ function extractPKAgents(
       }
     }
 
-    // Adjust clearance based on organ function from bloodwork
+    // Adjust clearance based on organ function from bloodwork (prefer live signals)
     if (pk.clearance?.renal) {
       const subjectGFR =
+        currentState?.signals?.egfr ??
         ctx.subject.bloodwork?.metabolic?.eGFR_mL_min ??
         ctx.physiology?.estimatedGFR ??
         100;
@@ -337,13 +339,49 @@ function extractPKAgents(
     }
 
     if (pk.clearance?.hepatic) {
-      const altVal = ctx.subject.bloodwork?.metabolic?.alt_U_L ?? 25;
+      const altVal =
+        currentState?.signals?.alt ??
+        ctx.subject.bloodwork?.metabolic?.alt_U_L ??
+        25;
       // Elevated ALT suggests impaired hepatic metabolism → slower clearance
       // Normal ALT ≤40: no adjustment. Above 40: progressively reduced, floor at 30%
       const hepaticRatio =
         altVal <= 40 ? 1.0 : Math.max(0.3, 1 - (altVal - 40) / 120);
       ke *= hepaticRatio;
+
+      // 3A: Age → hepatic metabolism decline
+      const age = ctx.subject?.age ?? 30;
+      const ageFactor =
+        age <= 40 ? 1.0 : Math.max(0.6, 1 - (age - 40) * 0.01);
+      ke *= ageFactor;
+
+      // 3B: Inflammation → hepatic clearance reduction
+      const hsCRP =
+        ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L ?? 1.0;
+      if (hsCRP > 3) {
+        const inflammationRatio = Math.max(0.5, 1 - (hsCRP - 3) / 20);
+        ke *= inflammationRatio;
+      }
+
+      // 3C: Sex hormone → CYP enzyme modulation (static initial)
+      const estrogen =
+        ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 40;
+      const cypFactor =
+        1.0 + Math.min(0.2, Math.max(-0.1, (estrogen - 40) / 2000));
+      ke *= cypFactor;
+
+      // 3D: liverBloodFlow for hepatic clearance
+      const liverFlow = ctx.physiology?.liverBloodFlow ?? 1.5;
+      ke *= liverFlow / 1.5;
     }
+
+    // 3E: metabolicCapacity for non-organ-specific drugs
+    if (!pk.clearance?.renal && !pk.clearance?.hepatic) {
+      ke *= ctx.physiology?.metabolicCapacity ?? 1.0;
+    }
+
+    // 3F: drugClearance (TBW-based) as global scaling
+    ke *= ctx.physiology?.drugClearance ?? 1.0;
 
     // Adjust Vd for low albumin (highly protein-bound drugs)
     // Low albumin → higher free fraction → larger effective Vd
@@ -1040,8 +1078,8 @@ export function integrateStep(
   // Convert back to object state, preserving PK
   const result = vectorToState(vector, layout);
 
-  // Compute final PK concentrations
-  const pkAgents = extractPKAgents(interventions, ctx);
+  // Compute final PK concentrations (use live signal state for organ function feedback)
+  const pkAgents = extractPKAgents(interventions, ctx, result);
   result.pk = { ...state.pk };
   for (const iv of interventions) {
     if (iv.pharmacology?.pk) {
@@ -1084,7 +1122,7 @@ export function computeDerivatives(
   );
   const vector = stateToVector(state, layout);
   const derivs = new Float64Array(layout.size);
-  const pkAgents = extractPKAgents(interventions, ctx);
+  const pkAgents = extractPKAgents(interventions, ctx, state);
   const debug = options?.debug;
   const clearanceModifiers = (options as any)?.clearanceModifiers;
 

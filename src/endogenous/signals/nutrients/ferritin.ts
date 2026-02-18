@@ -14,7 +14,7 @@ export const ferritin: SignalDefinition = {
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "iron", effect: "stimulate", strength: 0.008 }],
   },
   initialValue: (ctx) =>
     ctx.subject.bloodwork?.inflammation?.ferritin_ng_mL ?? 50,

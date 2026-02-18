@@ -12,7 +12,25 @@ export const hemoglobin: SignalDefinition = {
     setpoint: (ctx, state) =>
       ctx.subject.bloodwork?.hematology?.hemoglobin_g_dL ?? 14.5,
     tau: 10080,
-    production: [],
+    production: [
+      {
+        source: "constant",
+        coefficient: 1.0,
+        transform: (_: any, state: any) => {
+          const iron = state.signals.iron || 100;
+          const b12 = state.signals.b12 || 500;
+          const folate = state.signals.folate || 12;
+          // Sufficiency factors: 1.0 when adequate, drops when deficient
+          const ironF = iron >= 60 ? 1.0 : Math.max(0.3, iron / 60);
+          const b12F = b12 >= 300 ? 1.0 : Math.max(0.5, b12 / 300);
+          const folateF = folate >= 4 ? 1.0 : Math.max(0.5, folate / 4);
+          const efficiency = ironF * b12F * folateF;
+          // When efficiency < 1, adds negative pull proportional to current value
+          const hb = state.signals.hemoglobin ?? 14.5;
+          return hb * (efficiency - 1.0) * 0.0001;
+        },
+      },
+    ],
     clearance: [],
     couplings: [],
   },

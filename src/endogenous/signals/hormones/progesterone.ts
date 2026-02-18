@@ -25,7 +25,12 @@ export const progesterone: SignalDefinition = {
       const effectiveDay = cycleDay % cycleLength;
       return (
         (0.2 +
-          18.0 * getMenstrualHormones(effectiveDay, cycleLength).progesterone) *
+          18.0 *
+            getMenstrualHormones(
+              effectiveDay,
+              cycleLength,
+              ctx.subject.lutealPhaseLength ?? 14,
+            ).progesterone) *
         scale
       );
     },

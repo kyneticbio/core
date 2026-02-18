@@ -8,13 +8,15 @@ export const selenium: SignalDefinition = {
   description: "Antioxidant mineral.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 120,
+    setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.selenium_ug_L ?? 120,
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: 120,
+  initialValue: (ctx) =>
+    ctx.subject.bloodwork?.nutritional?.selenium_ug_L ?? 120,
   display: {
     referenceRange: { min: 70, max: 150 },
   },
