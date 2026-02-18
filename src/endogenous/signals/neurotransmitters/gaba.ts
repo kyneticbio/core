@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, sigmoidPhase } from "../../utils";
 
 export const gaba: SignalDefinition = {
   key: "gaba",
+  type: "neurotransmitter",
   label: "GABA",
   isPremium: true,
   unit: "nM",
@@ -11,9 +12,11 @@ export const gaba: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.004);
+      const sexFactor = ctx.subject.sex === "female" ? 1.15 : 1.0;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const eveningRise = sigmoidPhase(p, hourToPhase(21), 1.0);
-      return 240.0 + 180.0 * eveningRise;
+      return (240.0 + 180.0 * eveningRise) * ageFactor * sexFactor;
     },
     tau: 120,
     production: [

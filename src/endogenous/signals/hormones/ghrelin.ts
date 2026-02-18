@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const ghrelin: SignalDefinition = {
   key: "ghrelin",
+  type: "hormone",
   label: "Ghrelin",
   isPremium: true,
   unit: "pg/mL",
@@ -11,12 +12,16 @@ export const ghrelin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const bmi = ctx.physiology.bmi;
+      const sex = ctx.subject.sex;
+      const bmiFactor = Math.max(0.5, 25 / Math.max(18, bmi));
+      const sexFactor = sex === "female" ? 1.2 : 1.0;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const preMeal =
         gaussianPhase(p, hourToPhase(8.5), 1.0) +
         gaussianPhase(p, hourToPhase(13.0), 1.0) +
         gaussianPhase(p, hourToPhase(19.0), 1.0);
-      return 400 + 600 * preMeal;
+      return (400 + 600 * preMeal) * bmiFactor * sexFactor;
     },
     tau: 60,
     production: [],
@@ -33,7 +38,13 @@ export const ghrelin: SignalDefinition = {
       { source: "progesterone", effect: "stimulate", strength: 0.33 },
     ],
   },
-  initialValue: 500,
+  initialValue: (ctx) => {
+    const bmi = ctx.physiology.bmi;
+    const sex = ctx.subject.sex;
+    const bmiFactor = Math.max(0.5, 25 / Math.max(18, bmi));
+    const sexFactor = sex === "female" ? 1.2 : 1.0;
+    return 500 * bmiFactor * sexFactor;
+  },
   display: {
     referenceRange: { min: 500, max: 1500 },
   },

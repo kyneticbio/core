@@ -8,6 +8,7 @@ import {
 
 export const testosterone: SignalDefinition = {
   key: "testosterone",
+  type: "hormone",
   label: "Testosterone",
   isPremium: true,
   unit: "ng/dL",

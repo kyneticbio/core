@@ -9,14 +9,19 @@ export const GLUCOSE_CONSTANTS = {
 
 export const glucose: SignalDefinition = {
   key: "glucose",
+  type: "metabolic",
   label: "Glucose",
   unit: "mg/dL",
   description:
     "The primary fuel for your brain and muscles. Maintaining blood sugar in a steady range is essential for consistent energy levels, mental clarity, and long-term metabolic health.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.metabolic?.glucose_mg_dL ?? 90,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.metabolic?.glucose_mg_dL;
+      if (bw != null) return bw;
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.001;
+      return 90 * ageFactor;
+    },
     tau: 35.7,
     production: [{ source: "constant", coefficient: 0.1 }],
     clearance: [

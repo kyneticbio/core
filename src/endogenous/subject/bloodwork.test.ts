@@ -70,7 +70,7 @@ describe("Bloodwork Integration", () => {
     it("should fall back to default ALT when no bloodwork", () => {
       const subject = makeSubject();
       const val = resolveInitialValue("alt", subject);
-      expect(val).toBe(25);
+      expect(val).toBe(28);
     });
 
     it("should use bloodwork eGFR value when provided", () => {
@@ -139,11 +139,11 @@ describe("Bloodwork Integration", () => {
     it("should fall back to defaults for new signals without bloodwork", () => {
       const subject = makeSubject();
       expect(resolveInitialValue("albumin", subject)).toBe(4.0);
-      expect(resolveInitialValue("creatinine", subject)).toBe(0.9);
-      expect(resolveInitialValue("bilirubin", subject)).toBe(0.7);
+      expect(resolveInitialValue("creatinine", subject)).toBe(1.0);
+      expect(resolveInitialValue("bilirubin", subject)).toBe(0.8);
       expect(resolveInitialValue("potassium", subject)).toBe(4.2);
-      expect(resolveInitialValue("hemoglobin", subject)).toBe(14.5);
-      expect(resolveInitialValue("hematocrit", subject)).toBe(43);
+      expect(resolveInitialValue("hemoglobin", subject)).toBe(15.0);
+      expect(resolveInitialValue("hematocrit", subject)).toBe(45);
       expect(resolveInitialValue("platelets", subject)).toBe(250);
       expect(resolveInitialValue("wbc", subject)).toBe(7.0);
       expect(resolveInitialValue("hsCRP", subject)).toBe(1.0);
@@ -172,7 +172,7 @@ describe("Bloodwork Integration", () => {
     const nutritionalSignals = [
       { key: "vitaminD3", field: "vitaminD3_ng_mL", custom: 50, fallback: 35 },
       { key: "b12", field: "b12_pg_mL", custom: 800, fallback: 500 },
-      { key: "iron", field: "iron_ug_dL", custom: 130, fallback: 100 },
+      { key: "iron", field: "iron_ug_dL", custom: 130, fallback: 110 },
       { key: "folate", field: "folate_ng_mL", custom: 18, fallback: 12 },
       { key: "zinc", field: "zinc_ug_dL", custom: 105, fallback: 90 },
       { key: "magnesium", field: "magnesium_mg_dL", custom: 2.3, fallback: 2.0 },
@@ -278,7 +278,7 @@ describe("Bloodwork Integration", () => {
 
     it("should fall back to default DHEA-S", () => {
       const subject = makeSubject();
-      expect(resolveInitialValue("dheas", subject)).toBe(200);
+      expect(resolveInitialValue("dheas", subject)).toBe(231.25);
     });
 
     it("should set DHEA-S setpoint from bloodwork", () => {

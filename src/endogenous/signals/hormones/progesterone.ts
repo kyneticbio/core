@@ -3,6 +3,7 @@ import { getMenstrualHormones } from "../../utils";
 
 export const progesterone: SignalDefinition = {
   key: "progesterone",
+  type: "hormone",
   label: "Progesterone",
   isPremium: true,
   unit: "ng/mL",

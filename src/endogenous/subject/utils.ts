@@ -1,4 +1,21 @@
 import type { Subject, Physiology } from "./types";
+import { DEFAULT_SUBJECT } from "./defaults";
+
+/**
+ * Merges a (possibly partial) subject with defaults so demographic/anthropometric
+ * fields are always present. Bloodwork is preserved as-is from the input —
+ * it is NOT defaulted, because default bloodwork values are sex-dependent
+ * and signals already handle missing bloodwork with their own fallbacks.
+ */
+export function resolveSubject(subject?: Partial<Subject>): Subject {
+  if (!subject) return { ...DEFAULT_SUBJECT, bloodwork: undefined };
+  return {
+    ...DEFAULT_SUBJECT,
+    ...subject,
+    // Preserve user's bloodwork exactly — don't merge with male-centric defaults
+    bloodwork: subject.bloodwork,
+  };
+}
 
 /**
  * Mifflin-St Jeor Equation for BMR

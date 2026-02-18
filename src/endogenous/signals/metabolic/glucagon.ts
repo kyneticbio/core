@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const glucagon: SignalDefinition = {
   key: "glucagon",
+  type: "metabolic",
   label: "Glucagon",
   isPremium: true,
   unit: "pg/mL",
@@ -10,12 +11,14 @@ export const glucagon: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.015;
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.002;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const nocturnal =
         gaussianPhase(p, hourToPhase(23), 1.0) +
         0.8 * gaussianPhase(p, hourToPhase(1.5), 0.8);
       const daytimeSuppression = gaussianPhase(p, hourToPhase(7.5), 0.5);
-      return 40 + 35 * nocturnal - 15 * daytimeSuppression;
+      return (40 + 35 * nocturnal - 15 * daytimeSuppression) * bmiFactor * ageFactor;
     },
     tau: 60,
     production: [{ source: "cortisol", coefficient: 0.033 }],

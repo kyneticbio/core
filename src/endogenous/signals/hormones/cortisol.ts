@@ -8,6 +8,7 @@ import {
 
 export const cortisol: SignalDefinition = {
   key: "cortisol",
+  type: "hormone",
   label: "Cortisol",
   unit: "µg/dL",
   description:
@@ -15,6 +16,8 @@ export const cortisol: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.003;
+      const bmiFactor = ctx.physiology.bmi > 30 ? 1.0 + (ctx.physiology.bmi - 30) * 0.01 : 1.0;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const CAR = gaussianPhase(p, hourToPhase(8.75), 1.5);
       const dayComponent = windowPhase(p, hourToPhase(8), hourToPhase(20), 0.5);
@@ -22,7 +25,7 @@ export const cortisol: SignalDefinition = {
       const baselineCortisol =
         ctx.subject.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
       const scale = baselineCortisol / 12;
-      return (2.0 + 18.0 * CAR + 4.0 * dayComponent) * scale;
+      return (2.0 + 18.0 * CAR + 4.0 * dayComponent) * scale * ageFactor * bmiFactor;
     },
     tau: 20,
     production: [

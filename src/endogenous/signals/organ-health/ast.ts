@@ -2,19 +2,28 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const ast: SignalDefinition = {
   key: "ast",
+  type: "organ-health",
   label: "AST",
   unit: "U/L",
   isPremium: true,
   description: "Aspartate Aminotransferase. Liver/muscle health marker.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: (ctx, state) => ctx.subject.bloodwork?.metabolic?.ast_U_L ?? 22,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.metabolic?.ast_U_L;
+      if (bw != null) return bw;
+      return ctx.subject.sex === "male" ? 24 : 20;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) => ctx.subject.bloodwork?.metabolic?.ast_U_L ?? 22,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.metabolic?.ast_U_L;
+    if (bw != null) return bw;
+    return ctx.subject.sex === "male" ? 24 : 20;
+  },
   display: {
     referenceRange: { min: 0, max: 40 },
   },

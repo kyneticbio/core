@@ -7,6 +7,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
  */
 export const erectileFunction: SignalDefinition = {
   key: "erectileFunction",
+  type: "derived",
   label: "Erectile Function",
   unit: "%",
   description:
@@ -15,8 +16,9 @@ export const erectileFunction: SignalDefinition = {
   dynamics: {
     setpoint: (ctx, state) => {
       // Base erectile function depends on age
-      const age = ctx.subject?.age ?? 35;
+      const age = ctx.subject.age;
       const ageEffect = Math.max(0.6, 1.0 - (age - 25) * 0.008); // Gradual decline after 25
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : Math.max(0.5, 1.0 - (ctx.physiology.bmi - 25) * 0.03);
 
       // NO is the primary driver of erection mechanics
       const no = state.signals.nitricOxide ?? 25;
@@ -35,7 +37,7 @@ export const erectileFunction: SignalDefinition = {
       const arousalEffect = Math.min(1.3, 0.8 + dopamine / 200);
 
       const base =
-        70 * ageEffect * noEffect * testEffect * stressEffect * arousalEffect;
+        70 * bmiFactor * ageEffect * noEffect * testEffect * stressEffect * arousalEffect;
       return Math.max(0, Math.min(100, base));
     },
     tau: 10,
@@ -75,6 +77,7 @@ export const erectileFunction: SignalDefinition = {
  */
 export const libido: SignalDefinition = {
   key: "libido",
+  type: "derived",
   label: "Libido",
   unit: "%",
   description:
@@ -82,6 +85,7 @@ export const libido: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.005);
       // Testosterone is primary driver
       const testosterone = state.signals.testosterone ?? 500;
       const testEffect = Math.min(1.3, testosterone / 450);
@@ -104,6 +108,7 @@ export const libido: SignalDefinition = {
 
       const base =
         60 *
+        ageFactor *
         testEffect *
         dopamineEffect *
         energyEffect *

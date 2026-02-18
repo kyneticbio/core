@@ -2,20 +2,32 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const dheas: SignalDefinition = {
   key: "dheas",
+  type: "hormone",
   label: "DHEA-S",
   unit: "µg/dL",
   isPremium: true,
   description: "A precursor to sex hormones.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.hormones?.dheas_ug_dL ?? 200,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.hormones?.dheas_ug_dL;
+      if (bw != null) return bw;
+      const sexDefault = ctx.subject.sex === "male" ? 250 : 180;
+      const ageFactor = Math.max(0.2, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.015);
+      return sexDefault * ageFactor;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) => ctx.subject.bloodwork?.hormones?.dheas_ug_dL ?? 200,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.hormones?.dheas_ug_dL;
+    if (bw != null) return bw;
+    const sexDefault = ctx.subject.sex === "male" ? 250 : 180;
+    const ageFactor = Math.max(0.2, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.015);
+    return sexDefault * ageFactor;
+  },
   display: {
     referenceRange: { min: 100, max: 500 },
   },

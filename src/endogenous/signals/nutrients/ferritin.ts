@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const ferritin: SignalDefinition = {
   key: "ferritin",
+  type: "nutrient",
   label: "Ferritin",
   unit: "ng/mL",
   isPremium: true,
@@ -9,15 +10,21 @@ export const ferritin: SignalDefinition = {
     "A measure of your body's stored iron. Adequate ferritin is essential for producing healthy red blood cells and ensuring your brain and muscles have enough oxygen to function properly.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.inflammation?.ferritin_ng_mL ?? 50,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.inflammation?.ferritin_ng_mL;
+      if (bw != null) return bw;
+      return ctx.subject.sex === "male" ? 120 : 50;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [{ source: "iron", effect: "stimulate", strength: 0.008 }],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.inflammation?.ferritin_ng_mL ?? 50,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.inflammation?.ferritin_ng_mL;
+    if (bw != null) return bw;
+    return ctx.subject.sex === "male" ? 120 : 50;
+  },
   display: {
     referenceRange: { min: 30, max: 300 },
   },

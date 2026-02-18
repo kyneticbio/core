@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, windowPhase } from "../../utils";
 
 export const acetylcholine: SignalDefinition = {
   key: "acetylcholine",
+  type: "neurotransmitter",
   label: "Acetylcholine",
   isPremium: true,
   unit: "nM",
@@ -11,10 +12,11 @@ export const acetylcholine: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.007);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const remDrive = ctx.isAsleep ? 0.8 : 0.4;
       const wakeFocus = windowPhase(p, hourToPhase(10), hourToPhase(12), 0.5);
-      return 7.5 + 10.0 * wakeFocus + 7.5 * remDrive;
+      return (7.5 + 10.0 * wakeFocus + 7.5 * remDrive) * ageFactor;
     },
     tau: 45,
     production: [],

@@ -8,6 +8,7 @@ import {
 
 export const histamine: SignalDefinition = {
   key: "histamine",
+  type: "circadian",
   label: "Histamine",
   isPremium: true,
   unit: "nM",
@@ -16,11 +17,12 @@ export const histamine: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.004);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wake = sigmoidPhase(p, hourToPhase(7.5), 1.0);
       const day = gaussianPhase(p, hourToPhase(13), 0.8);
       const nightFall = sigmoidPhase(p, hourToPhase(22), 1.0);
-      return 7.5 + 22.5 * wake + 17.5 * day - 15.0 * nightFall;
+      return (7.5 + 22.5 * wake + 17.5 * day - 15.0 * nightFall) * ageFactor;
     },
     tau: 60,
     production: [],

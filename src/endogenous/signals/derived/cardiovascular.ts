@@ -17,6 +17,7 @@ import {
  */
 export const nitricOxide: SignalDefinition = {
   key: "nitricOxide",
+  type: "derived",
   label: "Nitric Oxide",
   unit: "nM",
   description:
@@ -24,6 +25,8 @@ export const nitricOxide: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.008);
+      const sexFactor = ctx.subject.sex === "female" && ctx.subject.age < 50 ? 1.1 : 1.0;
       // Baseline NO production, slightly higher during day (activity)
       const p = minuteToPhase(ctx.minuteOfDay);
       const dayActivity = gaussianPhase(
@@ -31,7 +34,7 @@ export const nitricOxide: SignalDefinition = {
         hourToPhase(14),
         widthToConcentration(480),
       );
-      return 20 + 10 * dayActivity;
+      return (20 + 10 * dayActivity) * ageFactor * sexFactor;
     },
     tau: 5, // NO has very short half-life (seconds), but we model the steady-state
     production: [],
@@ -67,6 +70,7 @@ export const nitricOxide: SignalDefinition = {
 
 export const hrv: SignalDefinition = {
   key: "hrv",
+  type: "derived",
   label: "HRV",
   isPremium: true,
   unit: "ms",
@@ -79,7 +83,9 @@ export const hrv: SignalDefinition = {
       const norepi = (state.signals.norepi ?? 250) / 500;
       const adrenaline = (state.signals.adrenaline ?? 30) / 200;
       // Target HRV scales with vagal tone and is suppressed by catecholamine load
-      return Math.max(20, vagal * 90 * Math.exp(-(norepi + adrenaline) * 0.4));
+      const ageFactor = Math.max(0.3, 1.0 - Math.max(0, ctx.subject.age - 20) * 0.01);
+      const sexFactor = ctx.subject.sex === "female" ? 1.05 : 1.0;
+      return Math.max(20, vagal * 90 * ageFactor * sexFactor * Math.exp(-(norepi + adrenaline) * 0.4));
     },
     tau: 5,
     production: [],
@@ -119,6 +125,7 @@ export const hrv: SignalDefinition = {
 
 export const bloodPressure: SignalDefinition = {
   key: "bloodPressure",
+  type: "derived",
   label: "Blood Pressure",
   isPremium: true,
   unit: "mmHg",
@@ -126,9 +133,12 @@ export const bloodPressure: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.004;
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.008;
+      const sexFactor = ctx.subject.sex === "male" ? 1.05 : 1.0;
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeRise = sigmoidPhase(p, hourToPhase(2), 1.0);
-      return 100.0 + 20.0 * wakeRise;
+      return (100.0 + 20.0 * wakeRise) * ageFactor * bmiFactor * sexFactor;
     },
     tau: 15,
     production: [],
@@ -168,6 +178,7 @@ export const bloodPressure: SignalDefinition = {
 
 export const vagal: SignalDefinition = {
   key: "vagal",
+  type: "derived",
   label: "Vagal Tone",
   isPremium: true,
   unit: "x",
@@ -175,6 +186,7 @@ export const vagal: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.006);
       const p = minuteToPhase(ctx.minuteOfDay);
       const parasym = windowPhase(
         p,
@@ -183,7 +195,7 @@ export const vagal: SignalDefinition = {
         minutesToPhaseWidth(60),
       );
       const drop = gaussianPhase(p, hourToPhase(1), widthToConcentration(60));
-      return 0.5 + 0.3 * parasym - 0.1 * drop;
+      return (0.5 + 0.3 * parasym - 0.1 * drop) * ageFactor;
     },
     tau: 60,
     production: [],

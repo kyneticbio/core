@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, sigmoidPhase } from "../../utils";
 
 export const glutamate: SignalDefinition = {
   key: "glutamate",
+  type: "neurotransmitter",
   label: "Glutamate",
   isPremium: true,
   unit: "µM",
@@ -11,9 +12,10 @@ export const glutamate: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.002;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(9), 1.0);
-      return 2.5 + 4.16 * wakeDrive;
+      return (2.5 + 4.16 * wakeDrive) * ageFactor;
     },
     tau: 60,
     production: [

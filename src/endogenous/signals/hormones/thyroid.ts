@@ -10,6 +10,7 @@ import {
 
 export const thyroid: SignalDefinition = {
   key: "thyroid",
+  type: "hormone",
   label: "Thyroid",
   isPremium: true,
   unit: "pmol/L",
@@ -22,6 +23,8 @@ export const thyroid: SignalDefinition = {
       // freeT4 in ng/dL maps to the thyroid signal's pmol/L output via ratio-scaling
       const baselineT4 = ctx.subject.bloodwork?.hormones?.freeT4_ng_dL ?? 1.2;
       const scale = baselineT4 / 1.2;
+      const sexFactor = ctx.subject.sex === "female" ? 0.97 : 1.0;
+      const ageFactor = Math.max(0.9, 1.0 - Math.max(0, ctx.subject.age - 60) * 0.002);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const active = windowPhase(
         p,
@@ -39,7 +42,7 @@ export const thyroid: SignalDefinition = {
         hourToPhase(2.0),
         widthToConcentration(300),
       );
-      return (1.0 + 2.0 * active + 1.5 * midday - 1.2 * nightDip) * scale;
+      return (1.0 + 2.0 * active + 1.5 * midday - 1.2 * nightDip) * scale * sexFactor * ageFactor;
     },
     tau: 43200,
     production: [],

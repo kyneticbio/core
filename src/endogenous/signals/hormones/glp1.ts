@@ -8,6 +8,7 @@ import {
 
 export const glp1: SignalDefinition = {
   key: "glp1",
+  type: "hormone",
   label: "GLP-1",
   isPremium: true,
   unit: "pmol/L",
@@ -16,11 +17,13 @@ export const glp1: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx, state) => {
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : Math.max(0.7, 1.0 - (ctx.physiology.bmi - 25) * 0.02);
+      const ageFactor = Math.max(0.8, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.004);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const bk = gaussianPhase(p, hourToPhase(8.5), widthToConcentration(70));
       const ln = gaussianPhase(p, hourToPhase(13.0), widthToConcentration(80));
       const dn = gaussianPhase(p, hourToPhase(19.0), widthToConcentration(90));
-      return Math.min(25, 2.0 + 12.0 * (bk + 0.9 * ln + 0.8 * dn));
+      return Math.min(25, 2.0 + 12.0 * (bk + 0.9 * ln + 0.8 * dn)) * bmiFactor * ageFactor;
     },
     tau: 30,
     production: [],

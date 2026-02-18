@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const hematocrit: SignalDefinition = {
   key: "hematocrit",
+  type: "hematology",
   label: "Hematocrit",
   unit: "%",
   isPremium: true,
@@ -9,15 +10,21 @@ export const hematocrit: SignalDefinition = {
     "The percentage of blood volume occupied by red blood cells. Reflects hydration and red cell mass.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.hematology?.hematocrit_pct ?? 43,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.hematology?.hematocrit_pct;
+      if (bw != null) return bw;
+      return ctx.subject.sex === "male" ? 45 : 40;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [{ source: "hemoglobin", effect: "stimulate", strength: 0.01 }],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.hematology?.hematocrit_pct ?? 43,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.hematology?.hematocrit_pct;
+    if (bw != null) return bw;
+    return ctx.subject.sex === "male" ? 45 : 40;
+  },
   display: {
     referenceRange: { min: 36, max: 54 },
   },

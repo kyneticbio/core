@@ -8,6 +8,7 @@ import {
 
 export const energy: SignalDefinition = {
   key: "energy",
+  type: "derived",
   label: "Vitality",
   unit: "%",
   description:
@@ -15,11 +16,12 @@ export const energy: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.003);
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(2), 1.0);
       const afternoonDip = gaussianPhase(p, hourToPhase(9), 1.5);
       const tone = 50.0 + 40.0 * wakeDrive - 15.0 * afternoonDip;
-      return tone * (0.8 + 0.2 * (ctx.physiology?.metabolicCapacity ?? 1.0));
+      return tone * (0.8 + 0.2 * (ctx.physiology?.metabolicCapacity ?? 1.0)) * ageFactor;
     },
     tau: 120,
     production: [

@@ -3,6 +3,7 @@ import { getMenstrualHormones } from "../../utils";
 
 export const estrogen: SignalDefinition = {
   key: "estrogen",
+  type: "hormone",
   label: "Estrogen",
   isPremium: true,
   unit: "pg/mL",

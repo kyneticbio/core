@@ -10,6 +10,7 @@ import {
 
 export const prolactin: SignalDefinition = {
   key: "prolactin",
+  type: "hormone",
   label: "Prolactin",
   isPremium: true,
   unit: "ng/mL",
@@ -18,6 +19,8 @@ export const prolactin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const sexFactor = ctx.subject.sex === "female" ? 1.8 : 1.0;
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.003;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const prep = sigmoidPhase(
         p,
@@ -27,7 +30,7 @@ export const prolactin: SignalDefinition = {
       const sleepPulse =
         gaussianPhase(p, hourToPhase(2.0), widthToConcentration(120)) +
         0.8 * gaussianPhase(p, hourToPhase(4.0), widthToConcentration(200));
-      return 4.0 + 8.0 * prep + 12.0 * sleepPulse;
+      return (4.0 + 8.0 * prep + 12.0 * sleepPulse) * sexFactor * ageFactor;
     },
     tau: 45,
     production: [],
@@ -37,7 +40,7 @@ export const prolactin: SignalDefinition = {
       { source: "dopamine", effect: "inhibit", strength: 0.011 },
     ],
   },
-  initialValue: 10,
+  initialValue: (ctx) => 10 * (ctx.subject.sex === "female" ? 1.8 : 1.0) * (1.0 + Math.max(0, ctx.subject.age - 30) * 0.003),
   display: {
     referenceRange: { min: 5, max: 20 },
   },

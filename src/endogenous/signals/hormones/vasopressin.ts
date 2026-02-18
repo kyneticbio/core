@@ -10,6 +10,7 @@ import {
 
 export const vasopressin: SignalDefinition = {
   key: "vasopressin",
+  type: "hormone",
   label: "Vasopressin",
   isPremium: true,
   unit: "pg/mL",
@@ -18,6 +19,8 @@ export const vasopressin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 50) * 0.005;
+      const sexFactor = ctx.subject.sex === "male" ? 1.1 : 1.0;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const couple = gaussianPhase(
         p,
@@ -30,7 +33,7 @@ export const vasopressin: SignalDefinition = {
         hourToPhase(7),
         minutesToPhaseWidth(45),
       );
-      return 1.8 + 3.5 * couple + 3.5 * nightRise;
+      return (1.8 + 3.5 * couple + 3.5 * nightRise) * ageFactor * sexFactor;
     },
     tau: 20,
     production: [],

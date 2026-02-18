@@ -6,6 +6,7 @@ import type {
 
 export const bdnf: SignalDefinition = {
   key: "bdnf",
+  type: "derived",
   label: "BDNF",
   isPremium: true,
   unit: "ng/mL",
@@ -13,7 +14,11 @@ export const bdnf: SignalDefinition = {
     "Often called 'brain fertilizer,' BDNF supports the survival of existing neurons and encourages the growth of new ones.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx, state) => 25.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.006);
+      const sexFactor = ctx.subject.sex === "female" ? 1.1 : 1.0;
+      return 25.0 * ageFactor * sexFactor;
+    },
     tau: 480,
     production: [
       { source: "growthHormone", coefficient: 0.5 },
@@ -52,6 +57,7 @@ export const bdnf: SignalDefinition = {
 
 export const bdnfExpression: AuxiliaryDefinition = {
   key: "bdnfExpression",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0.6,
     tau: 2880,
@@ -65,6 +71,7 @@ export const bdnfExpression: AuxiliaryDefinition = {
 
 export const mtor: SignalDefinition = {
   key: "mtor",
+  type: "derived",
   label: "mTOR",
   isPremium: true,
   unit: "x",
@@ -97,6 +104,7 @@ export const mtor: SignalDefinition = {
 
 export const ampk: SignalDefinition = {
   key: "ampk",
+  type: "derived",
   label: "AMPK",
   isPremium: true,
   unit: "x",
@@ -130,6 +138,7 @@ export const ampk: SignalDefinition = {
 
 export const muscleProteinSynthesis: AuxiliaryDefinition = {
   key: "muscleProteinSynthesis",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0,
     tau: 120,
@@ -152,6 +161,7 @@ export const muscleProteinSynthesis: AuxiliaryDefinition = {
 
 export const muscleMass: AuxiliaryDefinition = {
   key: "muscleMass",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0,
     tau: 43200, // Extremely slow (30 days)
@@ -178,12 +188,17 @@ export const muscleMass: AuxiliaryDefinition = {
 
 export const strengthReadiness: SignalDefinition = {
   key: "strengthReadiness",
+  type: "derived",
   label: "Strength Readiness",
   unit: "x",
   description: "Your immediate capacity for peak physical output.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.005);
+      const sexFactor = ctx.subject.sex === "female" ? 0.95 : 1.0;
+      return 1.0 * ageFactor * sexFactor;
+    },
     tau: 1440, // 24 hour recovery cycle
     production: [
       {
@@ -248,12 +263,16 @@ export const strengthReadiness: SignalDefinition = {
 
 export const neuroplasticityScore: SignalDefinition = {
   key: "neuroplasticityScore",
+  type: "derived",
   label: "Neuroplasticity",
   unit: "x",
   description: "The brain's current readiness for learning and adaptation.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 25) * 0.006);
+      return 1.0 * ageFactor;
+    },
     tau: 720,
     production: [
       {

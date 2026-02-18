@@ -15,6 +15,7 @@ import {
  */
 export const angiogenesis: SignalDefinition = {
   key: "angiogenesis",
+  type: "derived",
   label: "Angiogenesis",
   isPremium: true,
   unit: "x",
@@ -22,7 +23,10 @@ export const angiogenesis: SignalDefinition = {
     "The formation of new blood vessels. Critical for wound healing, tissue repair, and recovery from injury. Driven by VEGF and nitric oxide.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.006);
+      return 1.0 * ageFactor;
+    },
     tau: 720, // Slow biological process (hours to days)
     production: [
       {
@@ -78,6 +82,7 @@ export const angiogenesis: SignalDefinition = {
  */
 export const gastricEmptying: SignalDefinition = {
   key: "gastricEmptying",
+  type: "derived",
   label: "Gastric Motility",
   unit: "%",
   description:
@@ -85,12 +90,14 @@ export const gastricEmptying: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.004);
+      const sexFactor = ctx.subject.sex === "female" ? 0.85 : 1.0;
       // Higher around mealtimes, lower overnight
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const bk = gaussianPhase(p, hourToPhase(8.5), widthToConcentration(90));
       const ln = gaussianPhase(p, hourToPhase(13.0), widthToConcentration(90));
       const dn = gaussianPhase(p, hourToPhase(19.0), widthToConcentration(90));
-      return 35 + 35 * (bk + 0.9 * ln + 0.8 * dn);
+      return (35 + 35 * (bk + 0.9 * ln + 0.8 * dn)) * ageFactor * sexFactor;
     },
     tau: 30, // Responds quickly to meals and hormones
     production: [
@@ -140,6 +147,7 @@ export const gastricEmptying: SignalDefinition = {
  */
 export const appetite: SignalDefinition = {
   key: "appetite",
+  type: "derived",
   label: "Appetite",
   unit: "%",
   description:
@@ -147,6 +155,8 @@ export const appetite: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const bmiFactor = ctx.physiology.bmi > 30 ? 1.0 + (ctx.physiology.bmi - 30) * 0.01 : 1.0;
+      const sexFactor = ctx.subject.sex === "female" ? 0.95 : 1.0;
       // Appetite peaks before typical mealtimes
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const preBk = gaussianPhase(
@@ -170,7 +180,7 @@ export const appetite: SignalDefinition = {
         hourToPhase(2.0),
         widthToConcentration(300),
       );
-      return 30 + 35 * (preBk + 0.9 * preLn + 0.85 * preDn) - 20 * overnight;
+      return (30 + 35 * (preBk + 0.9 * preLn + 0.85 * preDn) - 20 * overnight) * bmiFactor * sexFactor;
     },
     tau: 45, // Appetite responds over ~45 minutes
     production: [

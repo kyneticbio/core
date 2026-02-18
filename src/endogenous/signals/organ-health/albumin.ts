@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const albumin: SignalDefinition = {
   key: "albumin",
+  type: "organ-health",
   label: "Albumin",
   unit: "g/dL",
   isPremium: true,
@@ -9,14 +10,21 @@ export const albumin: SignalDefinition = {
     "Major plasma protein produced by the liver. Important for drug binding and fluid balance.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.metabolic?.albumin_g_dL ?? 4.0,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.metabolic?.albumin_g_dL;
+      if (bw != null) return bw;
+      return Math.max(3.2, 4.0 - Math.max(0, ctx.subject.age - 50) * 0.01);
+    },
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "hsCRP", effect: "inhibit", strength: 0.001 }],
   },
-  initialValue: (ctx) => ctx.subject.bloodwork?.metabolic?.albumin_g_dL ?? 4.0,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.metabolic?.albumin_g_dL;
+    if (bw != null) return bw;
+    return Math.max(3.2, 4.0 - Math.max(0, ctx.subject.age - 50) * 0.01);
+  },
   display: {
     referenceRange: { min: 3.5, max: 5.0 },
   },

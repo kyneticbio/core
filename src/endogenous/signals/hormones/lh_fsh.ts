@@ -3,6 +3,7 @@ import { getMenstrualHormones } from "../../utils";
 
 export const lh: SignalDefinition = {
   key: "lh",
+  type: "hormone",
   label: "LH",
   isPremium: true,
   unit: "IU/L",
@@ -59,6 +60,7 @@ export const lh: SignalDefinition = {
 
 export const fsh: SignalDefinition = {
   key: "fsh",
+  type: "hormone",
   label: "FSH",
   isPremium: true,
   unit: "IU/L",

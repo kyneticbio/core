@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const igf1: SignalDefinition = {
   key: "igf1",
+  type: "hormone",
   label: "IGF-1",
   isPremium: true,
   unit: "ng/mL",
@@ -13,10 +14,10 @@ export const igf1: SignalDefinition = {
       // IGF-1 is relatively stable throughout the day with slight overnight dip
       // Age-dependent: peaks in puberty, declines with age
       const baseline = ctx.subject.bloodwork?.hormones?.igf1_ng_mL ?? 150;
-      const ageFactor = ctx.subject?.age
-        ? Math.max(0.5, 1.0 - (ctx.subject.age - 25) * 0.005)
-        : 1.0;
-      return baseline * ageFactor;
+      const ageFactor = Math.max(0.5, 1.0 - (ctx.subject.age - 25) * 0.005);
+      const sexFactor = ctx.subject.sex === "male" ? 1.1 : 1.0;
+      const bmiFactor = ctx.physiology.bmi <= 30 ? 1.0 : Math.max(0.8, 1.0 - (ctx.physiology.bmi - 30) * 0.01);
+      return baseline * ageFactor * sexFactor * bmiFactor;
     },
     tau: 1440, // Very slow - liver production, long half-life (~15 hours)
     production: [{ source: "growthHormone", coefficient: 0.05 }],

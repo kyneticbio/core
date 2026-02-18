@@ -10,6 +10,7 @@ import {
 
 export const oxytocin: SignalDefinition = {
   key: "oxytocin",
+  type: "hormone",
   label: "Oxytocin",
   isPremium: true,
   unit: "pg/mL",
@@ -18,6 +19,8 @@ export const oxytocin: SignalDefinition = {
   idealTendency: "higher",
   dynamics: {
     setpoint: (ctx, state) => {
+      const sexFactor = ctx.subject.sex === "female" ? 1.2 : 1.0;
+      const ageFactor = Math.max(0.8, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.003);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const social = gaussianPhase(
         p,
@@ -29,7 +32,7 @@ export const oxytocin: SignalDefinition = {
         hourToPhase(19),
         minutesToPhaseWidth(40 * 4),
       );
-      return 1.5 + 4.0 * social + 5.0 * evening;
+      return (1.5 + 4.0 * social + 5.0 * evening) * sexFactor * ageFactor;
     },
     tau: 20,
     production: [],

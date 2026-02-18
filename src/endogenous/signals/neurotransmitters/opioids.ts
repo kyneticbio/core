@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const endorphin: SignalDefinition = {
   key: "endorphin",
+  type: "neurotransmitter",
   label: "Endorphins",
   description: "Natural painkillers and mood elevators.",
   unit: "x",
@@ -9,7 +10,11 @@ export const endorphin: SignalDefinition = {
   idealTendency: "none",
   display: {},
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.005);
+      const sexFactor = ctx.subject.sex === "female" ? 0.9 : 1.0;
+      return 1.0 * ageFactor * sexFactor;
+    },
     tau: 30, // Relatively fast clearance
     production: [],
     clearance: [],
@@ -30,6 +35,7 @@ export const endorphin: SignalDefinition = {
 
 export const dynorphin: SignalDefinition = {
   key: "dynorphin",
+  type: "neurotransmitter",
   label: "Dynorphins",
   description: "Opioid peptides involved in stress and dysphoria.",
   unit: "x",
@@ -37,7 +43,10 @@ export const dynorphin: SignalDefinition = {
   idealTendency: "mid",
   display: {},
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.005);
+      return 1.0 * ageFactor;
+    },
     tau: 30,
     production: [],
     clearance: [],
@@ -47,6 +56,7 @@ export const dynorphin: SignalDefinition = {
 
 export const anandamide: SignalDefinition = {
   key: "anandamide",
+  type: "neurotransmitter",
   label: "Anandamide",
   description: "Endogenous cannabinoid neurotransmitter.",
   unit: "x",

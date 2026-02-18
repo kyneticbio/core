@@ -1,4 +1,5 @@
 import { Physiology, Subject } from "src/types";
+import { resolveSubject, derivePhysiology } from "../endogenous/subject/utils";
 import { collectSignalMonitors, evaluateMonitors } from "./monitors";
 
 import {
@@ -1194,6 +1195,10 @@ export function runOptimizedV2(
     receptorKeys,
   } = system;
 
+  // Resolve subject and physiology once — guaranteed non-null for all downstream use
+  const resolvedSubject = resolveSubject(options?.subject);
+  const resolvedPhysiology = options?.physiology ?? derivePhysiology(resolvedSubject);
+
   const enableInterventions = options?.debug?.enableInterventions ?? true;
   const includeSignals = options?.includeSignals ?? signals;
   const gridStep = gridMins.length > 1 ? gridMins[1] - gridMins[0] : 5;
@@ -1229,7 +1234,7 @@ export function runOptimizedV2(
                     ...item.meta.params,
                     durationMin:
                       item.durationMin || def.defaultDurationMin || 30,
-                    weight: (options as any)?.subject?.weight ?? 70,
+                    weight: resolvedSubject.weight,
                   }),
                 ].flat()
               : [def.pharmacology]
@@ -1258,10 +1263,10 @@ export function runOptimizedV2(
           let vd = 50;
           const vol = pk.volume;
           if (vol) {
-            const weight = options?.subject?.weight ?? 70;
-            const tbw = options?.physiology?.tbw ?? weight * 0.6;
-            const lbm = options?.physiology?.leanBodyMass ?? weight * 0.8;
-            const sex = options?.subject?.sex ?? "male";
+            const weight = resolvedSubject.weight;
+            const tbw = resolvedPhysiology.tbw;
+            const lbm = resolvedPhysiology.leanBodyMass;
+            const sex = resolvedSubject.sex;
             switch (vol.kind) {
               case "tbw":
                 vd = tbw * (vol.fraction ?? 0.6);
@@ -1332,8 +1337,8 @@ export function runOptimizedV2(
     signalDefinitions,
     auxDefinitions,
     {
-      subject: options?.subject ?? ({} as Subject),
-      physiology: options?.physiology ?? ({} as Physiology),
+      subject: resolvedSubject,
+      physiology: resolvedPhysiology,
       isAsleep: false,
     },
     { ...options?.debug, receptorKeys },
@@ -1372,7 +1377,7 @@ export function runOptimizedV2(
                     ...item.meta.params,
                     durationMin:
                       item.durationMin || def.defaultDurationMin || 30,
-                    weight: (options as any)?.subject?.weight ?? 70,
+                    weight: resolvedSubject.weight,
                   }),
                 ].flat()
               : [def.pharmacology]
@@ -1468,8 +1473,8 @@ export function runOptimizedV2(
         circadianMinuteOfDay: (wallMin + circShift + 1440) % 1440,
         dayOfYear: 1,
         isAsleep: isAsleep_warm,
-        subject: options?.subject ?? ({} as any),
-        physiology: options?.physiology ?? ({} as any),
+        subject: resolvedSubject,
+        physiology: resolvedPhysiology,
       };
 
       computeDerivativesVector(
@@ -1553,8 +1558,8 @@ export function runOptimizedV2(
           circadianMinuteOfDay: (currentMin + circShift + 1440) % 1440,
           dayOfYear: 1 + Math.floor(t / 1440),
           isAsleep,
-          subject: options?.subject ?? ({} as any),
-          physiology: options?.physiology ?? ({} as any),
+          subject: resolvedSubject,
+          physiology: resolvedPhysiology,
         };
 
         // RK4 with analytical PK lookup

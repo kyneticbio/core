@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const freeTestosterone: SignalDefinition = {
   key: "freeTestosterone",
+  type: "hormone",
   label: "Free Testosterone",
   unit: "pg/mL",
   isPremium: true,
@@ -11,7 +12,9 @@ export const freeTestosterone: SignalDefinition = {
     setpoint: (ctx, state) => {
       const bw = ctx.subject.bloodwork?.hormones?.free_testosterone_pg_mL;
       if (bw != null) return bw;
-      return (ctx.subject?.sex ?? "male") === "male" ? 15 : 2;
+      const base = ctx.subject.sex === "male" ? 15 : 2;
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.01);
+      return base * ageFactor;
     },
     tau: 10080,
     production: [],
@@ -21,7 +24,9 @@ export const freeTestosterone: SignalDefinition = {
   initialValue: (ctx) => {
     const bw = ctx.subject.bloodwork?.hormones?.free_testosterone_pg_mL;
     if (bw != null) return bw;
-    return (ctx.subject?.sex ?? "male") === "male" ? 15 : 2;
+    const base = ctx.subject.sex === "male" ? 15 : 2;
+    const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.01);
+    return base * ageFactor;
   },
   display: {
     referenceRange: { min: 5, max: 25 },

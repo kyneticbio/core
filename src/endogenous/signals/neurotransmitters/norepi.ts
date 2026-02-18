@@ -8,6 +8,7 @@ import {
 
 export const norepi: SignalDefinition = {
   key: "norepi",
+  type: "neurotransmitter",
   label: "Norepinephrine",
   isPremium: true,
   unit: "pg/mL",
@@ -16,10 +17,12 @@ export const norepi: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.003;
+      const sexFactor = ctx.subject.sex === "male" ? 1.05 : 1.0;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(8.5), 1.0);
       const stressResponse = gaussianPhase(p, hourToPhase(9), 0.5);
-      return 156.0 + 250.0 * wakeDrive + 94.0 * stressResponse;
+      return (156.0 + 250.0 * wakeDrive + 94.0 * stressResponse) * ageFactor * sexFactor;
     },
     tau: 5,
     production: [

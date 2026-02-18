@@ -2,6 +2,7 @@ import type { AuxiliaryDefinition, DynamicsContext } from "../../../engine";
 
 export const insulinSensitivity: AuxiliaryDefinition = {
   key: "insulinSensitivity",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx: DynamicsContext, state) => {
       const bmi = ctx.physiology?.bmi ?? 25;
@@ -23,7 +24,7 @@ export const insulinSensitivity: AuxiliaryDefinition = {
     production: [],
     clearance: [],
   },
-  initialValue: (ctx: DynamicsContext) => {
+  initialValue: (ctx) => {
     const bmi = ctx.physiology?.bmi ?? 25;
     const fastingInsulin =
       ctx.subject.bloodwork?.metabolic?.fasting_insulin_uIU_mL ?? 8;
@@ -45,6 +46,7 @@ export const insulinSensitivity: AuxiliaryDefinition = {
 
 export const insulinAction: AuxiliaryDefinition = {
   key: "insulinAction",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0,
     tau: 40,
@@ -65,6 +67,7 @@ export const insulinAction: AuxiliaryDefinition = {
 
 export const cypActivity: AuxiliaryDefinition = {
   key: "cypActivity",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => {
       const estrogen = state.signals?.estrogen ?? 40;
@@ -84,6 +87,7 @@ export const cypActivity: AuxiliaryDefinition = {
 
 export const hepaticGlycogen: AuxiliaryDefinition = {
   key: "hepaticGlycogen",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0.7,
     tau: 1440,

@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const wbc: SignalDefinition = {
   key: "wbc",
+  type: "hematology",
   label: "WBC",
   unit: "K/µL",
   isPremium: true,
@@ -9,8 +10,12 @@ export const wbc: SignalDefinition = {
     "White blood cell count. A marker of immune system activity and infection status.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.hematology?.wbc_count_k_uL ?? 7.0,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.hematology?.wbc_count_k_uL;
+      if (bw != null) return bw;
+      const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
+      return 7.0 * ageFactor;
+    },
     tau: 10080,
     production: [
       {
@@ -30,8 +35,12 @@ export const wbc: SignalDefinition = {
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.hematology?.wbc_count_k_uL ?? 7.0,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.hematology?.wbc_count_k_uL;
+    if (bw != null) return bw;
+    const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
+    return 7.0 * ageFactor;
+  },
   display: {
     referenceRange: { min: 4.5, max: 11.0 },
   },

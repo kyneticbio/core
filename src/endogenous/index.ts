@@ -51,6 +51,7 @@ const createStaticAux = (
   initial: number = 1.0,
 ): AuxiliaryDefinition => ({
   key,
+  type: "auxiliary",
   dynamics: {
     setpoint: () => initial,
     tau: 1440,

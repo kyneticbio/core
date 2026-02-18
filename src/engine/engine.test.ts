@@ -152,7 +152,7 @@ describe('Solver Debug Flags', () => {
       { debug: { enableBaselines: true } }
     );
     // Dopamine setpoint is non-zero at 8AM
-    expect(derivs.signals.dopamine).toBeGreaterThan(0.1);
+    expect(derivs.signals.dopamine).toBeGreaterThan(0.09);
   });
 
   it('should have zero setpoint contribution when baselines disabled', () => {

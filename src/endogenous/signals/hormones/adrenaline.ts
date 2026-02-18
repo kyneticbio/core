@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const adrenaline: SignalDefinition = {
   key: "adrenaline",
+  type: "hormone",
   label: "Adrenaline",
   isPremium: true,
   unit: "pg/mL",

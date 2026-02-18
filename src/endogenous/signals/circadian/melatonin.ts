@@ -4,6 +4,7 @@ import { minuteToPhase, hourToPhase, windowPhase } from "../../utils";
 
 export const melatonin: SignalDefinition = {
   key: "melatonin",
+  type: "circadian",
   label: "Melatonin",
   unit: "pg/mL",
   description:
@@ -11,8 +12,9 @@ export const melatonin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.2, 1.0 - Math.max(0, ctx.subject.age - 20) * 0.012);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
-      return 80.0 * windowPhase(p, hourToPhase(21), hourToPhase(7.5), 0.5);
+      return 80.0 * ageFactor * windowPhase(p, hourToPhase(21), hourToPhase(7.5), 0.5);
     },
     tau: 30,
     production: [],

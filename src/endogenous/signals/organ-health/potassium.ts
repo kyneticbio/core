@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const potassium: SignalDefinition = {
   key: "potassium",
+  type: "organ-health",
   label: "Potassium",
   unit: "mmol/L",
   isPremium: true,
@@ -14,7 +15,7 @@ export const potassium: SignalDefinition = {
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "egfr", effect: "inhibit", strength: 0.0005 }],
   },
   initialValue: (ctx) =>
     ctx.subject.bloodwork?.metabolic?.potassium_mmol_L ?? 4.2,

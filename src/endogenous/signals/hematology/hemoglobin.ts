@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const hemoglobin: SignalDefinition = {
   key: "hemoglobin",
+  type: "hematology",
   label: "Hemoglobin",
   unit: "g/dL",
   isPremium: true,
@@ -9,8 +10,13 @@ export const hemoglobin: SignalDefinition = {
     "The oxygen-carrying protein in red blood cells. Low hemoglobin indicates anemia.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.hematology?.hemoglobin_g_dL ?? 14.5,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.hematology?.hemoglobin_g_dL;
+      if (bw != null) return bw;
+      const sexDefault = ctx.subject.sex === "male" ? 15.0 : 13.5;
+      const ageFactor = Math.max(0.9, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
+      return sexDefault * ageFactor;
+    },
     tau: 10080,
     production: [
       {
@@ -34,8 +40,13 @@ export const hemoglobin: SignalDefinition = {
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.hematology?.hemoglobin_g_dL ?? 14.5,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.hematology?.hemoglobin_g_dL;
+    if (bw != null) return bw;
+    const sexDefault = ctx.subject.sex === "male" ? 15.0 : 13.5;
+    const ageFactor = Math.max(0.9, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
+    return sexDefault * ageFactor;
+  },
   display: {
     referenceRange: { min: 12.0, max: 17.5 },
   },

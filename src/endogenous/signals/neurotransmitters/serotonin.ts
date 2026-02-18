@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const serotonin: SignalDefinition = {
   key: "serotonin",
+  type: "neurotransmitter",
   label: "Serotonin",
   isPremium: true,
   unit: "nM",
@@ -11,10 +12,12 @@ export const serotonin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const sexFactor = ctx.subject.sex === "female" ? 0.85 : 1.0;
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.004);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const lateMorning = gaussianPhase(p, hourToPhase(11), 1.0);
       const afternoon = gaussianPhase(p, hourToPhase(15), 0.8);
-      return 2.0 + 2.5 * (lateMorning + afternoon);
+      return (2.0 + 2.5 * (lateMorning + afternoon)) * sexFactor * ageFactor;
     },
     tau: 180,
     production: [

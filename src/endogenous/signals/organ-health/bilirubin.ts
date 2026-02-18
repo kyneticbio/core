@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const bilirubin: SignalDefinition = {
   key: "bilirubin",
+  type: "organ-health",
   label: "Bilirubin",
   unit: "mg/dL",
   isPremium: true,
@@ -9,15 +10,21 @@ export const bilirubin: SignalDefinition = {
     "A byproduct of red blood cell breakdown processed by the liver. Elevated levels may indicate liver or bile duct issues.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.metabolic?.bilirubin_mg_dL ?? 0.7,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.metabolic?.bilirubin_mg_dL;
+      if (bw != null) return bw;
+      return ctx.subject.sex === "male" ? 0.8 : 0.6;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.metabolic?.bilirubin_mg_dL ?? 0.7,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.metabolic?.bilirubin_mg_dL;
+    if (bw != null) return bw;
+    return ctx.subject.sex === "male" ? 0.8 : 0.6;
+  },
   display: {
     referenceRange: { min: 0.1, max: 1.2 },
   },

@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const tsh: SignalDefinition = {
   key: "tsh",
+  type: "hormone",
   label: "TSH",
   unit: "µIU/mL",
   isPremium: true,
@@ -9,14 +10,27 @@ export const tsh: SignalDefinition = {
     "Thyroid-stimulating hormone. Controls thyroid gland activity. Elevated TSH suggests underactive thyroid.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.hormones?.tsh_uIU_mL ?? 2.0,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.hormones?.tsh_uIU_mL;
+      if (bw != null) return bw;
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.005;
+      const sexFactor = ctx.subject.sex === "female" ? 1.05 : 1.0;
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.01;
+      return 2.0 * ageFactor * sexFactor * bmiFactor;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [{ source: "thyroid", effect: "inhibit", strength: 0.001 }],
   },
-  initialValue: (ctx) => ctx.subject.bloodwork?.hormones?.tsh_uIU_mL ?? 2.0,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.hormones?.tsh_uIU_mL;
+    if (bw != null) return bw;
+    const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.005;
+    const sexFactor = ctx.subject.sex === "female" ? 1.05 : 1.0;
+    const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.01;
+    return 2.0 * ageFactor * sexFactor * bmiFactor;
+  },
   display: {
     referenceRange: { min: 0.4, max: 4.0 },
   },

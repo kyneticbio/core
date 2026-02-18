@@ -10,6 +10,7 @@ import type {
  */
 export const caloricIntake: SignalDefinition = {
   key: "caloricIntake",
+  type: "metabolic",
   label: "Caloric Intake",
   unit: "kcal/min",
   description: "Real-time absorption of calories from food.",
@@ -35,6 +36,7 @@ export const caloricIntake: SignalDefinition = {
  */
 export const burnRate: SignalDefinition = {
   key: "burnRate",
+  type: "metabolic",
   label: "Burn Rate",
   unit: "kcal/min",
   description: "Real-time caloric expenditure.",
@@ -74,6 +76,7 @@ export const burnRate: SignalDefinition = {
  */
 export const netEnergy: SignalDefinition = {
   key: "netEnergy",
+  type: "metabolic",
   label: "Caloric Balance",
   unit: "kcal/min",
   description:
@@ -125,6 +128,7 @@ export const netEnergy: SignalDefinition = {
  */
 export const fatOxidationRate: AuxiliaryDefinition = {
   key: "fatOxidationRate",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0,
     tau: 60,
@@ -158,6 +162,7 @@ export const fatOxidationRate: AuxiliaryDefinition = {
  */
 export const fatMass: AuxiliaryDefinition = {
   key: "fatMass",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0,
     tau: 43200,
@@ -191,6 +196,7 @@ export const fatMass: AuxiliaryDefinition = {
  */
 export const weight: SignalDefinition = {
   key: "weight",
+  type: "metabolic",
   label: "Weight",
   unit: "kg",
   description: "Total simulated body weight.",
@@ -221,6 +227,7 @@ export const weight: SignalDefinition = {
  */
 export const energyAvailability: SignalDefinition = {
   key: "energyAvailability",
+  type: "metabolic",
   label: "Energy Availability (EA)",
   unit: "kcal/kg",
   description:
@@ -236,7 +243,7 @@ export const energyAvailability: SignalDefinition = {
       const exerciseBurn = Math.max(0, burn - bmrMin);
 
       // Convert from kcal/min to kcal/day and normalize by lean mass
-      const leanMass = (ctx.subject?.weight ?? 70) * 0.8; // Rough LBM estimate
+      const leanMass = ctx.physiology.leanBodyMass;
       const intakeDaily = intake * 1440;
       const exerciseDaily = exerciseBurn * 1440;
 
@@ -288,6 +295,7 @@ export const energyAvailability: SignalDefinition = {
  */
 export const metabolicAdaptation: AuxiliaryDefinition = {
   key: "metabolicAdaptation",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 1.0,
     tau: 10080, // 7 days - metabolic adaptation is slow
@@ -332,15 +340,17 @@ export const metabolicAdaptation: AuxiliaryDefinition = {
  */
 export const thermogenesis: SignalDefinition = {
   key: "thermogenesis",
+  type: "metabolic",
   label: "Thermogenesis",
   unit: "kcal/min",
   description: "Heat production from brown fat activation and cold exposure.",
   idealTendency: "none",
   dynamics: {
     setpoint: (ctx, state) => {
-      // Baseline thermogenesis from thyroid
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : Math.max(0.6, 1.0 - (ctx.physiology.bmi - 25) * 0.03);
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.008);
       const thyroid = state.signals.thyroid ?? 1.5;
-      return 0.05 * (thyroid / 1.5);
+      return 0.05 * (thyroid / 1.5) * bmiFactor * ageFactor;
     },
     tau: 10,
     production: [],
@@ -366,6 +376,7 @@ export const thermogenesis: SignalDefinition = {
  */
 export const muscleGlycogen: AuxiliaryDefinition = {
   key: "muscleGlycogen",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 0.8,
     tau: 480, // 8 hours to refill
@@ -409,6 +420,7 @@ export const muscleGlycogen: AuxiliaryDefinition = {
  */
 export const hydration: SignalDefinition = {
   key: "hydration",
+  type: "metabolic",
   label: "Hydration",
   unit: "%",
   description:
@@ -425,10 +437,10 @@ export const hydration: SignalDefinition = {
         type: "linear",
         rate: 0.0001, // Small additional loss from activity/sweating
         transform: (value: number, state, ctx: any) => {
-          // Exercise increases water loss
           const burn = state.signals?.burnRate ?? 1.15;
           const exerciseIntensity = Math.max(0, burn - 1.15);
-          return 1 + exerciseIntensity * 2; // Up to 3x loss during intense exercise
+          const ageFactor = 1.0 + Math.max(0, ctx.subject?.age - 50) * 0.005;
+          return (1 + exerciseIntensity * 2) * ageFactor;
         },
       },
     ],
@@ -514,13 +526,17 @@ export const hydration: SignalDefinition = {
  */
 export const heatShockProteins: SignalDefinition = {
   key: "heatShockProteins",
+  type: "metabolic",
   label: "Heat Shock Proteins",
   unit: "x",
   description:
     "Cellular stress response proteins that promote repair and longevity.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.006);
+      return 1.0 * ageFactor;
+    },
     tau: 360, // 6 hours
     production: [],
     clearance: [{ type: "linear", rate: 0.005 }],
@@ -541,6 +557,7 @@ export const heatShockProteins: SignalDefinition = {
  */
 export const mitochondrialDensity: AuxiliaryDefinition = {
   key: "mitochondrialDensity",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => 1.0,
     tau: 43200, // 30 days - slow adaptation

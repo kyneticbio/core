@@ -8,13 +8,18 @@ import {
 
 export const inflammation: SignalDefinition = {
   key: "inflammation",
+  type: "derived",
   label: "Inflammation",
   isPremium: true,
   unit: "x",
   description: "A measure of your body's immune activation.",
   idealTendency: "lower",
   dynamics: {
-    setpoint: (ctx, state) => 1.0,
+    setpoint: (ctx, state) => {
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.02;
+      const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.003;
+      return 1.0 * bmiFactor * ageFactor;
+    },
     tau: 10,
     production: [
       {
@@ -58,6 +63,7 @@ export const inflammation: SignalDefinition = {
 
 export const ketone: SignalDefinition = {
   key: "ketone",
+  type: "derived",
   label: "Ketones",
   isPremium: true,
   unit: "mmol/L",
@@ -111,6 +117,7 @@ export const ketone: SignalDefinition = {
 
 export const ethanol: SignalDefinition = {
   key: "ethanol",
+  type: "derived",
   label: "Ethanol",
   isPremium: true,
   unit: "mg/dL",
@@ -120,7 +127,16 @@ export const ethanol: SignalDefinition = {
     setpoint: (ctx, state) => 0,
     tau: 60,
     production: [],
-    clearance: [{ type: "linear", rate: 0.003 }],
+    clearance: [{
+      type: "linear",
+      rate: 0.003,
+      transform: (_: any, _state: any, ctx: DynamicsContext) => {
+        const sexFactor = ctx.subject.sex === "female" ? 0.75 : 1.0;
+        const weightFactor = 70 / ctx.subject.weight;
+        const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.005);
+        return sexFactor * weightFactor * ageFactor;
+      },
+    }],
     couplings: [],
   },
   initialValue: 0,
@@ -152,6 +168,7 @@ export const ethanol: SignalDefinition = {
 
 export const acetaldehyde: SignalDefinition = {
   key: "acetaldehyde",
+  type: "derived",
   label: "Acetaldehyde",
   isPremium: true,
   unit: "µM",
@@ -161,7 +178,16 @@ export const acetaldehyde: SignalDefinition = {
     setpoint: (ctx, state) => 0,
     tau: 60,
     production: [{ source: "ethanol", coefficient: 0.005 }],
-    clearance: [{ type: "linear", rate: 0.03 }],
+    clearance: [{
+      type: "linear",
+      rate: 0.03,
+      transform: (_: any, _state: any, ctx: DynamicsContext) => {
+        const sexFactor = ctx.subject.sex === "female" ? 0.75 : 1.0;
+        const weightFactor = 70 / ctx.subject.weight;
+        const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.005);
+        return sexFactor * weightFactor * ageFactor;
+      },
+    }],
     couplings: [],
   },
   initialValue: 0,
@@ -185,6 +211,7 @@ export const acetaldehyde: SignalDefinition = {
 
 export const magnesium: SignalDefinition = {
   key: "magnesium",
+  type: "derived",
   label: "Magnesium",
   isPremium: true,
   unit: "mg/dL",
@@ -220,6 +247,7 @@ export const magnesium: SignalDefinition = {
 
 export const sensoryLoad: SignalDefinition = {
   key: "sensoryLoad",
+  type: "derived",
   label: "Sensory Load",
   isPremium: true,
   unit: "%",
@@ -254,6 +282,7 @@ export const sensoryLoad: SignalDefinition = {
 
 export const oxygen: SignalDefinition = {
   key: "oxygen",
+  type: "derived",
   label: "Oxygen",
   isPremium: true,
   unit: "%",
@@ -261,7 +290,10 @@ export const oxygen: SignalDefinition = {
     "A measure of how much oxygen your red blood cells are carrying.",
   idealTendency: "higher",
   dynamics: {
-    setpoint: (ctx, state) => 50.0,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.9, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.001);
+      return 50.0 * ageFactor;
+    },
     tau: 5,
     production: [],
     clearance: [{ type: "linear", rate: 0.2 }],

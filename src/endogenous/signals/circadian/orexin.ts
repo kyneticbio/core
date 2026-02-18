@@ -8,6 +8,7 @@ import {
 
 export const orexin: SignalDefinition = {
   key: "orexin",
+  type: "circadian",
   label: "Orexin",
   isPremium: true,
   unit: "pg/mL",
@@ -15,6 +16,8 @@ export const orexin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.6, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.005);
+      const bmiFactor = ctx.physiology.bmi <= 30 ? 1.0 : Math.max(0.8, 1.0 - (ctx.physiology.bmi - 30) * 0.01);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const wakeDrive = sigmoidPhase(p, hourToPhase(7.8), 1.0);
       const feedingCue =
@@ -22,7 +25,7 @@ export const orexin: SignalDefinition = {
         0.6 * gaussianPhase(p, hourToPhase(18.5), 0.8);
       const sleepPressure = sigmoidPhase(p, hourToPhase(22.5), 1.0);
       return (
-        250.0 + 150.0 * wakeDrive + 80.0 * feedingCue - 100.0 * sleepPressure
+        (250.0 + 150.0 * wakeDrive + 80.0 * feedingCue - 100.0 * sleepPressure) * ageFactor * bmiFactor
       );
     },
     tau: 90,

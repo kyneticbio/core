@@ -270,6 +270,16 @@ export interface SignalDefinition {
   label: string;
   unit: string;
   description: string;
+  type:
+    | "hormone"
+    | "nutrient"
+    | "neurotransmitter"
+    | "circadian"
+    | "organ-health"
+    | "nutrient"
+    | "derived"
+    | "hematology"
+    | "metabolic";
   dynamics: SignalDynamics;
   initialValue:
     | number
@@ -294,6 +304,7 @@ export interface SignalDefinition {
 export interface AuxiliaryDefinition {
   key: string;
   label?: string;
+  type: "auxiliary";
   dynamics: {
     setpoint: (ctx: DynamicsContext, state: SimulationState) => number;
     tau: number;

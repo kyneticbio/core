@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const endocannabinoid: SignalDefinition = {
   key: "endocannabinoid",
+  type: "neurotransmitter",
   label: "Endocannabinoid",
   isPremium: true,
   unit: "nM",
@@ -11,9 +12,11 @@ export const endocannabinoid: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.02;
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 30) * 0.004);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const morningRise = gaussianPhase(p, hourToPhase(9), 2.0);
-      return 4.0 + 6.0 * morningRise;
+      return (4.0 + 6.0 * morningRise) * bmiFactor * ageFactor;
     },
     tau: 60,
     production: [],

@@ -3,6 +3,7 @@ import { minuteToPhase, hourToPhase, gaussianPhase } from "../../utils";
 
 export const dopamine: SignalDefinition = {
   key: "dopamine",
+  type: "neurotransmitter",
   label: "Dopamine",
   isPremium: true,
   unit: "nM",
@@ -11,12 +12,14 @@ export const dopamine: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.5, 1.0 - Math.max(0, ctx.subject.age - 20) * 0.006);
+      const sexFactor = ctx.subject.sex === "male" ? 1.05 : 1.0;
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const morningDrive = gaussianPhase(p, hourToPhase(10.5), 1.0);
       const afternoonPlateau = gaussianPhase(p, hourToPhase(13.5), 0.8);
       const eveningDrop = gaussianPhase(p, hourToPhase(22), 0.5);
       return (
-        4.0 + 9.0 * morningDrive + 4.0 * afternoonPlateau - 3.0 * eveningDrop
+        (4.0 + 9.0 * morningDrive + 4.0 * afternoonPlateau - 3.0 * eveningDrop) * ageFactor * sexFactor
       );
     },
     tau: 120,

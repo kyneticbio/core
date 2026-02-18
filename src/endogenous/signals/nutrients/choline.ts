@@ -2,21 +2,32 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const choline: SignalDefinition = {
   key: "choline",
+  type: "nutrient",
   label: "Choline",
   unit: "µmol/L",
   isPremium: true,
   description: "Acetylcholine precursor.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.nutritional?.choline_umol_L ?? 10,
+    setpoint: (ctx, state) => {
+      const bw = ctx.subject.bloodwork?.nutritional?.choline_umol_L;
+      if (bw != null) return bw;
+      const sexDefault = ctx.subject.sex === "male" ? 11 : 9;
+      const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
+      return sexDefault * ageFactor;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.nutritional?.choline_umol_L ?? 10,
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.nutritional?.choline_umol_L;
+    if (bw != null) return bw;
+    const sexDefault = ctx.subject.sex === "male" ? 11 : 9;
+    const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
+    return sexDefault * ageFactor;
+  },
   display: {
     referenceRange: { min: 7, max: 20 },
   },

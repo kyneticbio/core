@@ -12,6 +12,7 @@ import {
 
 export const growthHormone: SignalDefinition = {
   key: "growthHormone",
+  type: "hormone",
   label: "Growth Hormone",
   isPremium: true,
   unit: "ng/mL",
@@ -20,6 +21,12 @@ export const growthHormone: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
+      const age = ctx.subject.age;
+      const sex = ctx.subject.sex;
+      const bmi = ctx.physiology.bmi;
+      const ageFactor = Math.max(0.3, 1.0 - Math.max(0, age - 20) * 0.014);
+      const sexFactor = sex === "female" ? 1.3 : 1.0;
+      const bmiFactor = bmi <= 25 ? 1.0 : Math.max(0.4, 1.0 - (bmi - 25) * 0.04);
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const sleepOnset = gaussianPhase(
         p,
@@ -31,7 +38,7 @@ export const growthHormone: SignalDefinition = {
         hourToPhase(3.0),
         widthToConcentration(90),
       );
-      return 0.5 + 8.0 * (sleepOnset + 0.6 * rebound);
+      return (0.5 + 8.0 * (sleepOnset + 0.6 * rebound)) * ageFactor * sexFactor * bmiFactor;
     },
     tau: 20,
     production: [
@@ -76,8 +83,12 @@ export const growthHormone: SignalDefinition = {
 
 export const ghReserve: AuxiliaryDefinition = {
   key: "ghReserve",
+  type: "auxiliary",
   dynamics: {
-    setpoint: (ctx, state) => 0.8,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.3, 1.0 - Math.max(0, ctx.subject.age - 20) * 0.014);
+      return 0.8 * ageFactor;
+    },
     tau: 1440,
     production: [
       {

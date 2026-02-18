@@ -2,6 +2,7 @@ import type { AuxiliaryDefinition } from "../../../engine";
 
 export const adenosinePressure: AuxiliaryDefinition = {
   key: "adenosinePressure",
+  type: "auxiliary",
   dynamics: {
     setpoint: (ctx, state) => (ctx.isAsleep ? 0 : 1.0),
     tau: 1440,

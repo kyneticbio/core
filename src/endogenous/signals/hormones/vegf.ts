@@ -2,6 +2,7 @@ import type { SignalDefinition, DynamicsContext } from "../../../engine";
 
 export const vegf: SignalDefinition = {
   key: "vegf",
+  type: "hormone",
   label: "VEGF",
   isPremium: true,
   unit: "pg/mL",
@@ -9,7 +10,11 @@ export const vegf: SignalDefinition = {
     "Vascular Endothelial Growth Factor drives the formation of new blood vessels (angiogenesis). Released in response to tissue injury, hypoxia, and exercise.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) => 100,
+    setpoint: (ctx, state) => {
+      const ageFactor = Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.005);
+      const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.01;
+      return 100 * ageFactor * bmiFactor;
+    },
     tau: 360, // Responds over hours to injury/hypoxia signals
     production: [
       {
@@ -26,7 +31,7 @@ export const vegf: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.008 }],
     couplings: [{ source: "cortisol", effect: "inhibit", strength: 0.05 }],
   },
-  initialValue: 100,
+  initialValue: (ctx) => 100 * Math.max(0.7, 1.0 - Math.max(0, ctx.subject.age - 40) * 0.005) * (ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.01),
   min: 0,
   max: 1000,
   display: {
