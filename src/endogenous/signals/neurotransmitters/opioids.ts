@@ -16,9 +16,19 @@ export const endorphin: SignalDefinition = {
       return 1.0 * ageFactor * sexFactor;
     },
     tau: 30, // Relatively fast clearance
-    production: [],
-    clearance: [],
-    couplings: [],
+    production: [
+      {
+        source: "constant",
+        coefficient: 0.003,
+        transform: (_: any, state: any) => {
+          const cortisol = state.signals.cortisol ?? 15;
+          const norepi = state.signals.norepi ?? 300;
+          return (cortisol > 15 ? 0.5 : 0) + (norepi > 300 ? 0.3 : 0);
+        },
+      },
+    ],
+    clearance: [{ type: "linear", rate: 0.02 }],
+    couplings: [{ source: "norepi", effect: "stimulate", strength: 0.005 }],
   },
   monitors: [
     {
@@ -48,8 +58,17 @@ export const dynorphin: SignalDefinition = {
       return 1.0 * ageFactor;
     },
     tau: 30,
-    production: [],
-    clearance: [],
+    production: [
+      {
+        source: "constant",
+        coefficient: 0.002,
+        transform: (_: any, state: any) => {
+          const cortisol = state.signals.cortisol ?? 15;
+          return cortisol > 18 ? 0.3 : 0;
+        },
+      },
+    ],
+    clearance: [{ type: "linear", rate: 0.02 }],
     couplings: [],
   },
 };

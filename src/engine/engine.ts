@@ -705,6 +705,7 @@ export function computeDerivativesVector(
     // Couplings
     if (debug.enableCouplings !== false) {
       for (const cp of rd.couplings) {
+        if (cp.sourceIndex === -1) continue;
         const srcVal = state[cp.sourceIndex];
         const sensitivity =
           debug.enableReceptors !== false && cp.receptorIndex !== -1

@@ -11,7 +11,14 @@ export const hematocrit: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
-      const bw = ctx.subject.bloodwork?.hematology?.hematocrit_pct;
+      let bw = ctx.subject.bloodwork?.hematology?.hematocrit_pct;
+      if (bw == null) {
+        const rbc = ctx.subject.bloodwork?.hematology?.rbc_count_m_uL;
+        const mcv = ctx.subject.bloodwork?.hematology?.mcv_fL;
+        if (rbc !== undefined && mcv !== undefined) {
+          bw = (rbc * mcv) / 10;
+        }
+      }
       if (bw != null) return bw;
       return ctx.subject.sex === "male" ? 45 : 40;
     },
@@ -21,7 +28,14 @@ export const hematocrit: SignalDefinition = {
     couplings: [{ source: "hemoglobin", effect: "stimulate", strength: 0.01 }],
   },
   initialValue: (ctx) => {
-    const bw = ctx.subject.bloodwork?.hematology?.hematocrit_pct;
+    let bw = ctx.subject.bloodwork?.hematology?.hematocrit_pct;
+    if (bw == null) {
+      const rbc = ctx.subject.bloodwork?.hematology?.rbc_count_m_uL;
+      const mcv = ctx.subject.bloodwork?.hematology?.mcv_fL;
+      if (rbc !== undefined && mcv !== undefined) {
+        bw = (rbc * mcv) / 10;
+      }
+    }
     if (bw != null) return bw;
     return ctx.subject.sex === "male" ? 45 : 40;
   },

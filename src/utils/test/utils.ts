@@ -106,6 +106,7 @@ const DEFAULT_SUBJECT: SubjectType = {
   cycleLength: 28,
   lutealPhaseLength: 14,
   cycleDay: 1,
+  genetics: {}, // Default empty GeneticProfile for tests
 };
 
 // --- Engine Runner (Synchronous for Testing) ---

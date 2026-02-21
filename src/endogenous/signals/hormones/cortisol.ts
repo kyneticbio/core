@@ -24,7 +24,18 @@ export const cortisol: SignalDefinition = {
       // Scale circadian rhythm around subject's baseline if bloodwork available
       const baselineCortisol =
         ctx.subject.bloodwork?.hormones?.cortisol_ug_dL ?? 12;
-      const scale = baselineCortisol / 12;
+
+      let acthF = 1.0;
+      const acth = ctx.subject.bloodwork?.hormones?.acth_pg_mL;
+      if (acth !== undefined) {
+        if (acth < 10) {
+          acthF = Math.max(0.6, acth / 10);
+        } else if (acth > 50 && baselineCortisol < 10) {
+          acthF = Math.max(0.7, baselineCortisol / 12);
+        }
+      }
+
+      const scale = (baselineCortisol / 12) * acthF;
       return (2.0 + 18.0 * CAR + 4.0 * dayComponent) * scale * ageFactor * bmiFactor;
     },
     tau: 20,

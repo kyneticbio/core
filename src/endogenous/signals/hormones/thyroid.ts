@@ -42,7 +42,19 @@ export const thyroid: SignalDefinition = {
         hourToPhase(2.0),
         widthToConcentration(300),
       );
-      return (1.0 + 2.0 * active + 1.5 * midday - 1.2 * nightDip) * scale * sexFactor * ageFactor;
+      const selenium = state.signals.selenium ?? 120;
+      const seleniumF = selenium >= 70 ? 1.0 : Math.max(0.85, selenium / 70);
+
+      const rT3 = ctx.subject.bloodwork?.hormones?.reverseT3_ng_dL;
+      const rT3F = rT3 !== undefined && rT3 > 20 ? Math.max(0.75, 1 - (rT3 - 20) * 0.005) : 1.0;
+
+      const tpo = ctx.subject.bloodwork?.hormones?.tpo_antibodies_IU_mL;
+      const tpoF = tpo !== undefined && tpo > 35 ? Math.max(0.7, 1 - Math.min(0.3, (tpo - 35) / 500)) : 1.0;
+
+      const iodine = ctx.subject.bloodwork?.nutritional?.iodine_ug_L;
+      const iodineF = iodine !== undefined && iodine < 100 ? Math.max(0.7, iodine / 100) : 1.0;
+
+      return (1.0 + 2.0 * active + 1.5 * midday - 1.2 * nightDip) * scale * sexFactor * ageFactor * seleniumF * rT3F * tpoF * iodineF;
     },
     tau: 43200,
     production: [],

@@ -11,7 +11,13 @@ export const albumin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
-      const bw = ctx.subject.bloodwork?.metabolic?.albumin_g_dL;
+      let bw = ctx.subject.bloodwork?.metabolic?.albumin_g_dL;
+      if (bw == null) {
+        const totalProtein = ctx.subject.bloodwork?.metabolic?.total_protein_g_dL;
+        if (totalProtein != null) {
+          bw = totalProtein * 0.6;
+        }
+      }
       if (bw != null) return bw;
       return Math.max(3.2, 4.0 - Math.max(0, ctx.subject.age - 50) * 0.01);
     },
@@ -21,7 +27,13 @@ export const albumin: SignalDefinition = {
     couplings: [{ source: "hsCRP", effect: "inhibit", strength: 0.001 }],
   },
   initialValue: (ctx) => {
-    const bw = ctx.subject.bloodwork?.metabolic?.albumin_g_dL;
+    let bw = ctx.subject.bloodwork?.metabolic?.albumin_g_dL;
+    if (bw == null) {
+      const totalProtein = ctx.subject.bloodwork?.metabolic?.total_protein_g_dL;
+      if (totalProtein != null) {
+        bw = totalProtein * 0.6;
+      }
+    }
     if (bw != null) return bw;
     return Math.max(3.2, 4.0 - Math.max(0, ctx.subject.age - 50) * 0.01);
   },

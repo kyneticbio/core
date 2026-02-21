@@ -10,15 +10,23 @@ export const potassium: SignalDefinition = {
     "An essential electrolyte critical for heart rhythm, muscle contraction, and nerve signaling.",
   idealTendency: "mid",
   dynamics: {
-    setpoint: (ctx, state) =>
-      ctx.subject.bloodwork?.metabolic?.potassium_mmol_L ?? 4.2,
+    setpoint: (ctx, state) => {
+      const base = ctx.subject.bloodwork?.metabolic?.potassium_mmol_L ?? 4.2;
+      const aldo = ctx.subject.bloodwork?.hormones?.aldosterone_ng_dL;
+      const aldoF = aldo !== undefined && aldo > 15 ? Math.max(0.85, 1 - (aldo - 15) * 0.005) : 1.0;
+      return base * aldoF;
+    },
     tau: 10080,
     production: [],
     clearance: [],
     couplings: [{ source: "egfr", effect: "inhibit", strength: 0.0005 }],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.metabolic?.potassium_mmol_L ?? 4.2,
+  initialValue: (ctx) => {
+    const base = ctx.subject.bloodwork?.metabolic?.potassium_mmol_L ?? 4.2;
+    const aldo = ctx.subject.bloodwork?.hormones?.aldosterone_ng_dL;
+    const aldoF = aldo !== undefined && aldo > 15 ? Math.max(0.85, 1 - (aldo - 15) * 0.005) : 1.0;
+    return base * aldoF;
+  },
   display: {
     referenceRange: { min: 3.5, max: 5.0 },
   },

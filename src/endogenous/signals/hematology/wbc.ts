@@ -33,7 +33,10 @@ export const wbc: SignalDefinition = {
       },
     ],
     clearance: [],
-    couplings: [],
+    couplings: [
+      { source: "inflammation", effect: "stimulate", strength: 0.002 },
+      { source: "cortisol", effect: "stimulate", strength: 0.0005 },
+    ],
   },
   initialValue: (ctx) => {
     const bw = ctx.subject.bloodwork?.hematology?.wbc_count_k_uL;

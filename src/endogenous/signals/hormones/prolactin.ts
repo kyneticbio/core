@@ -21,6 +21,11 @@ export const prolactin: SignalDefinition = {
     setpoint: (ctx, state) => {
       const sexFactor = ctx.subject.sex === "female" ? 1.8 : 1.0;
       const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.003;
+      const defaultBaseline = 10 * sexFactor * ageFactor;
+      
+      const bw = ctx.subject.bloodwork?.hormones?.prolactin_ng_mL;
+      const scale = bw ? bw / defaultBaseline : 1.0;
+
       const p = minuteToPhase(ctx.circadianMinuteOfDay);
       const prep = sigmoidPhase(
         p,
@@ -30,7 +35,7 @@ export const prolactin: SignalDefinition = {
       const sleepPulse =
         gaussianPhase(p, hourToPhase(2.0), widthToConcentration(120)) +
         0.8 * gaussianPhase(p, hourToPhase(4.0), widthToConcentration(200));
-      return (4.0 + 8.0 * prep + 12.0 * sleepPulse) * sexFactor * ageFactor;
+      return (4.0 + 8.0 * prep + 12.0 * sleepPulse) * sexFactor * ageFactor * scale;
     },
     tau: 45,
     production: [],
@@ -40,7 +45,11 @@ export const prolactin: SignalDefinition = {
       { source: "dopamine", effect: "inhibit", strength: 0.011 },
     ],
   },
-  initialValue: (ctx) => 10 * (ctx.subject.sex === "female" ? 1.8 : 1.0) * (1.0 + Math.max(0, ctx.subject.age - 30) * 0.003),
+  initialValue: (ctx) => {
+    const bw = ctx.subject.bloodwork?.hormones?.prolactin_ng_mL;
+    if (bw) return bw;
+    return 10 * (ctx.subject.sex === "female" ? 1.8 : 1.0) * (1.0 + Math.max(0, ctx.subject.age - 30) * 0.003);
+  },
   display: {
     referenceRange: { min: 5, max: 20 },
   },

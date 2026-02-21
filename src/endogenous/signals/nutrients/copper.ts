@@ -19,10 +19,16 @@ export const copper: SignalDefinition = {
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "zinc", effect: "inhibit", strength: 0.00003 }],
   },
   initialValue: (ctx) => {
-    const bw = ctx.subject.bloodwork?.nutritional?.copper_ug_dL;
+    let bw = ctx.subject.bloodwork?.nutritional?.copper_ug_dL;
+    if (bw != null) {
+      const ceruloplasmin = ctx.subject.bloodwork?.nutritional?.ceruloplasmin_mg_dL;
+      if (ceruloplasmin !== undefined && ceruloplasmin < 20 && bw > 100) {
+        bw *= Math.max(0.7, ceruloplasmin / 20);
+      }
+    }
     if (bw != null) return bw;
     const sexFactor = ctx.subject.sex === "female" ? 1.1 : 1.0;
     const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);

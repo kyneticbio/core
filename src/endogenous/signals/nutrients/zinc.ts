@@ -18,7 +18,7 @@ export const zinc: SignalDefinition = {
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "copper", effect: "inhibit", strength: 0.00003 }],
   },
   initialValue: (ctx) => {
     const bw = ctx.subject.bloodwork?.nutritional?.zinc_ug_dL;

@@ -16,7 +16,9 @@ export const tsh: SignalDefinition = {
       const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.005;
       const sexFactor = ctx.subject.sex === "female" ? 1.05 : 1.0;
       const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.01;
-      return 2.0 * ageFactor * sexFactor * bmiFactor;
+      const trab = ctx.subject.bloodwork?.hormones?.trab_IU_L;
+      const trabF = trab !== undefined && trab > 1.75 ? Math.max(0.1, 1 - Math.min(0.9, (trab - 1.75) * 0.1)) : 1.0;
+      return 2.0 * ageFactor * sexFactor * bmiFactor * trabF;
     },
     tau: 10080,
     production: [],
@@ -29,7 +31,9 @@ export const tsh: SignalDefinition = {
     const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.005;
     const sexFactor = ctx.subject.sex === "female" ? 1.05 : 1.0;
     const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.01;
-    return 2.0 * ageFactor * sexFactor * bmiFactor;
+    const trab = ctx.subject.bloodwork?.hormones?.trab_IU_L;
+    const trabF = trab !== undefined && trab > 1.75 ? Math.max(0.1, 1 - Math.min(0.9, (trab - 1.75) * 0.1)) : 1.0;
+    return 2.0 * ageFactor * sexFactor * bmiFactor * trabF;
   },
   display: {
     referenceRange: { min: 0.4, max: 4.0 },

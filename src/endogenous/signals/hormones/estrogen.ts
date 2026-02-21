@@ -16,7 +16,11 @@ export const estrogen: SignalDefinition = {
         return ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 30.0;
       }
       // Scale cycle rhythm around subject's baseline if bloodwork available
-      const baselineE2 = ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 40;
+      let baselineE2 = ctx.subject.bloodwork?.hormones?.estradiol_pg_mL;
+      if (baselineE2 == null && ctx.subject.age >= 50 && ctx.subject.bloodwork?.hormones?.estrone_pg_mL != null) {
+        baselineE2 = ctx.subject.bloodwork.hormones.estrone_pg_mL * 0.4;
+      }
+      baselineE2 = baselineE2 ?? 40;
       const scale = baselineE2 / 40;
       const cycleLength = ctx.subject.cycleLength || 28;
       const cycleDay =
@@ -39,7 +43,13 @@ export const estrogen: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.008 }],
     couplings: [],
   },
-  initialValue: (ctx) => ctx.subject.bloodwork?.hormones?.estradiol_pg_mL ?? 40,
+  initialValue: (ctx) => {
+    let baselineE2 = ctx.subject.bloodwork?.hormones?.estradiol_pg_mL;
+    if (baselineE2 == null && ctx.subject.age >= 50 && ctx.subject.bloodwork?.hormones?.estrone_pg_mL != null) {
+      baselineE2 = ctx.subject.bloodwork.hormones.estrone_pg_mL * 0.4;
+    }
+    return baselineE2 ?? 40;
+  },
   display: {
     referenceRange: { min: 50, max: 400 },
   },

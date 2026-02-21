@@ -26,6 +26,16 @@ export const testosterone: SignalDefinition = {
         const baselineT =
           ctx.subject.bloodwork?.hormones?.total_testosterone_ng_dL ?? 500;
         const scale = baselineT / 500;
+
+        const dht = ctx.subject.bloodwork?.hormones?.dht_ng_dL;
+        let dhtF = 1.0;
+        if (dht !== undefined && baselineT > 0) {
+          const ratio = dht / baselineT;
+          if (ratio > 0.12) {
+            dhtF = Math.max(0.9, 1 - (ratio - 0.12) * 1.0);
+          }
+        }
+
         const p = minuteToPhase(ctx.circadianMinuteOfDay);
         const circadian =
           400.0 +
@@ -33,7 +43,7 @@ export const testosterone: SignalDefinition = {
         const zincVal = state?.signals?.zinc;
         const zinc = zincVal > 0 ? zincVal : 90;
         const zincFactor = zinc >= 70 ? 1.0 : Math.max(0.6, zinc / 70);
-        return circadian * ageFactor * scale * zincFactor;
+        return circadian * ageFactor * scale * zincFactor * dhtF;
       } else {
         const baselineT =
           ctx.subject.bloodwork?.hormones?.total_testosterone_ng_dL ?? 40;

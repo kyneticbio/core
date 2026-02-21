@@ -639,6 +639,7 @@ describe('Subject Parameters', () => {
         cycleLength: 28,
         lutealPhaseLength: 14,
         cycleDay: 0,
+        genetics: {}, // Default empty GeneticProfile
       };
       const phys = derivePhysiology(refMale);
 
@@ -657,6 +658,7 @@ describe('Subject Parameters', () => {
         cycleLength: 28,
         lutealPhaseLength: 14,
         cycleDay: 14,
+        genetics: {}, // Default empty GeneticProfile
       };
       const phys = derivePhysiology(refFemale);
 

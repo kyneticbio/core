@@ -18,7 +18,7 @@ export const folate: SignalDefinition = {
     tau: 10080,
     production: [],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "b12", effect: "stimulate", strength: 0.00003 }],
   },
   initialValue: (ctx) => {
     const bw = ctx.subject.bloodwork?.nutritional?.folate_ng_mL;

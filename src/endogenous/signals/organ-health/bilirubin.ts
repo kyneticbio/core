@@ -15,10 +15,30 @@ export const bilirubin: SignalDefinition = {
       if (bw != null) return bw;
       return ctx.subject.sex === "male" ? 0.8 : 0.6;
     },
-    tau: 10080,
-    production: [],
+    tau: 4320,
+    production: [
+      {
+        source: "constant",
+        coefficient: 1.0,
+        transform: (_: any, state: any, ctx: DynamicsContext) => {
+          const hb = state.signals.hemoglobin ?? 14.5;
+          let baseProduction = hb * 0.00002;
+          
+          const indirect = ctx.subject.bloodwork?.metabolic?.indirect_bilirubin_mg_dL;
+          const total = ctx.subject.bloodwork?.metabolic?.bilirubin_mg_dL;
+          if (indirect !== undefined && total !== undefined && total > 0) {
+            const fraction = indirect / total;
+            if (fraction > 0.85) {
+              const hemolysisF = 1 + (fraction - 0.85) * 5;
+              baseProduction *= hemolysisF;
+            }
+          }
+          return baseProduction;
+        },
+      },
+    ],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "inflammation", effect: "stimulate", strength: 0.001 }],
   },
   initialValue: (ctx) => {
     const bw = ctx.subject.bloodwork?.metabolic?.bilirubin_mg_dL;

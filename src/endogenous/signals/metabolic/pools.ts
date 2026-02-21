@@ -18,7 +18,17 @@ export const insulinSensitivity: AuxiliaryDefinition = {
         fastingInsulin <= 10
           ? 1.0
           : Math.max(0.5, 1.0 - (fastingInsulin - 10) * 0.02);
-      return bmiFactor * insulinFactor;
+      
+      const chromium = state.signals.chromium ?? 1.0;
+      const chromiumF = chromium >= 0.7 ? 1.0 : Math.max(0.85, chromium / 0.7);
+
+      const hba1c = ctx.subject.bloodwork?.metabolic?.hba1c_pct;
+      const hba1cF = hba1c !== undefined && hba1c > 5.7 ? Math.max(0.5, 1 - (hba1c - 5.7) * 0.1) : 1.0;
+
+      const cPeptide = ctx.subject.bloodwork?.metabolic?.c_peptide_ng_mL;
+      const cPeptideF = cPeptide !== undefined && cPeptide > 3.0 ? Math.max(0.6, 1 - (cPeptide - 3.0) * 0.05) : 1.0;
+
+      return bmiFactor * insulinFactor * chromiumF * hba1cF * cPeptideF;
     },
     tau: 43200, // 30 days — changes slowly
     production: [],
@@ -38,7 +48,11 @@ export const insulinSensitivity: AuxiliaryDefinition = {
       fastingInsulin <= 10
         ? 1.0
         : Math.max(0.5, 1.0 - (fastingInsulin - 10) * 0.02);
-    return bmiFactor * insulinFactor;
+
+    const hba1c = ctx.subject.bloodwork?.metabolic?.hba1c_pct;
+    const hba1cF = hba1c !== undefined && hba1c > 5.7 ? Math.max(0.5, 1 - (hba1c - 5.7) * 0.1) : 1.0;
+
+    return bmiFactor * insulinFactor * hba1cF;
   },
   min: 0.2,
   max: 1.5,

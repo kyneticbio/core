@@ -17,7 +17,13 @@ export const glucose: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
-      const bw = ctx.subject.bloodwork?.metabolic?.glucose_mg_dL;
+      let bw = ctx.subject.bloodwork?.metabolic?.glucose_mg_dL;
+      if (bw == null) {
+        const hba1c = ctx.subject.bloodwork?.metabolic?.hba1c_pct;
+        if (hba1c != null) {
+          bw = 28.7 * hba1c - 46.7;
+        }
+      }
       if (bw != null) return bw;
       const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.001;
       return 90 * ageFactor;
@@ -32,7 +38,16 @@ export const glucose: SignalDefinition = {
       { source: "adrenaline", effect: "stimulate", strength: 0.0014 },
     ],
   },
-  initialValue: (ctx) => ctx.subject.bloodwork?.metabolic?.glucose_mg_dL ?? 90,
+  initialValue: (ctx) => {
+    let bw = ctx.subject.bloodwork?.metabolic?.glucose_mg_dL;
+    if (bw == null) {
+      const hba1c = ctx.subject.bloodwork?.metabolic?.hba1c_pct;
+      if (hba1c != null) {
+        bw = 28.7 * hba1c - 46.7;
+      }
+    }
+    return bw ?? 90;
+  },
   min: 40,
   max: 400,
   display: {

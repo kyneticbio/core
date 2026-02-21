@@ -17,7 +17,10 @@ export const adrenaline: SignalDefinition = {
     },
     tau: 5,
     production: [],
-    clearance: [],
+    clearance: [
+      { type: "enzyme-dependent", rate: 0.002, enzyme: "COMT" },
+      { type: "enzyme-dependent", rate: 0.001, enzyme: "MAO_A" },
+    ],
     couplings: [
       { source: "orexin", effect: "stimulate", strength: 0.4 },
       { source: "dopamine", effect: "stimulate", strength: 1.0 },

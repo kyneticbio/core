@@ -136,9 +136,30 @@ export const bloodPressure: SignalDefinition = {
       const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 30) * 0.004;
       const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.008;
       const sexFactor = ctx.subject.sex === "male" ? 1.05 : 1.0;
+
+      let sodiumF = 1.0;
+      const sodium = ctx.subject.bloodwork?.metabolic?.sodium_mmol_L;
+      if (sodium !== undefined && sodium > 140) {
+        sodiumF = 1 + Math.min(0.15, (sodium - 140) * 0.01);
+      }
+
+      let raasF = 1.0;
+      const aldo = ctx.subject.bloodwork?.hormones?.aldosterone_ng_dL;
+      if (aldo !== undefined && aldo > 15) {
+        raasF = 1 + Math.min(0.15, (aldo - 15) * 0.01);
+      }
+
+      const renin = ctx.subject.bloodwork?.hormones?.renin_ng_mL_hr;
+      if (aldo !== undefined && renin !== undefined && renin > 0) {
+        const arr = aldo / renin;
+        if (arr > 30) {
+          raasF *= (1 + Math.min(0.1, (arr - 30) * 0.002));
+        }
+      }
+
       const p = minuteToPhase(ctx.minuteOfDay);
       const wakeRise = sigmoidPhase(p, hourToPhase(2), 1.0);
-      return (100.0 + 20.0 * wakeRise) * ageFactor * bmiFactor * sexFactor;
+      return (100.0 + 20.0 * wakeRise) * ageFactor * bmiFactor * sexFactor * sodiumF * raasF;
     },
     tau: 15,
     production: [],

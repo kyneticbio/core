@@ -17,9 +17,18 @@ export const creatinine: SignalDefinition = {
       return sexDefault;
     },
     tau: 10080,
-    production: [],
+    production: [
+      {
+        source: "constant",
+        coefficient: 1.0,
+        transform: (_: any, state: any) => {
+          const muscleMass = state.auxiliary?.muscleMass ?? 0;
+          return muscleMass * 0.00001;
+        },
+      },
+    ],
     clearance: [],
-    couplings: [],
+    couplings: [{ source: "egfr", effect: "inhibit", strength: 0.0003 }],
   },
   initialValue: (ctx) => {
     const bw = ctx.subject.bloodwork?.metabolic?.creatinine_mg_dL;

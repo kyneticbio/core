@@ -10,7 +10,7 @@ export const chromium: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
-      const bw = ctx.subject.bloodwork?.nutritional?.chromium_x;
+      const bw = ctx.subject.bloodwork?.nutritional?.chromium_ug_L;
       if (bw != null) return bw;
       const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
       return 1.0 * ageFactor;
@@ -21,7 +21,7 @@ export const chromium: SignalDefinition = {
     couplings: [],
   },
   initialValue: (ctx) => {
-    const bw = ctx.subject.bloodwork?.nutritional?.chromium_x;
+    const bw = ctx.subject.bloodwork?.nutritional?.chromium_ug_L;
     if (bw != null) return bw;
     const ageFactor = Math.max(0.85, 1.0 - Math.max(0, ctx.subject.age - 50) * 0.002);
     return 1.0 * ageFactor;

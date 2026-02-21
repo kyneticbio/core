@@ -242,7 +242,7 @@ describe("Physiology Integration", () => {
       const result = await runEngine({
         duration: 1440,
         subject: {
-          bloodwork: { nutritional: { chromium_x: 0.8 } },
+          bloodwork: { nutritional: { chromium_ug_L: 0.8 } },
         },
         includeSignals: ["chromium"] as Signal[],
       });

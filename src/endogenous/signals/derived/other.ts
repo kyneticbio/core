@@ -18,7 +18,26 @@ export const inflammation: SignalDefinition = {
     setpoint: (ctx, state) => {
       const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.02;
       const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.003;
-      return 1.0 * bmiFactor * ageFactor;
+
+      let bwFactor = 1.0;
+      const hscrp = ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L;
+      if (hscrp !== undefined) {
+        if (hscrp <= 1) bwFactor *= 0.8;
+        else if (hscrp > 3) bwFactor *= Math.min(3.0, hscrp / 3);
+      }
+
+      const esr = ctx.subject.bloodwork?.inflammation?.esr_mm_hr;
+      if (esr !== undefined) {
+        const threshold = ctx.subject.sex === "female" ? 30 : 20;
+        if (esr > threshold) bwFactor *= (1 + Math.min(1.0, (esr - threshold) / threshold));
+      }
+
+      const hcy = ctx.subject.bloodwork?.inflammation?.homocysteine_umol_L;
+      if (hcy !== undefined && hcy > 12) {
+        bwFactor *= (1 + Math.min(0.5, (hcy - 12) / 20));
+      }
+
+      return 1.0 * bmiFactor * ageFactor * bwFactor;
     },
     tau: 10,
     production: [
@@ -42,7 +61,15 @@ export const inflammation: SignalDefinition = {
       { source: "vitaminD3", effect: "inhibit", strength: 0.0005 },
     ],
   },
-  initialValue: 1.0,
+  initialValue: (ctx) => {
+    const hscrp = ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L;
+    let bwFactor = 1.0;
+    if (hscrp !== undefined) {
+      if (hscrp <= 1) bwFactor = 0.8;
+      else if (hscrp > 3) bwFactor = Math.min(3.0, hscrp / 3);
+    }
+    return 1.0 * bwFactor;
+  },
   min: 0,
   max: 100,
   display: {
@@ -219,6 +246,7 @@ export const magnesium: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) =>
+      ctx.subject.bloodwork?.nutritional?.rbc_magnesium_mg_dL ??
       ctx.subject.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
     tau: 10080,
     production: [],
@@ -226,6 +254,7 @@ export const magnesium: SignalDefinition = {
     couplings: [{ source: "adrenaline", effect: "inhibit", strength: 0.05 }],
   },
   initialValue: (ctx) =>
+    ctx.subject.bloodwork?.nutritional?.rbc_magnesium_mg_dL ??
     ctx.subject.bloodwork?.nutritional?.magnesium_mg_dL ?? 2.0,
   min: 0,
   max: 5.0,

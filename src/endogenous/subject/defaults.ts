@@ -54,6 +54,7 @@ export const DEFAULT_SUBJECT: Subject = {
   cycleLength: 28,
   lutealPhaseLength: 14,
   cycleDay: 0,
+  genetics: {}, // Default empty GeneticProfile
   bloodwork: DEFAULT_BLOODWORK,
 };
 

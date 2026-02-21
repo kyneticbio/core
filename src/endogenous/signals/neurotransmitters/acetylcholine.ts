@@ -19,7 +19,17 @@ export const acetylcholine: SignalDefinition = {
       return (7.5 + 10.0 * wakeFocus + 7.5 * remDrive) * ageFactor;
     },
     tau: 45,
-    production: [],
+    production: [
+      {
+        source: "constant",
+        coefficient: 0.01,
+        transform: (_: any, state: any) => {
+          const choline = state.signals.choline ?? 10;
+          const cholineFactor = Math.min(1.0, choline / 7);
+          return cholineFactor * 10;
+        },
+      },
+    ],
     clearance: [{ type: "enzyme-dependent", rate: 0.02, enzyme: "AChE" }],
     couplings: [{ source: "orexin", effect: "stimulate", strength: 0.0375 }],
   },

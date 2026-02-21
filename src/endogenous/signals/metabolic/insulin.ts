@@ -21,7 +21,13 @@ export const insulin: SignalDefinition = {
   idealTendency: "mid",
   dynamics: {
     setpoint: (ctx, state) => {
-      const bw = ctx.subject.bloodwork?.metabolic?.fasting_insulin_uIU_mL;
+      let bw = ctx.subject.bloodwork?.metabolic?.fasting_insulin_uIU_mL;
+      if (bw == null) {
+        const cPeptide = ctx.subject.bloodwork?.metabolic?.c_peptide_ng_mL;
+        if (cPeptide != null) {
+          bw = cPeptide * 3.3;
+        }
+      }
       if (bw != null) return bw;
       const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.02;
       return 8.0 * bmiFactor;
@@ -37,8 +43,16 @@ export const insulin: SignalDefinition = {
     clearance: [{ type: "linear", rate: 0.05 }],
     couplings: [{ source: "glucagon", effect: "inhibit", strength: 0.01 }],
   },
-  initialValue: (ctx) =>
-    ctx.subject.bloodwork?.metabolic?.fasting_insulin_uIU_mL ?? 8,
+  initialValue: (ctx) => {
+    let bw = ctx.subject.bloodwork?.metabolic?.fasting_insulin_uIU_mL;
+    if (bw == null) {
+      const cPeptide = ctx.subject.bloodwork?.metabolic?.c_peptide_ng_mL;
+      if (cPeptide != null) {
+        bw = cPeptide * 3.3;
+      }
+    }
+    return bw ?? 8;
+  },
   min: 0,
   max: 200,
   display: {

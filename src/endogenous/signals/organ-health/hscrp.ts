@@ -11,7 +11,18 @@ export const hsCRP: SignalDefinition = {
   idealTendency: "lower",
   dynamics: {
     setpoint: (ctx, state) => {
-      const bw = ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L;
+      let bw = ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L;
+      if (bw == null) {
+        const esr = ctx.subject.bloodwork?.inflammation?.esr_mm_hr;
+        if (esr != null) {
+          bw = esr * 0.1;
+        } else {
+          const fibrinogen = ctx.subject.bloodwork?.inflammation?.fibrinogen_mg_dL;
+          if (fibrinogen !== undefined && fibrinogen > 400) {
+            bw = Math.min(10, (fibrinogen - 200) * 0.01);
+          }
+        }
+      }
       if (bw != null) return bw;
       const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.03;
       const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.005;
@@ -23,7 +34,18 @@ export const hsCRP: SignalDefinition = {
     couplings: [],
   },
   initialValue: (ctx) => {
-    const bw = ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L;
+    let bw = ctx.subject.bloodwork?.inflammation?.hsCRP_mg_L;
+    if (bw == null) {
+      const esr = ctx.subject.bloodwork?.inflammation?.esr_mm_hr;
+      if (esr != null) {
+        bw = esr * 0.1;
+      } else {
+        const fibrinogen = ctx.subject.bloodwork?.inflammation?.fibrinogen_mg_dL;
+        if (fibrinogen !== undefined && fibrinogen > 400) {
+          bw = Math.min(10, (fibrinogen - 200) * 0.01);
+        }
+      }
+    }
     if (bw != null) return bw;
     const bmiFactor = ctx.physiology.bmi <= 25 ? 1.0 : 1.0 + (ctx.physiology.bmi - 25) * 0.03;
     const ageFactor = 1.0 + Math.max(0, ctx.subject.age - 40) * 0.005;
